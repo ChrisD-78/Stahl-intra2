@@ -1,14 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import WassermessungForm from '@/components/WassermessungForm'
-import RutschenkontrolleForm from '@/components/RutschenkontrolleForm'
-import StoermeldungForm from '@/components/StoermeldungForm'
-import KassenabrechnungForm from '@/components/KassenabrechnungForm'
-import ArbeitsunfallForm from '@/components/ArbeitsunfallForm'
-import FeedbackForm from '@/components/FeedbackForm'
-import StundenkorrekturForm from '@/components/StundenkorrekturForm'
-import { insertAccident, getFormSubmissions, insertFormSubmission, deleteFormSubmissionById } from '@/lib/db'
+import UrlaubsantragForm from '@/components/UrlaubsantragForm'
+import DienstreiseantragForm from '@/components/DienstreiseantragForm'
+import BeschaffungsantragForm from '@/components/BeschaffungsantragForm'
+import ReisekostenabrechnungForm from '@/components/ReisekostenabrechnungForm'
+import { getFormSubmissions, insertFormSubmission, deleteFormSubmissionById } from '@/lib/db'
 import { useAuth } from '@/components/AuthProvider'
 
 interface FormSubmission {
@@ -87,33 +84,6 @@ export default function Formulare() {
       }
       
       setSubmissions([newSubmission, ...submissions])
-
-      // Special handling for arbeitsunfall
-      if (type === 'arbeitsunfall') {
-        try {
-          await insertAccident({
-            unfalltyp: data.unfalltyp,
-            datum: data.datum,
-            zeit: data.zeit,
-            verletzte_person: data.verletztePerson,
-            unfallort: data.unfallort,
-            unfallart: data.unfallart,
-            verletzungsart: data.verletzungsart,
-            schweregrad: data.schweregrad,
-            erste_hilfe: data.ersteHilfe,
-            arzt_kontakt: data.arztKontakt,
-            zeugen: data.zeugen || null,
-            beschreibung: data.beschreibung,
-            meldende_person: data.meldendePerson,
-            unfallhergang: data.unfallhergang || null,
-            gast_alter: data.gastAlter || null,
-            gast_kontakt: data.gastKontakt || null,
-          })
-        } catch (e) {
-          console.error('Supabase insertAccident error', e)
-          alert('Fehler beim Speichern des Arbeitsunfalls in der Datenbank.')
-        }
-      }
     } catch (error) {
       console.error('Error saving form submission:', error)
       alert('Fehler beim Speichern des Formulars.')
@@ -122,20 +92,14 @@ export default function Formulare() {
 
   const generateDescription = (type: string, data: any): string => { // eslint-disable-line @typescript-eslint/no-explicit-any
     switch (type) {
-      case 'wassermessung':
-        return `Becken: ${data.becken}, pH: ${data.phWert}, Chlor: ${data.chlorWert} mg/l, Chlor-Gesamt: ${data.chlorWertGesamt} mg/l, Chlor-Gebunden: ${data.chlorWertGebunden} mg/l, Redox: ${data.redox} mV`
-      case 'rutschenkontrolle':
-        return `Sicherheit: ${data.sicherheitscheck}, Funktion: ${data.funktionspruefung}`
-      case 'stoermeldung':
-        return `Störungstyp: ${data.stoerungstyp}, Meldende Person: ${data.meldendePerson}`
-      case 'kassenabrechnung':
-        return `Umsatz: €${data.tagesumsatz}, Kassenbestand: €${data.kassenbestand}`
-      case 'arbeitsunfall':
-        return `Unfallort: ${data.unfallort}, Verletzte Person: ${data.verletztePerson}, Schweregrad: ${data.schweregrad}`
-      case 'feedback':
-        return `Kategorie: ${data.kategorie}, Bereich: ${data.betroffenerBereich}, Priorität: ${data.prioritaet}`
-      case 'stundenkorrektur':
-        return `Name: ${data.name}, Datum: ${data.datum}, Zeit: ${data.uhrzeitVon} - ${data.uhrzeitBis}, Grund: ${data.grund}`
+      case 'urlaubsantrag':
+        return `Name: ${data.name}, Abteilung: ${data.abteilung}, Von: ${data.vonDatum}, Bis: ${data.bisDatum}, Tage: ${data.anzahlTage}`
+      case 'dienstreiseantrag':
+        return `Name: ${data.name}, Reiseziel: ${data.reiseziel}, Von: ${data.vonDatum}, Bis: ${data.bisDatum}, Kosten: ${data.geschaetzteKosten} €`
+      case 'beschaffungsantrag':
+        return `Name: ${data.name}, Gegenstand: ${data.beschaffungsgegenstand}, Menge: ${data.menge}, Gesamtpreis: ${data.gesamtpreis} €, Dringlichkeit: ${data.dringlichkeit}`
+      case 'reisekostenabrechnung':
+        return `Name: ${data.name}, Reiseziel: ${data.reiseziel}, Von: ${data.vonDatum}, Bis: ${data.bisDatum}, Gesamtkosten: ${data.gesamtkosten} €`
       default:
         return 'Formular eingereicht'
     }
@@ -233,12 +197,10 @@ export default function Formulare() {
 
   const getFormTypeLabel = (type: string) => {
     switch (type) {
-      case 'wassermessung': return 'Wassermessung'
-      case 'rutschenkontrolle': return 'Rutschenkontrolle'
-      case 'stoermeldung': return 'Störmeldung'
-      case 'kassenabrechnung': return 'Kassenabrechnung'
-      case 'arbeitsunfall': return 'Arbeitsunfall'
-      case 'feedback': return 'Feedback'
+      case 'urlaubsantrag': return 'Urlaubsantrag'
+      case 'dienstreiseantrag': return 'Dienstreiseantrag'
+      case 'beschaffungsantrag': return 'Beschaffungsantrag'
+      case 'reisekostenabrechnung': return 'Reisekostenabrechnung'
       default: return type
     }
   }
@@ -264,37 +226,19 @@ export default function Formulare() {
         <div className="p-4 lg:p-6 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900">Verfügbare Formulare</h2>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 p-4 lg:p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 p-4 lg:p-6">
           <div className="border border-gray-200 rounded-lg p-4 lg:p-6 hover:shadow-md transition-shadow">
             <div className="text-center mb-4">
-              <span className="text-4xl">🏥</span>
+              <span className="text-4xl">🏖️</span>
             </div>
             <h3 className="text-base lg:text-lg font-semibold text-gray-900 text-center mb-2">
-              Unfall melden
+              Urlaubsantrag
             </h3>
             <p className="text-sm text-gray-900 text-center mb-4">
-              Melden Sie Unfälle und Vorfälle
+              Beantragen Sie Urlaub und Abwesenheiten
             </p>
             <button 
-              onClick={() => setOpenForm('arbeitsunfall')}
-              className="w-full px-4 py-2.5 text-base bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
-            >
-              Formular öffnen
-            </button>
-          </div>
-
-          <div className="border border-gray-200 rounded-lg p-4 lg:p-6 hover:shadow-md transition-shadow">
-            <div className="text-center mb-4">
-              <span className="text-4xl">💧</span>
-            </div>
-            <h3 className="text-base lg:text-lg font-semibold text-gray-900 text-center mb-2">
-              Wassermessung
-            </h3>
-            <p className="text-sm text-gray-900 text-center mb-4">
-              Dokumentieren Sie Wasserwerte und Messungen
-            </p>
-            <button 
-              onClick={() => setOpenForm('wassermessung')}
+              onClick={() => setOpenForm('urlaubsantrag')}
               className="w-full px-4 py-2.5 text-base bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
             >
               Formular öffnen
@@ -303,16 +247,16 @@ export default function Formulare() {
 
           <div className="border border-gray-200 rounded-lg p-4 lg:p-6 hover:shadow-md transition-shadow">
             <div className="text-center mb-4">
-              <span className="text-4xl">🎢</span>
+              <span className="text-4xl">✈️</span>
             </div>
             <h3 className="text-base lg:text-lg font-semibold text-gray-900 text-center mb-2">
-              Rutschenkontrolle
+              Dienstreiseantrag
             </h3>
             <p className="text-sm text-gray-900 text-center mb-4">
-              Kontrollieren Sie die Sicherheit der Rutsche
+              Beantragen Sie Dienstreisen und Fortbildungen
             </p>
             <button 
-              onClick={() => setOpenForm('rutschenkontrolle')}
+              onClick={() => setOpenForm('dienstreiseantrag')}
               className="w-full px-4 py-2.5 text-base bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
             >
               Formular öffnen
@@ -321,34 +265,16 @@ export default function Formulare() {
 
           <div className="border border-gray-200 rounded-lg p-4 lg:p-6 hover:shadow-md transition-shadow">
             <div className="text-center mb-4">
-              <span className="text-4xl">🚨</span>
+              <span className="text-4xl">🛒</span>
             </div>
             <h3 className="text-base lg:text-lg font-semibold text-gray-900 text-center mb-2">
-              Störmeldung Melden
+              Beschaffungsantrag
             </h3>
             <p className="text-sm text-gray-900 text-center mb-4">
-              Melden Sie technische Störungen und Defekte
+              Beantragen Sie Beschaffungen und Einkäufe
             </p>
             <button 
-              onClick={() => setOpenForm('stoermeldung')}
-              className="w-full px-4 py-2.5 text-base bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
-            >
-              Formular öffnen
-            </button>
-          </div>
-
-          <div className="border border-gray-200 rounded-lg p-4 lg:p-6 hover:shadow-md transition-shadow">
-            <div className="text-center mb-4">
-              <span className="text-4xl">📝</span>
-            </div>
-            <h3 className="text-base lg:text-lg font-semibold text-gray-900 text-center mb-2">
-              Feedback geben
-            </h3>
-            <p className="text-sm text-gray-900 text-center mb-4">
-              Teilen Sie Ihr Feedback mit uns
-            </p>
-            <button 
-              onClick={() => setOpenForm('feedback')}
+              onClick={() => setOpenForm('beschaffungsantrag')}
               className="w-full px-4 py-2.5 text-base bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
             >
               Formular öffnen
@@ -357,35 +283,17 @@ export default function Formulare() {
 
           <div className="border border-gray-200 rounded-lg p-4 lg:p-6 hover:shadow-md transition-shadow">
             <div className="text-center mb-4">
-              <span className="text-4xl">⏰</span>
+              <span className="text-4xl">💳</span>
             </div>
             <h3 className="text-base lg:text-lg font-semibold text-gray-900 text-center mb-2">
-              Stundenkorrektur
+              Reisekostenabrechnung
             </h3>
             <p className="text-sm text-gray-900 text-center mb-4">
-              Korrektur von Arbeitszeiten beantragen
+              Rechnen Sie Ihre Reisekosten ab
             </p>
             <button 
-              onClick={() => setOpenForm('stundenkorrektur')}
-              className="w-full px-4 py-2.5 text-base bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
-            >
-              Formular öffnen
-            </button>
-          </div>
-
-          <div className="border border-gray-200 rounded-lg p-4 lg:p-6 hover:shadow-md transition-shadow">
-            <div className="text-center mb-4">
-              <span className="text-4xl">💰</span>
-            </div>
-            <h3 className="text-base lg:text-lg font-semibold text-gray-900 text-center mb-2">
-              Kassenabrechnung
-            </h3>
-            <p className="text-sm text-gray-900 text-center mb-4">
-              Führen Sie die tägliche Kassenabrechnung durch
-            </p>
-            <button 
-              onClick={() => setOpenForm('kassenabrechnung')}
-              className="w-full px-4 py-2.5 text-base bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+              onClick={() => setOpenForm('reisekostenabrechnung')}
+              className="w-full px-4 py-2.5 text-base bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors font-medium"
             >
               Formular öffnen
             </button>
@@ -471,12 +379,10 @@ export default function Formulare() {
                 className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">Alle Formulare</option>
-                <option value="wassermessung">Wassermessung</option>
-                <option value="rutschenkontrolle">Rutschenkontrolle</option>
-                <option value="stoermeldung">Störmeldung</option>
-                <option value="kassenabrechnung">Kassenabrechnung</option>
-                <option value="arbeitsunfall">Arbeitsunfall</option>
-                <option value="feedback">Feedback</option>
+                <option value="urlaubsantrag">Urlaubsantrag</option>
+                <option value="dienstreiseantrag">Dienstreiseantrag</option>
+                <option value="beschaffungsantrag">Beschaffungsantrag</option>
+                <option value="reisekostenabrechnung">Reisekostenabrechnung</option>
               </select>
             </div>
           </div>
@@ -523,26 +429,23 @@ export default function Formulare() {
                   <td className="px-3 lg:px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className={`w-8 h-8 rounded flex items-center justify-center mr-3 ${
-                        submission.type === 'wassermessung' ? 'bg-blue-100' :
-                        submission.type === 'rutschenkontrolle' ? 'bg-green-100' :
-                        submission.type === 'stoermeldung' ? 'bg-orange-100' :
-                        submission.type === 'kassenabrechnung' ? 'bg-indigo-100' :
-                        submission.type === 'arbeitsunfall' ? 'bg-red-100' :
-                        'bg-purple-100'
+                        submission.type === 'urlaubsantrag' ? 'bg-blue-100' :
+                        submission.type === 'dienstreiseantrag' ? 'bg-green-100' :
+                        submission.type === 'beschaffungsantrag' ? 'bg-purple-100' :
+                        submission.type === 'reisekostenabrechnung' ? 'bg-orange-100' :
+                        'bg-gray-100'
                       }`}>
                         <span className={`text-sm ${
-                          submission.type === 'wassermessung' ? 'text-blue-600' :
-                          submission.type === 'rutschenkontrolle' ? 'text-green-600' :
-                          submission.type === 'stoermeldung' ? 'text-orange-600' :
-                          submission.type === 'kassenabrechnung' ? 'text-indigo-600' :
-                          submission.type === 'arbeitsunfall' ? 'text-red-600' :
-                          'text-purple-600'
+                          submission.type === 'urlaubsantrag' ? 'text-blue-600' :
+                          submission.type === 'dienstreiseantrag' ? 'text-green-600' :
+                          submission.type === 'beschaffungsantrag' ? 'text-purple-600' :
+                          submission.type === 'reisekostenabrechnung' ? 'text-orange-600' :
+                          'text-gray-600'
                         }`}>
-                          {submission.type === 'wassermessung' ? '💧' :
-                           submission.type === 'rutschenkontrolle' ? '🎢' :
-                           submission.type === 'stoermeldung' ? '🚨' :
-                           submission.type === 'kassenabrechnung' ? '💰' :
-                           submission.type === 'arbeitsunfall' ? '🏥' :
+                          {submission.type === 'urlaubsantrag' ? '🏖️' :
+                           submission.type === 'dienstreiseantrag' ? '✈️' :
+                           submission.type === 'beschaffungsantrag' ? '🛒' :
+                           submission.type === 'reisekostenabrechnung' ? '💳' :
                            '📝'}
                         </span>
                       </div>
@@ -614,26 +517,23 @@ export default function Formulare() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <div className={`w-10 h-10 rounded flex items-center justify-center ${
-                    selectedSubmission.type === 'wassermessung' ? 'bg-blue-100' :
-                    selectedSubmission.type === 'rutschenkontrolle' ? 'bg-green-100' :
-                    selectedSubmission.type === 'stoermeldung' ? 'bg-orange-100' :
-                    selectedSubmission.type === 'kassenabrechnung' ? 'bg-indigo-100' :
-                    selectedSubmission.type === 'arbeitsunfall' ? 'bg-red-100' :
-                    'bg-purple-100'
+                    selectedSubmission.type === 'urlaubsantrag' ? 'bg-blue-100' :
+                    selectedSubmission.type === 'dienstreiseantrag' ? 'bg-green-100' :
+                    selectedSubmission.type === 'beschaffungsantrag' ? 'bg-purple-100' :
+                    selectedSubmission.type === 'reisekostenabrechnung' ? 'bg-orange-100' :
+                    'bg-gray-100'
                   }`}>
                     <span className={`text-lg ${
-                      selectedSubmission.type === 'wassermessung' ? 'text-blue-600' :
-                      selectedSubmission.type === 'rutschenkontrolle' ? 'text-green-600' :
-                      selectedSubmission.type === 'stoermeldung' ? 'text-orange-600' :
-                      selectedSubmission.type === 'kassenabrechnung' ? 'text-indigo-600' :
-                      selectedSubmission.type === 'arbeitsunfall' ? 'text-red-600' :
-                      'text-purple-600'
+                      selectedSubmission.type === 'urlaubsantrag' ? 'text-blue-600' :
+                      selectedSubmission.type === 'dienstreiseantrag' ? 'text-green-600' :
+                      selectedSubmission.type === 'beschaffungsantrag' ? 'text-purple-600' :
+                      selectedSubmission.type === 'reisekostenabrechnung' ? 'text-orange-600' :
+                      'text-gray-600'
                     }`}>
-                      {selectedSubmission.type === 'wassermessung' ? '💧' :
-                       selectedSubmission.type === 'rutschenkontrolle' ? '🎢' :
-                       selectedSubmission.type === 'stoermeldung' ? '🚨' :
-                       selectedSubmission.type === 'kassenabrechnung' ? '💰' :
-                       selectedSubmission.type === 'arbeitsunfall' ? '🏥' :
+                      {selectedSubmission.type === 'urlaubsantrag' ? '🏖️' :
+                       selectedSubmission.type === 'dienstreiseantrag' ? '✈️' :
+                       selectedSubmission.type === 'beschaffungsantrag' ? '🛒' :
+                       selectedSubmission.type === 'reisekostenabrechnung' ? '💳' :
                        '📝'}
                     </span>
                   </div>
@@ -765,46 +665,28 @@ export default function Formulare() {
       )}
 
       {/* Popup Forms */}
-      <WassermessungForm
-        isOpen={openForm === 'wassermessung'}
+      <UrlaubsantragForm
+        isOpen={openForm === 'urlaubsantrag'}
         onClose={() => setOpenForm(null)}
-        onSubmit={(data) => handleFormSubmit('wassermessung', data)}
+        onSubmit={(data) => handleFormSubmit('urlaubsantrag', data)}
       />
       
-      <RutschenkontrolleForm
-        isOpen={openForm === 'rutschenkontrolle'}
+      <DienstreiseantragForm
+        isOpen={openForm === 'dienstreiseantrag'}
         onClose={() => setOpenForm(null)}
-        onSubmit={(data) => handleFormSubmit('rutschenkontrolle', data)}
+        onSubmit={(data) => handleFormSubmit('dienstreiseantrag', data)}
       />
       
-      <StoermeldungForm
-        isOpen={openForm === 'stoermeldung'}
+      <BeschaffungsantragForm
+        isOpen={openForm === 'beschaffungsantrag'}
         onClose={() => setOpenForm(null)}
-        onSubmit={(data) => handleFormSubmit('stoermeldung', data)}
+        onSubmit={(data) => handleFormSubmit('beschaffungsantrag', data)}
       />
       
-      <KassenabrechnungForm
-        isOpen={openForm === 'kassenabrechnung'}
+      <ReisekostenabrechnungForm
+        isOpen={openForm === 'reisekostenabrechnung'}
         onClose={() => setOpenForm(null)}
-        onSubmit={(data) => handleFormSubmit('kassenabrechnung', data)}
-      />
-      
-      <ArbeitsunfallForm
-        isOpen={openForm === 'arbeitsunfall'}
-        onClose={() => setOpenForm(null)}
-        onSubmit={(data) => handleFormSubmit('arbeitsunfall', data)}
-      />
-      
-      <FeedbackForm
-        isOpen={openForm === 'feedback'}
-        onClose={() => setOpenForm(null)}
-        onSubmit={(data) => handleFormSubmit('feedback', data)}
-      />
-      
-      <StundenkorrekturForm
-        isOpen={openForm === 'stundenkorrektur'}
-        onClose={() => setOpenForm(null)}
-        onSubmit={(data) => handleFormSubmit('stundenkorrektur', data)}
+        onSubmit={(data) => handleFormSubmit('reisekostenabrechnung', data)}
       />
     </div>
   )

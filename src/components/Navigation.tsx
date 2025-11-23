@@ -14,10 +14,12 @@ const Navigation = () => {
     <nav className="bg-white shadow-lg border-b border-gray-200">
       <div className="ml-64 px-6">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <div className="text-gray-800 text-2xl font-bold">
-              Stadtholding Intranet
-            </div>
+          <div className="flex items-center gap-3">
+            <img 
+              src="/stadtholding-logo.svg" 
+              alt="Stadtholding Logo" 
+              className="h-10 w-auto object-contain"
+            />
           </div>
           
           <div className="flex items-center space-x-4">

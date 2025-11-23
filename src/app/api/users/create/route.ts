@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// DATENBANKVERBINDUNG DEAKTIVIERT - Mock-Daten für Entwicklung
 // POST - Neuen Benutzer erstellen (nur für Admins)
 export async function POST(request: NextRequest) {
   try {
@@ -25,18 +26,22 @@ export async function POST(request: NextRequest) {
     const userRole = role && validRoles.includes(role) ? role : 'Benutzer'
     const isAdmin = userRole === 'Admin'
 
-    // Mock response - database disabled
+    // Mock-Daten zurückgeben (später durch echte Datenbank ersetzen)
+    const mockUser = {
+      id: Date.now().toString(),
+      username,
+      displayName,
+      role: userRole,
+      isAdmin,
+      isActive: true,
+      createdAt: new Date().toISOString()
+    }
+
+    console.log('✅ Neuer Benutzer erstellt (Mock):', mockUser.username)
+
     return NextResponse.json({
       success: true,
-      user: {
-        id: Date.now().toString(),
-        username,
-        displayName,
-        role: userRole,
-        isAdmin,
-        isActive: true,
-        createdAt: new Date().toISOString()
-      }
+      user: mockUser
     }, { status: 201 })
 
   } catch (error) {

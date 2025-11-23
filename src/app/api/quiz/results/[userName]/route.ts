@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 
+// DATENBANKVERBINDUNG DEAKTIVIERT - Mock-Daten für Entwicklung
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ userName: string }> }
@@ -11,11 +12,11 @@ export async function DELETE(
       return NextResponse.json({ error: 'User name is required' }, { status: 400 })
     }
 
-    // Mock response - database disabled
+    // Mock-Löschung (später durch echte Datenbank ersetzen)
     return NextResponse.json({ 
       success: true, 
       deletedCount: 0,
-      message: `Quiz-Ergebnisse für ${userName} wurden gelöscht`
+      message: `Alle Quiz-Ergebnisse von ${userName} wurden gelöscht.`
     })
   } catch (error) {
     console.error('Failed to delete quiz results:', error)
@@ -25,3 +26,4 @@ export async function DELETE(
     )
   }
 }
+

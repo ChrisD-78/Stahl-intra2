@@ -1,0 +1,59 @@
+<svg viewBox="0 0 400 450" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Logo Stadtholding Landau -->
+
+  <g transform="translate(200, 180)">
+
+    <!-- Kreis-Rahmen -->
+
+    <circle cx="0" cy="0" r="85" fill="none" stroke="#1565c0" stroke-width="4"/>
+
+    <circle cx="0" cy="0" r="75" fill="none" stroke="#1976d2" stroke-width="2"/>
+
+    
+
+    <!-- S (linksseitig, klar und deutlich) -->
+
+    <path d="M -15,-45 Q -35,-50 -45,-40 Q -50,-30 -45,-20 Q -40,-15 -30,-12 L -20,-10 Q -10,-8 -8,-3 Q -5,5 -12,12 Q -20,18 -32,15 Q -42,12 -48,5" 
+
+          fill="none" stroke="#0d47a1" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+
+    
+
+    <!-- H (rechtsseitig, klar und deutlich) -->
+
+    <!-- Linker Strich -->
+
+    <line x1="20" y1="-45" x2="20" y2="25" stroke="#0d47a1" stroke-width="9" stroke-linecap="round"/>
+
+    <!-- Rechter Strich -->
+
+    <line x1="50" y1="-45" x2="50" y2="25" stroke="#0d47a1" stroke-width="9" stroke-linecap="round"/>
+
+    <!-- Querstrich -->
+
+    <line x1="20" y1="-10" x2="50" y2="-10" stroke="#0d47a1" stroke-width="9" stroke-linecap="round"/>
+
+  </g>
+
+  
+
+  <!-- Text -->
+
+  <text x="200" y="340" font-family="Arial, sans-serif" font-size="26" font-weight="bold" text-anchor="middle" fill="#0d47a1">
+
+    STADTHOLDING
+
+  </text>
+
+  <text x="200" y="370" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="#1976d2">
+
+    Landau in der Pfalz
+
+  </text>
+
+</svg>
+
+
+
+

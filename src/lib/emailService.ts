@@ -153,7 +153,7 @@ export const createFeedbackEmail = (feedbackData: {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Neues Feedback - Laola Intranet</title>
+      <title>Neues Feedback - Stadtholding Intranet</title>
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f8fafc; }
         .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden; }
@@ -172,13 +172,13 @@ export const createFeedbackEmail = (feedbackData: {
       <div class="container">
         <div class="header">
           <h1>📝 Neues Feedback eingegangen</h1>
-          <p style="margin: 10px 0 0 0; opacity: 0.9;">Laola Intranet System</p>
+          <p style="margin: 10px 0 0 0; opacity: 0.9;">Stadtholding Intranet System</p>
         </div>
         
         <div class="content">
           <div class="highlight">
             <strong>⚠️ Wichtige Information:</strong><br>
-            Ein neues Feedback wurde über das Laola Intranet System eingereicht und erfordert Ihre Aufmerksamkeit.
+            Ein neues Feedback wurde über das Stadtholding Intranet System eingereicht und erfordert Ihre Aufmerksamkeit.
           </div>
 
           <div class="field">
@@ -229,7 +229,7 @@ export const createFeedbackEmail = (feedbackData: {
         </div>
 
         <div class="footer">
-          <p><strong>Laola Intranet System</strong></p>
+          <p><strong>Stadtholding Intranet System</strong></p>
           <p>Diese E-Mail wurde automatisch generiert. Bitte antworten Sie nicht direkt auf diese E-Mail.</p>
           <p style="margin-top: 15px; font-size: 12px; color: #9ca3af;">
             System generiert am ${new Date().toISOString()}
@@ -241,10 +241,10 @@ export const createFeedbackEmail = (feedbackData: {
   `
 
   const text = `
-Neues Feedback - Laola Intranet System
+Neues Feedback - Stadtholding Intranet System
 =====================================
 
-Wichtige Information: Ein neues Feedback wurde über das Laola Intranet System eingereicht.
+Wichtige Information: Ein neues Feedback wurde über das Stadtholding Intranet System eingereicht.
 
 KATEGORIE: ${feedbackData.kategorie}
 PRIORITÄT: ${feedbackData.prioritaet || 'Nicht angegeben'}
@@ -262,13 +262,13 @@ ${feedbackData.vorschlag}
 ` : ''}EINGEGANGEN AM: ${currentDate}
 
 ---
-Laola Intranet System
+Stadtholding Intranet System
 Diese E-Mail wurde automatisch generiert.
   `
 
   return {
     to: getEmailRecipient(feedbackData.kategorie),
-    subject: `[Laola Intranet] Neues Feedback: ${feedbackData.titel} - ${feedbackData.kategorie}`,
+    subject: `[Stadtholding Intranet] Neues Feedback: ${feedbackData.titel} - ${feedbackData.kategorie}`,
     html,
     text
   }
@@ -362,7 +362,7 @@ export const createFormSubmissionEmail = (formData: {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Neuer Formular-Eintrag - Laola Intranet</title>
+      <title>Neuer Formular-Eintrag - Stadtholding Intranet</title>
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f8fafc; }
         .container { max-width: 650px; margin: 0 auto; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden; }
@@ -381,13 +381,13 @@ export const createFormSubmissionEmail = (formData: {
       <div class="container">
         <div class="header">
           <h1>${formTypeLabel} eingegangen</h1>
-          <p style="margin: 10px 0 0 0; opacity: 0.9;">Laola Intranet System</p>
+          <p style="margin: 10px 0 0 0; opacity: 0.9;">Stadtholding Intranet System</p>
         </div>
         
         <div class="content">
           <div class="highlight">
             <strong>📋 Neue Formular-Eintragung:</strong><br>
-            Ein neuer Eintrag wurde über das Laola Intranet System eingereicht.
+            Ein neuer Eintrag wurde über das Stadtholding Intranet System eingereicht.
           </div>
 
           <div class="field">
@@ -428,7 +428,7 @@ export const createFormSubmissionEmail = (formData: {
         </div>
 
         <div class="footer">
-          <p><strong>Laola Intranet System</strong></p>
+          <p><strong>Stadtholding Intranet System</strong></p>
           <p>Diese E-Mail wurde automatisch generiert. Bitte antworten Sie nicht direkt auf diese E-Mail.</p>
           <p style="margin-top: 15px; font-size: 12px; color: #9ca3af;">
             System generiert am ${new Date().toISOString()}
@@ -440,7 +440,7 @@ export const createFormSubmissionEmail = (formData: {
   `
 
   const text = `
-Neuer Formular-Eintrag - Laola Intranet System
+Neuer Formular-Eintrag - Stadtholding Intranet System
 =============================================
 
 Formular-Typ: ${formTypeLabel}
@@ -459,13 +459,13 @@ ${Object.entries(formData.formData)
 Eingegangen am: ${currentDate}
 
 ---
-Laola Intranet System
+Stadtholding Intranet System
 Diese E-Mail wurde automatisch generiert.
   `
 
   return {
     to: recipients,
-    subject: `[Laola Intranet] ${formTypeLabel}: ${formData.title}`,
+    subject: `[Stadtholding Intranet] ${formTypeLabel}: ${formData.title}`,
     html,
     text
   }
@@ -513,7 +513,7 @@ export const createAccidentEmail = (accidentData: {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>🚨 Arbeitsunfall-Meldung - Laola Intranet</title>
+      <title>🚨 Arbeitsunfall-Meldung - Stadtholding Intranet</title>
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f8fafc; }
         .container { max-width: 650px; margin: 0 auto; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden; }
@@ -535,13 +535,13 @@ export const createAccidentEmail = (accidentData: {
       <div class="container">
         <div class="header">
           <h1>🚨 ARBEITSUNFALL-MELDUNG</h1>
-          <p style="margin: 10px 0 0 0; opacity: 0.9;">LA OLA Freizeitbad - Sofortmeldung</p>
+          <p style="margin: 10px 0 0 0; opacity: 0.9;">Stadtholding Freizeitbad - Sofortmeldung</p>
         </div>
         
         <div class="alert-box">
           <strong style="color: #DC2626; font-size: 16px;">⚠️ WICHTIG - SOFORTIGE AUFMERKSAMKEIT ERFORDERLICH!</strong><br>
           <p style="margin: 10px 0 0 0;">
-            Eine Arbeitsunfall-Meldung wurde über das LA OLA Intranet System eingereicht.<br>
+            Eine Arbeitsunfall-Meldung wurde über das Stadtholding Intranet System eingereicht.<br>
             Bitte überprüfen Sie die Details und leiten Sie erforderliche Maßnahmen ein.
           </p>
         </div>
@@ -676,7 +676,7 @@ export const createAccidentEmail = (accidentData: {
         </div>
 
         <div class="footer">
-          <p><strong>LA OLA Intranet System</strong></p>
+          <p><strong>Stadtholding Intranet System</strong></p>
           <p>Diese E-Mail wurde automatisch generiert. Bei Rückfragen kontaktieren Sie bitte ${accidentData.meldendePerson}.</p>
           <p style="margin-top: 15px; font-size: 12px; color: #9ca3af;">
             System generiert am ${new Date().toISOString()}
@@ -688,12 +688,12 @@ export const createAccidentEmail = (accidentData: {
   `
 
   const text = `
-🚨 ARBEITSUNFALL-MELDUNG - LA OLA Freizeitbad
+🚨 ARBEITSUNFALL-MELDUNG - Stadtholding Freizeitbad
 =============================================
 
 ⚠️ WICHTIG - SOFORTIGE AUFMERKSAMKEIT ERFORDERLICH!
 
-Eine Arbeitsunfall-Meldung wurde über das LA OLA Intranet System eingereicht.
+Eine Arbeitsunfall-Meldung wurde über das Stadtholding Intranet System eingereicht.
 
 UNFALLTYP: ${accidentData.unfalltyp === 'mitarbeiter' ? 'Mitarbeiter-Unfall' : 'Gast-Unfall'}
 SCHWEREGRAD: ${accidentData.schweregrad}
@@ -728,7 +728,7 @@ MELDENDE PERSON: ${accidentData.meldendePerson}
 MELDUNG EINGEGANGEN AM: ${currentDate}
 
 ---
-LA OLA Intranet System
+Stadtholding Intranet System
 Diese E-Mail wurde automatisch generiert.
   `
 
@@ -761,7 +761,7 @@ export const createHoursCorrectionEmail = (correctionData: {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>⏰ Stundenkorrektur - Laola Intranet</title>
+      <title>⏰ Stundenkorrektur - Stadtholding Intranet</title>
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f8fafc; }
         .container { max-width: 650px; margin: 0 auto; background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden; }
@@ -781,13 +781,13 @@ export const createHoursCorrectionEmail = (correctionData: {
       <div class="container">
         <div class="header">
           <h1>⏰ STUNDENKORREKTUR</h1>
-          <p style="margin: 10px 0 0 0; opacity: 0.9;">LA OLA Freizeitbad - Stundenanpassung</p>
+          <p style="margin: 10px 0 0 0; opacity: 0.9;">Stadtholding Freizeitbad - Stundenanpassung</p>
         </div>
         
         <div class="alert-box">
           <strong style="color: #92400E; font-size: 16px;">📋 Neue Stundenkorrektur eingegangen</strong><br>
           <p style="margin: 10px 0 0 0;">
-            Eine Stundenkorrektur wurde über das LA OLA Intranet System eingereicht.<br>
+            Eine Stundenkorrektur wurde über das Stadtholding Intranet System eingereicht.<br>
             Bitte überprüfen Sie die Angaben und nehmen Sie die Korrektur vor.
           </p>
         </div>
@@ -849,7 +849,7 @@ export const createHoursCorrectionEmail = (correctionData: {
         </div>
 
         <div class="footer">
-          <p><strong>LA OLA Intranet System</strong></p>
+          <p><strong>Stadtholding Intranet System</strong></p>
           <p>Diese E-Mail wurde automatisch generiert. Bei Rückfragen kontaktieren Sie bitte ${correctionData.name}.</p>
           <p style="margin-top: 15px; font-size: 12px; color: #9ca3af;">
             System generiert am ${new Date().toISOString()}
@@ -861,12 +861,12 @@ export const createHoursCorrectionEmail = (correctionData: {
   `
 
   const text = `
-⏰ STUNDENKORREKTUR - LA OLA Freizeitbad
+⏰ STUNDENKORREKTUR - Stadtholding Freizeitbad
 ========================================
 
 📋 Neue Stundenkorrektur eingegangen
 
-Eine Stundenkorrektur wurde über das LA OLA Intranet System eingereicht.
+Eine Stundenkorrektur wurde über das Stadtholding Intranet System eingereicht.
 
 MITARBEITER:
 Name: ${correctionData.name}
@@ -883,7 +883,7 @@ EINGEREICHT VON: ${correctionData.name}
 EINGEGANGEN AM: ${currentDate}
 
 ---
-LA OLA Intranet System
+Stadtholding Intranet System
 Diese E-Mail wurde automatisch generiert.
   `
 

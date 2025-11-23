@@ -575,7 +575,7 @@ const ArbeitsunfallForm = ({ isOpen, onClose, onSubmit }: ArbeitsunfallFormProps
                 </div>
               </div>
               <div>
-                <div className="text-sm text-gray-500">LA OLA</div>
+                <div className="text-sm text-gray-500">Stadtholding</div>
                 <div className="flex items-center gap-2">
                   <div className="font-mono text-sm break-all">KU6X2BE2DXRDTL3SZ6A5FSQXZ</div>
                   <button

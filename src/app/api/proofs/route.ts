@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// DATENBANKVERBINDUNG DEAKTIVIERT - Mock-Daten für Entwicklung
 // GET all external proofs
 export async function GET() {
   try {
-    // Mock data - database disabled
+    // Mock-Daten (später durch echte Datenbank ersetzen)
     return NextResponse.json([])
   } catch (error) {
     console.error('Failed to fetch proofs:', error)
@@ -18,13 +19,21 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
+    const { bezeichnung, vorname, nachname, datum, pdf_name, pdf_url } = body
 
-    // Mock response - database disabled
-    return NextResponse.json({
+    // Mock-Daten zurückgeben (später durch echte Datenbank ersetzen)
+    const mockResult = {
       id: Date.now().toString(),
-      ...body,
+      bezeichnung,
+      vorname,
+      nachname,
+      datum,
+      pdf_name: pdf_name || null,
+      pdf_url: pdf_url || null,
       created_at: new Date().toISOString()
-    }, { status: 201 })
+    }
+
+    return NextResponse.json(mockResult, { status: 201 })
   } catch (error) {
     console.error('Failed to create proof:', error)
     return NextResponse.json(
@@ -44,8 +53,8 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'ID is required' }, { status: 400 })
     }
 
-    // Mock response - database disabled
-    return NextResponse.json({ success: true, id })
+    // Mock-Löschung (später durch echte Datenbank ersetzen)
+    return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Failed to delete proof:', error)
     return NextResponse.json(

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// DATENBANKVERBINDUNG DEAKTIVIERT - Mock-Daten für Entwicklung
 // GET leaderboard for quiz
 export async function GET(
   request: NextRequest,
@@ -8,7 +9,7 @@ export async function GET(
   try {
     const { id } = await params
 
-    // Mock response - database disabled
+    // Mock-Daten (später durch echte Datenbank ersetzen)
     return NextResponse.json([])
   } catch (error) {
     console.error('Failed to fetch leaderboard:', error)
@@ -18,3 +19,4 @@ export async function GET(
     )
   }
 }
+

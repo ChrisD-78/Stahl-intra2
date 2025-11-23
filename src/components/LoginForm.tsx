@@ -17,9 +17,9 @@ const LoginForm = () => {
 
     try {
       // Verwende die login-Funktion aus dem AuthProvider (jetzt async)
-      const result = await login(username, password)
+      const success = await login(username, password)
       
-      if (result.success) {
+      if (success) {
         // Login erfolgreich - Formular zurücksetzen
         setUsername('')
         setPassword('')
@@ -27,15 +27,13 @@ const LoginForm = () => {
         console.log('Login erfolgreich!')
         // AuthProvider kümmert sich um die Weiterleitung
       } else {
-        // Zeige die spezifische Fehlermeldung von der API
-        setError(result.error || 'Ungültige Anmeldedaten. Bitte versuchen Sie es erneut.')
+        setError('Ungültige Anmeldedaten. Bitte versuchen Sie es erneut.')
         setPassword('') // Passwort zurücksetzen bei Fehler
-        console.log('Login fehlgeschlagen!', result.error)
+        console.log('Login fehlgeschlagen!')
       }
     } catch (err) {
       console.error('Login error:', err)
-      const errorMessage = err instanceof Error ? err.message : 'Unbekannter Fehler'
-      setError(`Ein Fehler ist aufgetreten: ${errorMessage}`)
+      setError('Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.')
       setPassword('')
     } finally {
       setIsLoading(false)
@@ -43,22 +41,20 @@ const LoginForm = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center px-4">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen bg-white flex items-center justify-center px-4">
+      <div className="max-w-md w-full space-y-2">
         <div className="text-center">
-          <div className="mx-auto h-20 w-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-2xl border border-white/30">
-            <span className="text-white text-3xl">🏊‍♂️</span>
+          <div className="mb-0 flex items-center justify-center">
+            <img 
+              src="/stadtholding-logo-new.svg" 
+              alt="Stadtholding Logo" 
+              className="h-48 w-auto object-contain"
+            />
           </div>
-          <h2 className="mt-6 text-3xl font-bold text-white">
-            Stadtholding Intranet
-          </h2>
-          <p className="mt-2 text-sm text-white/80">
-            Melden Sie sich an, um auf das Mitarbeiter-Portal zuzugreifen
-          </p>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-xl py-8 px-6 shadow-2xl rounded-2xl border border-white/20">
-          <form className="space-y-6" onSubmit={handleSubmit}>
+        <div className="bg-gradient-to-br from-blue-600 to-purple-600 backdrop-blur-xl py-4 px-6 shadow-2xl rounded-2xl border border-white/20">
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-white">
                 Benutzername

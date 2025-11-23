@@ -1,13 +1,28 @@
 import { NextResponse } from 'next/server'
 
-// GET - Alle Benutzer abrufen (nur für Admins)
+// DATENBANKVERBINDUNG DEAKTIVIERT - Mock-Daten für Entwicklung
 export async function GET() {
   try {
-    // Mock data - database disabled
+    // Mock-Daten (später durch echte Datenbank ersetzen)
+    const mockUsers = [
+      {
+        id: '1',
+        username: 'staho',
+        display_name: 'Stadtholding',
+        is_admin: true,
+        role: 'Admin',
+        is_active: true,
+        created_at: new Date().toISOString(),
+        last_login: null,
+        created_by: 'system'
+      }
+    ]
+
     return NextResponse.json({
       success: true,
-      users: []
+      users: mockUsers
     })
+
   } catch (error) {
     console.error('Failed to fetch users:', error)
     return NextResponse.json(

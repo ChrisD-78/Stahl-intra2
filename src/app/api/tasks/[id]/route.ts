@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// DATENBANKVERBINDUNG DEAKTIVIERT - Mock-Daten für Entwicklung
 // PATCH update task
 export async function PATCH(
   request: NextRequest,
@@ -9,12 +10,14 @@ export async function PATCH(
     const body = await request.json()
     const { id } = await params
 
-    // Mock response - database disabled
-    return NextResponse.json({
+    // Mock-Daten zurückgeben (später durch echte Datenbank ersetzen)
+    const mockTask = {
       id,
       ...body,
       updated_at: new Date().toISOString()
-    })
+    }
+
+    return NextResponse.json(mockTask)
   } catch (error) {
     console.error('Failed to update task:', error)
     return NextResponse.json(

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// DATENBANKVERBINDUNG DEAKTIVIERT - Mock-Daten für Entwicklung
 // PUT - Passwort für einen Benutzer zurücksetzen (nur für Admins)
 export async function PUT(
   request: NextRequest,
@@ -7,7 +8,7 @@ export async function PUT(
 ) {
   try {
     const { id } = await params
-    const { newPassword } = await request.json()
+    const { newPassword, adminUser } = await request.json()
 
     // Validierung
     if (!newPassword) {
@@ -24,11 +25,14 @@ export async function PUT(
       )
     }
 
-    // Mock response - database disabled
+    // Mock-Daten (später durch echte Datenbank ersetzen)
+    console.log(`✅ Passwort für Benutzer ${id} wurde von ${adminUser || 'Admin'} zurückgesetzt (Mock)`)
+
     return NextResponse.json({
       success: true,
       message: `Passwort wurde erfolgreich zurückgesetzt`
     })
+
   } catch (error) {
     console.error('Failed to reset password:', error)
     return NextResponse.json(
@@ -37,3 +41,4 @@ export async function PUT(
     )
   }
 }
+

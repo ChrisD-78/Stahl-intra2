@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// DATENBANKVERBINDUNG DEAKTIVIERT - Mock-Daten für Entwicklung
 // GET all trainings
 export async function GET() {
   try {
-    // Mock data - database disabled
+    // Mock-Daten (später durch echte Datenbank ersetzen)
     return NextResponse.json([])
   } catch (error) {
     console.error('Failed to fetch trainings:', error)
@@ -19,19 +20,19 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
-    // Mock response - database disabled
-    return NextResponse.json({
+    // Mock-Daten zurückgeben (später durch echte Datenbank ersetzen)
+    const mockResult = {
       id: Date.now().toString(),
       ...body,
-      created_at: new Date().toISOString()
-    }, { status: 201 })
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }
+
+    return NextResponse.json(mockResult, { status: 201 })
   } catch (error) {
     console.error('Failed to create training:', error)
     return NextResponse.json(
-      { 
-        error: 'Failed to create training',
-        details: error instanceof Error ? error.message : String(error)
-      },
+      { error: 'Failed to create training' },
       { status: 500 }
     )
   }
@@ -47,8 +48,8 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'ID is required' }, { status: 400 })
     }
 
-    // Mock response - database disabled
-    return NextResponse.json({ success: true, id })
+    // Mock-Löschung (später durch echte Datenbank ersetzen)
+    return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Failed to delete training:', error)
     return NextResponse.json(

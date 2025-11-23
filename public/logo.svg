@@ -1,0 +1,17 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Schwarzes Element (unten links) - Hauptbalken horizontal, vertikaler Balken nach oben, kurzer horizontaler Balken nach links -->
+  <!-- Hauptbalken (horizontal, unten) -->
+  <path d="M 20 160 L 100 160 L 100 180 L 20 180 Z" fill="#000000"/>
+  <!-- Vertikaler Balken nach oben -->
+  <path d="M 20 120 L 40 120 L 40 160 L 20 160 Z" fill="#000000"/>
+  <!-- Kurzer horizontaler Balken nach links oben -->
+  <path d="M 20 120 L 20 100 L 40 100 L 40 120 Z" fill="#000000"/>
+  
+  <!-- Dunkelrotes Element (oben rechts) - Hauptbalken horizontal, vertikaler Balken nach unten, kurzer horizontaler Balken nach rechts -->
+  <!-- Hauptbalken (horizontal, oben) -->
+  <path d="M 100 20 L 180 20 L 180 40 L 100 40 Z" fill="#87003f"/>
+  <!-- Vertikaler Balken nach unten -->
+  <path d="M 140 40 L 180 40 L 180 80 L 140 80 Z" fill="#87003f"/>
+  <!-- Kurzer horizontaler Balken nach rechts unten -->
+  <path d="M 160 80 L 180 80 L 180 100 L 160 100 Z" fill="#87003f"/>
+</svg>

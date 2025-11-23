@@ -330,7 +330,6 @@ export default function AdminUsersPage() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="Benutzer">Benutzer</option>
-                    <option value="Technik">Technik</option>
                     <option value="Verwaltung">Verwaltung</option>
                     <option value="Admin">Admin</option>
                   </select>
@@ -445,10 +444,6 @@ export default function AdminUsersPage() {
                           ) : user.role === 'Verwaltung' ? (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                               📋 Verwaltung
-                            </span>
-                          ) : user.role === 'Technik' ? (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                              🔧 Technik
                             </span>
                           ) : (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
@@ -621,10 +616,6 @@ export default function AdminUsersPage() {
                   <div>
                     <p className="font-semibold">📋 Verwaltung</p>
                     <p className="text-xs mt-1">Standard-Rechte für Verwaltungspersonal</p>
-                  </div>
-                  <div>
-                    <p className="font-semibold">🔧 Technik</p>
-                    <p className="text-xs mt-1">Standard-Rechte für technisches Personal</p>
                   </div>
                   <div>
                     <p className="font-semibold">👤 Benutzer</p>

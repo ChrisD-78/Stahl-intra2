@@ -20,6 +20,215 @@ interface InfoItem {
   isPopup?: boolean
 }
 
+const faqItems = [
+  {
+    question: 'Wie beantrage ich Urlaub oder Gleittage?',
+    answer:
+      'Nutze das Formular unter Verwaltungsprozesse → Abwesenheiten. Nach digitaler Unterschrift geht der Antrag automatisch zur Teamleitung und Personalstelle.'
+  },
+  {
+    question: 'Wo hinterlege ich Dienstreiseanträge?',
+    answer:
+      'Dienstreisen werden im Workflow-System angelegt. Lade Budget und Agenda hoch, anschließend prüft die Beschaffung die Unterlagen.'
+  },
+  {
+    question: 'Wer hilft bei IT-Problemen?',
+    answer:
+      'Wende dich an den IT-Service im Organigramm. Über das Status-Tracking siehst du, wie weit dein Ticket ist.'
+  },
+  {
+    question: 'Wie reiche ich Verbesserungsvorschläge ein?',
+    answer:
+      'Öffne das Ideenmanagement-Tool weiter unten. Dort kannst du Ideen kategorisieren, Impact einschätzen und das Team zur Diskussion einladen.'
+  }
+]
+
+const bulletinPosts = [
+  {
+    title: 'Stadthallen-Renovierung: Sperrzeiten beachten',
+    category: 'Ankündigung',
+    date: '15.12.2025',
+    details: 'Zugang Nordflügel ab 18:00 Uhr gesperrt. Bitte Material rechtzeitig umlagern.'
+  },
+  {
+    title: 'Verwaltungsforum & Netzwerktreffen',
+    category: 'Veranstaltung',
+    date: '22.01.2026',
+    details: 'Impulsvortrag zu digitalen Genehmigungsprozessen, anschließend Workshops.'
+  },
+  {
+    title: 'Neues Energiesparprogramm',
+    category: 'Ankündigung',
+    date: '05.12.2025',
+    details: 'Teams können eigene Projekte im Workspace „GreenOps“ starten und Budgets abrufen.'
+  }
+]
+
+const orgStructure = [
+  {
+    unit: 'Geschäftsführung',
+    lead: 'Eva Klein',
+    phone: '+49 6341 12-100',
+    mail: 'eva.klein@stadtholding.de'
+  },
+  {
+    unit: 'Verwaltungsservice',
+    lead: 'Jonas Meier',
+    phone: '+49 6341 12-220',
+    mail: 'jonas.meier@stadtholding.de'
+  },
+  {
+    unit: 'Personal & Entwicklung',
+    lead: 'Carla Nguyen',
+    phone: '+49 6341 12-330',
+    mail: 'carla.nguyen@stadtholding.de'
+  },
+  {
+    unit: 'IT & Digitales',
+    lead: 'Felix Sturm',
+    phone: '+49 6341 12-440',
+    mail: 'felix.sturm@stadtholding.de'
+  }
+]
+
+const employeeDirectory = [
+  {
+    name: 'Mara Schubert',
+    role: 'Teamkoordination Verwaltung',
+    competencies: ['Prozessdesign', 'Haushaltsplanung'],
+    responsibilities: 'Koordination Verwaltung, Eskalationsstelle Beschaffung',
+    deputy: 'Leon Fuchs',
+    contact: 'mara.schubert@stadtholding.de'
+  },
+  {
+    name: 'Leon Fuchs',
+    role: 'Fachreferent Beschaffung',
+    competencies: ['Vergaberecht', 'Lieferantenmanagement'],
+    responsibilities: 'Prüfung Beschaffungen ab 5.000 €',
+    deputy: 'Mara Schubert',
+    contact: 'leon.fuchs@stadtholding.de'
+  },
+  {
+    name: 'Selina Wolf',
+    role: 'HR Business Partner',
+    competencies: ['Arbeitsrecht', 'Change Management'],
+    responsibilities: 'Personalentwicklung, Vertretung für Urlaubsprozesse',
+    deputy: 'Moritz Brecht',
+    contact: 'selina.wolf@stadtholding.de'
+  },
+  {
+    name: 'Moritz Brecht',
+    role: 'Digital Workplace',
+    competencies: ['Automationen', 'Power Platform'],
+    responsibilities: 'Workflow-System, digitale Signaturen',
+    deputy: 'Felix Sturm',
+    contact: 'moritz.brecht@stadtholding.de'
+  }
+]
+
+const projectWorkspaces = [
+  {
+    name: 'GreenOps',
+    goal: 'Energie- und Ressourcenmanagement bündeln',
+    leads: ['Felix Sturm', 'Eva Klein'],
+    channel: '#workspace-greenops'
+  },
+  {
+    name: 'Service2026',
+    goal: 'Kund:innenservice digitalisieren',
+    leads: ['Mara Schubert'],
+    channel: '#workspace-service'
+  },
+  {
+    name: 'QMS-Upgrade',
+    goal: 'Qualitätsmanagement ISO 9001 rezertifizieren',
+    leads: ['Carla Nguyen', 'Leon Fuchs'],
+    channel: '#workspace-qms'
+  }
+]
+
+const surveyData = [
+  {
+    title: 'Pulse Check Dezember',
+    focus: 'Mitarbeiterzufriedenheit',
+    participation: '78 %',
+    action: 'Workshops zu Workload & Kollaboration ab Januar'
+  },
+  {
+    title: 'IT Service Feedback',
+    focus: 'Ticketbearbeitung',
+    participation: '62 %',
+    action: 'Neue Self-Service-Roadmap veröffentlicht'
+  }
+]
+
+const adminProcesses = [
+  {
+    title: 'Abwesenheiten & Zeitwirtschaft',
+    description: 'Urlaub, Dienstreisen, Zeitausgleich mit automatischer Vertretungsregel.',
+    tools: ['Workflow-System', 'Digitale Signatur']
+  },
+  {
+    title: 'Beschaffung & Verträge',
+    description: 'Standardisierte Freigaben mit Budgetkontrolle und Lieferantenvergleich.',
+    tools: ['Status-Tracking', 'Dokumentenablage']
+  },
+  {
+    title: 'Verwaltungsprozesse',
+    description: 'Formulare für Rechnungen, Kassenführung und interne Abstimmungen.',
+    tools: ['Formularcenter', 'Aufgabensteuerung']
+  }
+]
+
+const workflowStatus = [
+  {
+    process: 'Beschaffung',
+    pending: 3,
+    avgTime: '2,4 Tage',
+    status: 'On Track'
+  },
+  {
+    process: 'Dienstreisen',
+    pending: 1,
+    avgTime: '1,1 Tage',
+    status: 'Priorität'
+  },
+  {
+    process: 'HR-Freigaben',
+    pending: 5,
+    avgTime: '3,2 Tage',
+    status: 'Monitoring'
+  }
+]
+
+const trackingItems = [
+  {
+    title: 'Sanierung Nordbad',
+    owner: 'Projektteam GreenOps',
+    phase: 'Genehmigung',
+    eta: 'KW 51'
+  },
+  {
+    title: 'Dienstreise-Leitfaden',
+    owner: 'Personal & Entwicklung',
+    phase: 'Review',
+    eta: 'KW 48'
+  },
+  {
+    title: 'IT-Sicherheitsupdate',
+    owner: 'IT & Digitales',
+    phase: 'Umsetzung',
+    eta: 'laufend'
+  }
+]
+
+const signaturePolicies = [
+  'Beschaffungen über 5.000 € erfordern eine doppelte digitale Signatur.',
+  'Dienstreiseanträge werden nach Genehmigung automatisch archiviert.',
+  'HR-Verträge nutzen DocuSign-Vorlagen mit Zwei-Faktor-Authentifizierung.',
+  'Projektdokumente lassen sich direkt aus dem Workspace signieren.'
+]
+
 export default function Dashboard() {
   const { getTaskStats, getTasksByStatus } = useTasks()
   const { isAdmin } = useAuth()
@@ -233,64 +442,10 @@ export default function Dashboard() {
     <div className="space-y-4 lg:space-y-8">
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-xl p-4 lg:p-8 text-white">
-        <h1 className="text-2xl lg:text-4xl font-bold mb-4 text-center">
-          Willkommen im Stadtholding Intranet
+        <h1 className="text-lg lg:text-xl font-bold mb-4 text-center">
+          Willkommen im Intranet der Stadtholding Landau in der Pfalz GmbH
         </h1>
         <DailyMotivation />
-      </div>
-
-      {/* Aktionen unterhalb des Headers */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <Link
-          href="https://stadtholding-landau-pep.dejoris.de/de/login//#%257B%2522main%2522%253A%2522de%252Fadmin%252Femployees%2522%252C%2522column%2522%253A%2522de%252Fadmin%252Findex%252Fhome_column%2522%252C%2522icon%2522%253A%2522fas%2520fa-users%2522%257D"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block w-full bg-white rounded-2xl shadow-lg p-4 lg:p-6 border border-gray-100 hover:shadow-xl transition-all duration-300"
-        >
-          <div className="flex items-center">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
-              <span className="text-2xl">📅</span>
-            </div>
-            <div className="ml-4">
-              <p className="text-lg font-semibold text-gray-900">Schichtplaner</p>
-              <p className="text-sm text-gray-600">Dienstpläne ansehen und verwalten</p>
-            </div>
-          </div>
-        </Link>
-
-        <a
-          href="https://kurse.la-ola.de/de/customers/login/aHR0cHM6Ly9rdXJzZS5sYS1vbGEuZGUvZGUvYWRtaW4vZGFzaGJvYXJkcy9tb2R1bGVzLw%3D%3D/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block w-full bg-white rounded-2xl shadow-lg p-4 lg:p-6 border border-gray-100 hover:shadow-xl transition-all duration-300"
-        >
-          <div className="flex items-center">
-            <div className="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg">
-              <span className="text-2xl">🏊‍♂️</span>
-            </div>
-            <div className="ml-4">
-              <p className="text-lg font-semibold text-gray-900">Kursmanager</p>
-              <p className="text-sm text-gray-600">Kurse planen und Teilnehmer verwalten</p>
-            </div>
-          </div>
-        </a>
-
-        <a
-          href="https://pretix.eu/stadtholding/WFeier2025/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block w-full bg-white rounded-2xl shadow-lg p-4 lg:p-6 border border-gray-100 hover:shadow-xl transition-all duration-300"
-        >
-          <div className="flex items-center">
-            <div className="p-3 bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg">
-              <span className="text-2xl">🎉</span>
-            </div>
-            <div className="ml-4">
-              <p className="text-lg font-semibold text-gray-900">Events</p>
-              <p className="text-sm text-gray-600">Veranstaltungen und Events ansehen</p>
-            </div>
-          </div>
-        </a>
       </div>
 
       {/* Quick Stats */}

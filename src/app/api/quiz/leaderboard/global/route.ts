@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server'
 
+// DATENBANKVERBINDUNG DEAKTIVIERT - Mock-Daten für Entwicklung
 export async function GET() {
   try {
-    // Mock data - database disabled
+    // Mock-Daten (später durch echte Datenbank ersetzen)
     return NextResponse.json([])
   } catch (error) {
     console.error('Failed to fetch global leaderboard:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch global leaderboard' },
-      { status: 500 }
-    )
+    return NextResponse.json([])
   }
 }
+

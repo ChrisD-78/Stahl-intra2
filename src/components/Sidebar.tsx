@@ -3,29 +3,21 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/components/AuthProvider'
-import { useChatNotifications } from '@/contexts/ChatNotificationContext'
 import { useState } from 'react'
 
 const Sidebar = () => {
   const pathname = usePathname()
   const { currentUser, logout, isAdmin } = useAuth()
-  const { unreadCount } = useChatNotifications()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-
-  const handleAIAgentClick = () => {
-    window.open('https://cdagent.netlify.app', '_blank', 'noopener,noreferrer')
-    setIsMobileMenuOpen(false)
-  }
 
   const navItems = [
     { href: '/', label: 'Dashboard', icon: '🏠' },
+    { href: '/projektmanagement', label: 'Projektmanagement', icon: '📊' },
     { href: '/aufgaben', label: 'Aufgaben', icon: '📋' },
-    { href: '/wiederkehrende-aufgaben', label: 'Wiederkehrende Aufgaben', icon: '🔄' },
     { href: '/dokumente', label: 'Dokumente', icon: '📄' },
     { href: '/formulare', label: 'Formulare', icon: '📝' },
     { href: '/schulungen', label: 'Schulungen', icon: '🎓' },
-    { href: '/technik', label: 'Technik', icon: '🔧' },
-    { href: '/chat', label: 'Chat', icon: '💬' },
+    { href: '/ideen', label: 'Ideen', icon: '💡' },
   ]
 
   const adminNavItems = [
@@ -54,19 +46,17 @@ const Sidebar = () => {
       <div className={`fixed left-0 top-0 h-full w-64 bg-blue-900 lg:bg-blue-900/20 backdrop-blur-xl border-r border-blue-200/30 shadow-2xl z-50 transform transition-transform duration-300 flex flex-col ${
         isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       }`}>
-      {/* Header */}
-      <div className="flex-shrink-0 p-6 border-b border-blue-200/30">
-        <div className="flex items-center space-x-3">
-          <div className="w-12 h-12 bg-blue-800/40 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg border border-blue-300/40">
-            <span className="text-white text-2xl">🏊‍♂️</span>
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-white">Stadtholding</h1>
-            <p className="text-sm text-white font-medium">Intranet</p>
-          </div>
+      {/* Logo */}
+      <div className="flex-shrink-0 p-4 border-b border-blue-200/30">
+        <div className="flex items-center justify-center">
+          <img 
+            src="/stadtholding-logo-new.svg" 
+            alt="Stadtholding Logo" 
+            className="h-24 w-auto object-contain"
+          />
         </div>
       </div>
-
+      
       {/* User Info */}
       <div className="flex-shrink-0 p-4 border-b border-blue-200/30">
         <div className="flex items-center space-x-3 p-3 bg-blue-800/30 backdrop-blur-sm rounded-xl border border-blue-300/30">
@@ -89,8 +79,7 @@ const Sidebar = () => {
         <ul className="space-y-2">
           {navItems.map((item) => {
             const isActive = pathname === item.href
-            const isChatLink = item.href === '/chat'
-            const showBadge = isChatLink && unreadCount > 0
+            const isIdeen = item.href === '/ideen'
             
             return (
               <li key={item.href}>
@@ -99,35 +88,22 @@ const Sidebar = () => {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 relative ${
                     isActive
-                      ? 'bg-blue-800/60 text-white border-r-2 border-blue-400 shadow-lg backdrop-blur-sm'
-                      : 'text-white hover:bg-blue-800/40 hover:text-white hover:shadow-md backdrop-blur-sm'
+                      ? 'bg-blue-800/60 border-r-2 border-blue-400 shadow-lg backdrop-blur-sm'
+                      : 'hover:bg-blue-800/40 hover:shadow-md backdrop-blur-sm'
+                  } ${
+                    isIdeen 
+                      ? isActive 
+                        ? 'text-yellow-300' 
+                        : 'text-yellow-400 hover:text-yellow-300'
+                      : 'text-white'
                   }`}
                 >
                   <span className="text-lg">{item.icon}</span>
                   <span className="font-medium flex-1">{item.label}</span>
-                  {showBadge && (
-                    <span className="bg-red-500 text-white text-xs font-bold rounded-full min-w-[22px] h-[22px] flex items-center justify-center px-2 shadow-lg animate-pulse ring-2 ring-red-300">
-                      {unreadCount > 99 ? '99+' : unreadCount}
-                    </span>
-                  )}
                 </Link>
               </li>
             )
           })}
-
-          {/* AI-Agent Button (nur für Admins, oben in der Navigation) */}
-          {isAdmin && (
-            <li>
-              <button
-                onClick={handleAIAgentClick}
-                className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 text-white hover:bg-gradient-to-r hover:from-purple-700/50 hover:to-blue-700/50 hover:text-white hover:shadow-md backdrop-blur-sm relative group"
-              >
-                <span className="text-lg">🤖</span>
-                <span className="font-medium">AI-Agent</span>
-                <span className="absolute top-2 right-2 text-[10px] bg-purple-500/60 px-1.5 py-0.5 rounded-full whitespace-nowrap">Admin</span>
-              </button>
-            </li>
-          )}
 
           {/* Admin Section */}
           {isAdmin && (

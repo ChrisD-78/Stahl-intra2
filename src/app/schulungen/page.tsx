@@ -177,8 +177,6 @@ export default function Schulungen() {
   const categories = [
     { name: 'Unterweisungen', icon: '📋', color: 'bg-red-100 text-red-800', count: getCategoryCount('Unterweisungen') },
     { name: 'Schulungen', icon: '🎓', color: 'bg-blue-100 text-blue-800', count: getCategoryCount('Schulungen') },
-    { name: 'Gastronomie', icon: '🍽️', color: 'bg-green-100 text-green-800', count: getCategoryCount('Gastronomie') },
-    { name: 'Kursverlaufspläne', icon: '📅', color: 'bg-purple-100 text-purple-800', count: getCategoryCount('Kursverlaufspläne') },
     { name: 'Quiz', icon: '🎯', color: 'bg-yellow-100 text-yellow-800', count: quizCount, isSpecial: true }
   ]
 
@@ -535,30 +533,30 @@ export default function Schulungen() {
   }
 
   const SchulungCard = ({ schulung }: { schulung: Schulung }) => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 overflow-hidden">
-      <div className="p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white text-xl">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 overflow-hidden h-full flex flex-col">
+      <div className="p-4 lg:p-6 flex-1 flex flex-col">
+        <div className="flex items-start justify-between mb-3 lg:mb-4">
+          <div className="flex items-center space-x-2 lg:space-x-3 flex-1 min-w-0">
+            <div className="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white text-lg lg:text-xl flex-shrink-0">
               {schulung.thumbnail}
             </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900">{schulung.title}</h3>
-              <p className="text-sm text-gray-600">{schulung.instructor}</p>
+            <div className="min-w-0 flex-1">
+              <h3 className="text-base lg:text-lg font-semibold text-gray-900 truncate">{schulung.title}</h3>
+              <p className="text-xs lg:text-sm text-gray-600 truncate">{schulung.instructor}</p>
             </div>
           </div>
-      </div>
+        </div>
 
-        <p className="text-gray-700 mb-4 line-clamp-2">{schulung.description}</p>
+        <p className="text-gray-700 mb-3 lg:mb-4 line-clamp-2 text-sm lg:text-base flex-1">{schulung.description}</p>
 
         {/* Status in separate centered row */}
-        <div className="flex justify-center mb-4">
-          <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(schulung.status)}`}>
+        <div className="flex justify-center mb-3 lg:mb-4">
+          <span className={`px-3 py-1 rounded-full text-xs lg:text-sm font-medium ${getStatusColor(schulung.status)}`}>
             {schulung.status}
           </span>
         </div>
 
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="flex flex-wrap gap-2 mb-3 lg:mb-4">
           <span className="px-2 py-1 bg-gray-100 text-gray-800 rounded-full text-xs font-medium">
             {schulung.duration}
           </span>
@@ -567,14 +565,14 @@ export default function Schulungen() {
           </span>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-3 mt-auto">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-500">📅 {schulung.date}</span>
-            <div className="flex space-x-2">
+            <span className="text-xs lg:text-sm text-gray-500">📅 {schulung.date}</span>
+            <div className="flex space-x-1 lg:space-x-2">
               {schulung.pdfUrl && (
                 <button 
                   onClick={() => window.open(schulung.pdfUrl, '_blank')}
-                  className="p-2 text-gray-400 hover:text-red-600 transition-colors" 
+                  className="p-1.5 lg:p-2 text-gray-400 hover:text-red-600 transition-colors touch-target" 
                   title="PDF anzeigen"
                 >
                   📄
@@ -583,7 +581,7 @@ export default function Schulungen() {
               {schulung.videoUrl && (
                 <button 
                   onClick={() => window.open(schulung.videoUrl, '_blank')}
-                  className="p-2 text-gray-400 hover:text-blue-600 transition-colors" 
+                  className="p-1.5 lg:p-2 text-gray-400 hover:text-blue-600 transition-colors touch-target" 
                   title="Video ansehen"
                 >
                   🎥
@@ -591,7 +589,7 @@ export default function Schulungen() {
               )}
               <button 
                 onClick={() => setShowDeleteConfirm(schulung)}
-                className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                className="p-1.5 lg:p-2 text-gray-400 hover:text-red-600 transition-colors touch-target"
                 title="Schulung löschen"
               >
                 🗑️
@@ -602,14 +600,14 @@ export default function Schulungen() {
           <div className="flex justify-center">
             <button 
               onClick={() => setShowSchulungViewer(schulung)}
-              className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+              className="w-full px-4 py-2.5 lg:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm lg:text-base font-medium touch-target"
             >
               Starten
             </button>
           </div>
         </div>
-                </div>
-              </div>
+      </div>
+    </div>
   )
 
   const CreateSchulungForm = () => {
@@ -729,8 +727,6 @@ export default function Schulungen() {
                 >
                   <option value="Unterweisungen">Unterweisungen</option>
                   <option value="Schulungen">Schulungen</option>
-                  <option value="Gastronomie">Gastronomie</option>
-                  <option value="Kursverlaufspläne">Kursverlaufspläne</option>
                 </select>
                 </div>
 
@@ -1268,14 +1264,14 @@ export default function Schulungen() {
         <div className="flex flex-col sm:flex-row justify-center gap-3">
           <button 
             onClick={() => setShowCreateForm(true)}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center space-x-2"
+            className="px-6 py-3 lg:py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center justify-center space-x-2 text-sm lg:text-base touch-target"
           >
             <span>➕</span>
             <span>Neue Schulung</span>
           </button>
           <button 
             onClick={() => setActiveTab('overview')}
-            className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center justify-center space-x-2"
+            className="px-6 py-3 lg:py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center justify-center space-x-2 text-sm lg:text-base touch-target"
           >
             <span>📊</span>
             <span>Schulungsübersicht</span>
@@ -1317,18 +1313,18 @@ export default function Schulungen() {
           {activeTab === 'available' && (
             <div className="space-y-6">
               {/* Kategorien */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
                 {categories.map((category) => (
-                  <div key={category.name} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div key={category.name} className="bg-white border border-gray-200 rounded-lg p-4 lg:p-6 hover:shadow-md transition-shadow">
                     <div className="text-center">
-                      <span className="text-3xl mb-2 block">{category.icon}</span>
-                      <h3 className="font-semibold text-gray-900">{category.name}</h3>
-                      <p className="text-sm text-gray-600 mt-1">
+                      <span className="text-4xl lg:text-5xl mb-3 block">{category.icon}</span>
+                      <h3 className="font-semibold text-gray-900 text-base lg:text-lg">{category.name}</h3>
+                      <p className="text-sm lg:text-base text-gray-600 mt-2">
                         {category.name === 'Quiz' ? `${category.count} Quizze` : `${category.count} Schulungen`}
                       </p>
                       <button 
                         onClick={() => handleCategoryFilter(category.name)}
-                        className={`mt-3 px-3 py-1 rounded-full text-xs font-medium ${category.color} hover:opacity-80 transition-opacity`}
+                        className={`mt-4 px-4 py-2 rounded-full text-sm font-medium ${category.color} hover:opacity-80 transition-opacity w-full sm:w-auto`}
                       >
                         Anzeigen
                       </button>
@@ -1339,24 +1335,24 @@ export default function Schulungen() {
 
               {/* Filter Header */}
               {selectedCategory && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                  <div className="flex items-center justify-between">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 lg:p-6 mb-6">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex items-center space-x-3">
-                      <span className="text-2xl">
+                      <span className="text-2xl lg:text-3xl">
                         {categories.find(c => c.name === selectedCategory)?.icon}
                       </span>
                       <div>
-                        <h3 className="font-semibold text-gray-900">
+                        <h3 className="font-semibold text-gray-900 text-base lg:text-lg">
                           {selectedCategory} ({filteredSchulungen.length} Schulungen)
                         </h3>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm lg:text-base text-gray-600">
                           Gefilterte Ergebnisse für {selectedCategory}
                         </p>
                       </div>
                     </div>
                     <button
                       onClick={handleClearFilter}
-                      className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
+                      className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm w-full sm:w-auto"
                     >
                       Alle anzeigen
                     </button>
@@ -1365,7 +1361,7 @@ export default function Schulungen() {
               )}
 
               {/* Schulungs-Kacheln */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
                 {loading ? (
                   <div className="col-span-full text-center py-12">
                     <div className="text-gray-500">Lade Schulungen...</div>
@@ -1403,19 +1399,19 @@ export default function Schulungen() {
           {activeTab === 'overview' && (
             <div className="space-y-6">
               {/* Results Summary */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <div className="flex items-center justify-between">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 lg:p-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div>
-                    <h3 className="font-semibold text-gray-900">
+                    <h3 className="font-semibold text-gray-900 text-base lg:text-lg">
                       {getFilteredOverviewSchulungen().length} von {completedSchulungen.filter(c => !!c.schulungId).length} abgelegte Schulungen
                     </h3>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm lg:text-base text-gray-600">
                       {overviewFilters.category || overviewFilters.instructor || overviewFilters.title || overviewFilters.instructorName || overviewFilters.dateFrom || overviewFilters.dateTo ? 'Gefilterte Ergebnisse' : 'Alle abgelegten Schulungen'}
                     </p>
                   </div>
                   <button
                     onClick={clearOverviewFilters}
-                    className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors text-sm"
+                    className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors text-sm w-full sm:w-auto touch-target"
                   >
                     Filter zurücksetzen
                   </button>
@@ -1424,20 +1420,20 @@ export default function Schulungen() {
 
               {/* Table: Abgelegte Schulungen */}
               <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                  <div className="text-sm text-gray-600">Gefilterte Ergebnisse exportieren</div>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border-b border-gray-200 gap-3">
+                  <div className="text-sm lg:text-base text-gray-600">Gefilterte Ergebnisse exportieren</div>
                   <button
                     onClick={handleExportOverviewPdf}
-                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm"
+                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm w-full sm:w-auto touch-target"
                   >
                     ⬇️ Übersicht als PDF
                   </button>
                 </div>
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">
                           <div className="space-y-2">
                             <div>Schulung</div>
                             <input
@@ -1445,11 +1441,11 @@ export default function Schulungen() {
                               placeholder="Schulung suchen..."
                               value={overviewFilters.title}
                               onChange={(e) => handleOverviewFilterChange('title', e.target.value)}
-                              className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                              className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent touch-target"
                             />
                           </div>
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
                           <div className="space-y-2">
                             <div>Teilnehmer</div>
                             <input
@@ -1457,17 +1453,17 @@ export default function Schulungen() {
                               placeholder="Name suchen..."
                               value={overviewFilters.instructor}
                               onChange={(e) => handleOverviewFilterChange('instructor', e.target.value)}
-                              className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                              className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent touch-target"
                             />
                           </div>
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
                           <div className="space-y-2">
                             <div>Kategorie</div>
                             <select
                               value={overviewFilters.category}
                               onChange={(e) => handleOverviewFilterChange('category', e.target.value)}
-                              className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                              className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent touch-target"
                             >
                               <option value="">Alle</option>
                               {categories.filter(c => c.name !== 'Quiz').map(category => (
@@ -1476,7 +1472,7 @@ export default function Schulungen() {
                             </select>
                           </div>
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
                           <div className="space-y-2">
                             <div>Referent</div>
                             <input
@@ -1484,11 +1480,11 @@ export default function Schulungen() {
                               placeholder="Referent suchen..."
                               value={overviewFilters.instructorName}
                               onChange={(e) => handleOverviewFilterChange('instructorName', e.target.value)}
-                              className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                              className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent touch-target"
                             />
                           </div>
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[180px]">
                           <div className="space-y-2">
                             <div>Abgeschlossen</div>
                             <div className="flex space-x-1">
@@ -1497,20 +1493,20 @@ export default function Schulungen() {
                                 placeholder="Von"
                                 value={overviewFilters.dateFrom}
                                 onChange={(e) => handleOverviewFilterChange('dateFrom', e.target.value)}
-                                className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent touch-target"
                               />
                               <input
                                 type="date"
                                 placeholder="Bis"
                                 value={overviewFilters.dateTo}
                                 onChange={(e) => handleOverviewFilterChange('dateTo', e.target.value)}
-                                className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent touch-target"
                               />
                             </div>
                           </div>
                         </th>
                         {isAdmin && (
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">
                             Aktionen
                           </th>
                         )}
@@ -1519,7 +1515,7 @@ export default function Schulungen() {
                     <tbody className="bg-white divide-y divide-gray-200">
                       {getFilteredOverviewSchulungen().map((completed) => (
                         <tr key={completed.id} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center">
                               <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-blue-600 rounded-lg flex items-center justify-center text-white text-lg mr-3">
                                 ✅
@@ -1530,29 +1526,29 @@ export default function Schulungen() {
                               </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                             <div className="text-sm font-medium text-gray-900">
                               {completed.participantName} {completed.participantSurname}
                             </div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                             <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                               categories.find(c => c.name === completed.category)?.color || 'bg-gray-100 text-gray-800'
                             }`}>
                               {completed.category}
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             {completed.instructor}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             {completed.completedDate}
                           </td>
                           {isAdmin && (
-                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                            <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm">
                               <button
                                 onClick={() => setShowDeleteCompletedConfirm(completed)}
-                                className="text-red-600 hover:text-red-900 transition-colors"
+                                className="text-red-600 hover:text-red-900 transition-colors touch-target p-2"
                                 title="Schulung löschen"
                               >
                                 🗑️
@@ -1584,21 +1580,21 @@ export default function Schulungen() {
 
               {/* Externe Schulungsnachweise Zusatz-Tabelle */}
               <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                <div className="flex items-center justify-between p-4 border-b border-gray-200">
-                  <h3 className="font-semibold text-gray-900">Externe Schulungsnachweise</h3>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border-b border-gray-200 gap-3">
+                  <h3 className="font-semibold text-gray-900 text-base lg:text-lg">Externe Schulungsnachweise</h3>
                   <button
                     onClick={() => setShowProofForm(true)}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm w-full sm:w-auto touch-target"
                   >
                     ➕ Nachweis hinzufügen
                   </button>
                 </div>
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          <button onClick={()=>toggleProofSort('bezeichnung')} className="flex items-center gap-1 hover:text-gray-700">
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[180px]">
+                          <button onClick={()=>toggleProofSort('bezeichnung')} className="flex items-center gap-1 hover:text-gray-700 touch-target">
                             Bezeichnung der Schulung {proofSortBy==='bezeichnung' ? (proofSortOrder==='asc'?'▲':'▼') : ''}
                           </button>
                           <input
@@ -1606,11 +1602,11 @@ export default function Schulungen() {
                             placeholder="Bezeichnung filtern..."
                             value={proofFilters.bezeichnung}
                             onChange={(e)=>setProofFilters({...proofFilters, bezeichnung: e.target.value})}
-                            className="mt-2 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                            className="mt-2 w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent touch-target"
                           />
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          <button onClick={()=>toggleProofSort('nachname')} className="flex items-center gap-1 hover:text-gray-700">
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+                          <button onClick={()=>toggleProofSort('nachname')} className="flex items-center gap-1 hover:text-gray-700 touch-target">
                             Name {proofSortBy==='nachname' ? (proofSortOrder==='asc'?'▲':'▼') : ''}
                           </button>
                           <input
@@ -1618,11 +1614,11 @@ export default function Schulungen() {
                             placeholder="Name filtern..."
                             value={proofFilters.nachname}
                             onChange={(e)=>setProofFilters({...proofFilters, nachname: e.target.value})}
-                            className="mt-2 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                            className="mt-2 w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent touch-target"
                           />
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          <button onClick={()=>toggleProofSort('vorname')} className="flex items-center gap-1 hover:text-gray-700">
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">
+                          <button onClick={()=>toggleProofSort('vorname')} className="flex items-center gap-1 hover:text-gray-700 touch-target">
                             Vorname {proofSortBy==='vorname' ? (proofSortOrder==='asc'?'▲':'▼') : ''}
                           </button>
                           <input
@@ -1630,11 +1626,11 @@ export default function Schulungen() {
                             placeholder="Vorname filtern..."
                             value={proofFilters.vorname}
                             onChange={(e)=>setProofFilters({...proofFilters, vorname: e.target.value})}
-                            className="mt-2 w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                            className="mt-2 w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent touch-target"
                           />
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          <button onClick={()=>toggleProofSort('datum')} className="flex items-center gap-1 hover:text-gray-700">
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[180px]">
+                          <button onClick={()=>toggleProofSort('datum')} className="flex items-center gap-1 hover:text-gray-700 touch-target">
                             Datum {proofSortBy==='datum' ? (proofSortOrder==='asc'?'▲':'▼') : ''}
                           </button>
                           <div className="mt-2 flex gap-1">
@@ -1642,39 +1638,39 @@ export default function Schulungen() {
                               type="date"
                               value={proofFilters.dateFrom}
                               onChange={(e)=>setProofFilters({...proofFilters, dateFrom: e.target.value})}
-                              className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                              className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent touch-target"
                             />
                             <input
                               type="date"
                               value={proofFilters.dateTo}
                               onChange={(e)=>setProofFilters({...proofFilters, dateTo: e.target.value})}
-                              className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                              className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent touch-target"
                             />
                           </div>
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Schulungsnachweis (PDF)</th>
+                        <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px]">Schulungsnachweis (PDF)</th>
                         {isAdmin && (
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aktionen</th>
+                          <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">Aktionen</th>
                         )}
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {getFilteredProofs().length === 0 ? (
                         <tr>
-                          <td colSpan={isAdmin ? 6 : 5} className="px-6 py-6 text-center text-sm text-gray-500">Keine Nachweise vorhanden</td>
+                          <td colSpan={isAdmin ? 6 : 5} className="px-3 sm:px-6 py-6 text-center text-sm text-gray-500">Keine Nachweise vorhanden</td>
                         </tr>
                       ) : (
                         getFilteredProofs().map(item => (
                           <tr key={item.id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.bezeichnung}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.nachname}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.vorname}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.datum}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.bezeichnung}</td>
+                            <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.nachname}</td>
+                            <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.vorname}</td>
+                            <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.datum}</td>
+                            <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                               {item.pdfUrl ? (
                                 <button
                                   onClick={() => window.open(item.pdfUrl, '_blank')}
-                                  className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-xs"
+                                  className="px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-xs touch-target"
                                 >
                                   📄 {item.pdfName || 'Anzeigen'}
                                 </button>
@@ -1683,10 +1679,10 @@ export default function Schulungen() {
                               )}
                             </td>
                             {isAdmin && (
-                              <td className="px-6 py-4 whitespace-nowrap text-sm">
+                              <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-sm">
                                 <button
                                   onClick={() => setShowDeleteProofConfirm({ id: item.id, bezeichnung: item.bezeichnung })}
-                                  className="text-red-600 hover:text-red-900 transition-colors"
+                                  className="text-red-600 hover:text-red-900 transition-colors touch-target p-2"
                                   title="Nachweis löschen"
                                 >
                                   🗑️

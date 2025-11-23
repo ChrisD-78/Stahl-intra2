@@ -228,9 +228,8 @@ export default function Dokumente() {
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'Sicherheit': return 'bg-red-100 text-red-800'
-      case 'Betrieb': return 'bg-blue-100 text-blue-800'
+      case 'FAQ': return 'bg-blue-100 text-blue-800'
       case 'Verwaltung': return 'bg-green-100 text-green-800'
-      case 'Technik': return 'bg-yellow-100 text-yellow-800'
       default: return 'bg-gray-100 text-gray-800'
     }
   }
@@ -265,7 +264,7 @@ export default function Dokumente() {
     <div className="space-y-4 lg:space-y-6">
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-xl p-4 lg:p-8 text-white text-center">
-        <h1 className="text-2xl lg:text-4xl font-bold mb-2">Dokumente</h1>
+        <h1 className="text-2xl lg:text-4xl font-bold mb-2">Dokumente (QM-Datenbank)</h1>
         <p className="text-sm lg:text-base text-white/90">
           Verwalten Sie alle wichtigen Dokumente und Unterlagen
         </p>
@@ -290,16 +289,15 @@ export default function Dokumente() {
           >
             <option>Alle Kategorien</option>
             <option>Sicherheit</option>
-            <option>Betrieb</option>
+            <option>FAQ</option>
             <option>Verwaltung</option>
-            <option>Technik</option>
           </select>
           <DokumentUploadForm onUploadDocument={addNewDocument} />
         </div>
       </div>
 
       {/* Document Categories */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="text-center">
             <span className="text-4xl">🛡️</span>
@@ -309,9 +307,9 @@ export default function Dokumente() {
         </div>
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="text-center">
-            <span className="text-4xl">⚙️</span>
-            <h3 className="mt-4 text-lg font-semibold text-gray-900">Betrieb</h3>
-            <p className="mt-2 text-sm text-gray-600">{getCategoryCount('Betrieb')} Dokumente</p>
+            <span className="text-4xl">❓</span>
+            <h3 className="mt-4 text-lg font-semibold text-gray-900">FAQ</h3>
+            <p className="mt-2 text-sm text-gray-600">{getCategoryCount('FAQ')} Dokumente</p>
           </div>
         </div>
         <div className="bg-white rounded-lg shadow-sm p-6">
@@ -319,13 +317,6 @@ export default function Dokumente() {
             <span className="text-4xl">📋</span>
             <h3 className="mt-4 text-lg font-semibold text-gray-900">Verwaltung</h3>
             <p className="mt-2 text-sm text-gray-600">{getCategoryCount('Verwaltung')} Dokumente</p>
-          </div>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <div className="text-center">
-            <span className="text-4xl">🔧</span>
-            <h3 className="mt-4 text-lg font-semibold text-gray-900">Technik</h3>
-            <p className="mt-2 text-sm text-gray-600">{getCategoryCount('Technik')} Dokumente</p>
           </div>
         </div>
       </div>
@@ -457,9 +448,8 @@ export default function Dokumente() {
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
                       <option value="Sicherheit">Sicherheit</option>
-                      <option value="Betrieb">Betrieb</option>
+                      <option value="FAQ">FAQ</option>
                       <option value="Verwaltung">Verwaltung</option>
-                      <option value="Technik">Technik</option>
                     </select>
                   </div>
                   <div>

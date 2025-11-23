@@ -4,16 +4,12 @@ import "./globals.css";
 import { AuthProvider } from "@/components/AuthProvider";
 import ProtectedLayout from "@/components/ProtectedLayout";
 import { TaskProvider } from "@/contexts/TaskContext";
-import { ChatNotificationProvider } from "@/contexts/ChatNotificationContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Stadtholding Intranet - Mitarbeiter Portal",
   description: "Intranet Portal für Mitarbeiter - Stadtholding",
-  icons: {
-    apple: "/apple-touch-icon.png",
-  },
 };
 
 export default function RootLayout({
@@ -25,13 +21,11 @@ export default function RootLayout({
     <html lang="de">
         <body className={inter.className}>
           <AuthProvider>
-            <ChatNotificationProvider>
-              <TaskProvider>
-                <ProtectedLayout>
-                  {children}
-                </ProtectedLayout>
-              </TaskProvider>
-            </ChatNotificationProvider>
+            <TaskProvider>
+              <ProtectedLayout>
+                {children}
+              </ProtectedLayout>
+            </TaskProvider>
           </AuthProvider>
         </body>
     </html>
