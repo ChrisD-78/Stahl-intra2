@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { neon } from '@neondatabase/serverless'
 
-const sql = neon(process.env.DATABASE_URL!)
-
+// DATENBANKVERBINDUNGEN DEAKTIVIERT - Mock-Implementierung
 // GET all completions for a specific recurring task
 export async function GET(
   request: NextRequest,
@@ -11,13 +9,8 @@ export async function GET(
   try {
     const { id } = await params
     
-    const completions = await sql`
-      SELECT * FROM recurring_task_completions 
-      WHERE recurring_task_id = ${id}
-      ORDER BY completed_at DESC
-    `
-    
-    return NextResponse.json(completions)
+    // Mock: Leeres Array zurückgeben
+    return NextResponse.json([])
   } catch (error) {
     console.error('Failed to fetch task completions:', error)
     return NextResponse.json(

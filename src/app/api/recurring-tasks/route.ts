@@ -1,16 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { neon } from '@neondatabase/serverless'
 
-const sql = neon(process.env.DATABASE_URL!)
+// DATENBANKVERBINDUNGEN DEAKTIVIERT - Mock-Implementierung
 
 // GET all recurring tasks
 export async function GET() {
   try {
-    const tasks = await sql`
-      SELECT * FROM recurring_tasks 
-      ORDER BY created_at DESC
-    `
-    return NextResponse.json(tasks)
+    // Mock: Leeres Array zurückgeben
+    return NextResponse.json([])
   } catch (error) {
     console.error('Failed to fetch recurring tasks:', error)
     return NextResponse.json(
@@ -26,16 +22,20 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { title, description, frequency, priority, start_time, assigned_to, is_active, next_due } = body
 
-    const result = await sql`
-      INSERT INTO recurring_tasks (
-        title, description, frequency, priority, start_time, assigned_to, is_active, next_due
-      ) VALUES (
-        ${title}, ${description}, ${frequency}, ${priority}, ${start_time}, ${assigned_to}, ${is_active}, ${next_due}
-      )
-      RETURNING *
-    `
-
-    return NextResponse.json(result[0], { status: 201 })
+    // Mock: Dummy-Daten zurückgeben
+    const mockResult = {
+      id: Date.now().toString(),
+      title,
+      description,
+      frequency,
+      priority,
+      start_time,
+      assigned_to,
+      is_active,
+      next_due,
+      created_at: new Date().toISOString()
+    }
+    return NextResponse.json(mockResult, { status: 201 })
   } catch (error) {
     console.error('Failed to create recurring task:', error)
     return NextResponse.json(
@@ -55,8 +55,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'ID is required' }, { status: 400 })
     }
 
-    await sql`DELETE FROM recurring_tasks WHERE id = ${id}`
-
+    // Mock: Erfolg zurückgeben
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Failed to delete recurring task:', error)

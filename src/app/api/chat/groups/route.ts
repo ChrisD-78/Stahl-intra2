@@ -1,16 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { neon } from '@neondatabase/serverless'
 
-const sql = neon(process.env.DATABASE_URL!)
-
+// DATENBANKVERBINDUNGEN DEAKTIVIERT - Mock-Implementierung
 // GET all chat groups
 export async function GET() {
   try {
-    const groups = await sql`
-      SELECT * FROM chat_groups 
-      ORDER BY created_at DESC
-    `
-    return NextResponse.json(groups)
+    // Mock: Leeres Array zurückgeben
+    return NextResponse.json([])
   } catch (error) {
     console.error('Failed to fetch chat groups:', error)
     return NextResponse.json(
@@ -24,15 +19,15 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { name, description, created_by } = body
-
-    const result = await sql`
-      INSERT INTO chat_groups (name, description, created_by)
-      VALUES (${name}, ${description || null}, ${created_by})
-      RETURNING *
-    `
-
-    return NextResponse.json(result[0], { status: 201 })
+    // Mock: Dummy-Daten zurückgeben
+    const mockResult = {
+      id: Date.now().toString(),
+      name: body.name,
+      description: body.description || null,
+      created_by: body.created_by,
+      created_at: new Date().toISOString()
+    }
+    return NextResponse.json(mockResult, { status: 201 })
   } catch (error) {
     console.error('Failed to create chat group:', error)
     return NextResponse.json(

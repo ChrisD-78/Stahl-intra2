@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { neon } from '@neondatabase/serverless'
 
-const sql = neon(process.env.DATABASE_URL!)
-
+// DATENBANKVERBINDUNGEN DEAKTIVIERT - Mock-Implementierung
 // PATCH update recurring task
 export async function PATCH(
   request: NextRequest,
@@ -12,30 +10,21 @@ export async function PATCH(
     const body = await request.json()
     const { id } = await params
 
-    // Simple approach: allow updating specific fields
+    // Mock: Dummy-Daten zurückgeben
     const { title, description, frequency, priority, start_time, assigned_to, is_active, next_due } = body
-
-    const result = await sql`
-      UPDATE recurring_tasks 
-      SET 
-        title = COALESCE(${title}, title),
-        description = COALESCE(${description}, description),
-        frequency = COALESCE(${frequency}, frequency),
-        priority = COALESCE(${priority}, priority),
-        start_time = COALESCE(${start_time}, start_time),
-        assigned_to = COALESCE(${assigned_to}, assigned_to),
-        is_active = COALESCE(${is_active}, is_active),
-        next_due = COALESCE(${next_due}, next_due),
-        updated_at = NOW()
-      WHERE id = ${id}
-      RETURNING *
-    `
-
-    if (result.length === 0) {
-      return NextResponse.json({ error: 'Task not found' }, { status: 404 })
+    const mockResult = {
+      id,
+      title: title || 'Mock Task',
+      description: description || '',
+      frequency: frequency || 'Täglich',
+      priority: priority || 'Mittel',
+      start_time: start_time || '09:00',
+      assigned_to: assigned_to || null,
+      is_active: is_active !== undefined ? is_active : true,
+      next_due: next_due || new Date().toISOString(),
+      updated_at: new Date().toISOString()
     }
-
-    return NextResponse.json(result[0])
+    return NextResponse.json(mockResult)
   } catch (error) {
     console.error('Failed to update recurring task:', error)
     return NextResponse.json(
