@@ -16,7 +16,7 @@ const Navigation = () => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-3">
             <img 
-              src="/stadtholding-logo.svg" 
+              src="/stadtholding-logo-new.svg" 
               alt="Stadtholding Logo" 
               className="h-8 lg:h-10 w-auto object-contain"
             />
