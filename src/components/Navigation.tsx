@@ -18,8 +18,11 @@ const Navigation = () => {
             <img 
               src="/stadtholding-logo.svg" 
               alt="Stadtholding Logo" 
-              className="h-10 w-auto object-contain"
+              className="h-8 lg:h-10 w-auto object-contain"
             />
+            <h1 className="text-lg lg:text-2xl font-bold text-gray-900 whitespace-nowrap">
+              Stadtholding Landau
+            </h1>
           </div>
           
           <div className="flex items-center space-x-4">
