@@ -17,7 +17,7 @@ const Sidebar = () => {
     { href: '/dokumente', label: 'Dokumente', icon: '📄' },
     { href: '/marketing', label: 'Marketing', icon: '📢' },
     { href: '/projektmanagement', label: 'Projektmanagement', icon: '📊' },
-    { href: '/beschwerdemanagement', label: 'Beschwerdemanagement', icon: '📢' },
+    { href: '/beschwerdemanagement', label: 'Beschwerden', icon: '⚠️', color: 'red' },
     { href: '/schulungen', label: 'Schulungen', icon: '🎓' },
   ]
 
@@ -80,6 +80,7 @@ const Sidebar = () => {
         <ul className="space-y-2">
           {navItems.map((item) => {
             const isActive = pathname === item.href
+            const isBeschwerden = item.href === '/beschwerdemanagement'
             
             return (
               <li key={item.href}>
@@ -88,9 +89,19 @@ const Sidebar = () => {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 relative ${
                     isActive
-                      ? 'bg-blue-800/60 border-r-2 border-blue-400 shadow-lg backdrop-blur-sm'
-                      : 'hover:bg-blue-800/40 hover:shadow-md backdrop-blur-sm'
-                  } text-white`}
+                      ? isBeschwerden
+                        ? 'bg-red-700/60 border-r-2 border-red-300 shadow-lg backdrop-blur-sm'
+                        : 'bg-blue-800/60 border-r-2 border-blue-400 shadow-lg backdrop-blur-sm'
+                      : isBeschwerden
+                        ? 'hover:bg-red-700/40 hover:shadow-md backdrop-blur-sm'
+                        : 'hover:bg-blue-800/40 hover:shadow-md backdrop-blur-sm'
+                  } ${
+                    isBeschwerden
+                      ? isActive
+                        ? 'text-red-100'
+                        : 'text-red-200 hover:text-red-100'
+                      : 'text-white'
+                  }`}
                 >
                   <span className="text-lg">{item.icon}</span>
                   <span className="font-medium flex-1">{item.label}</span>
