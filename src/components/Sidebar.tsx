@@ -12,14 +12,13 @@ const Sidebar = () => {
 
   const navItems = [
     { href: '/', label: 'Dashboard', icon: '🏠' },
-    { href: '/projektmanagement', label: 'Projektmanagement', icon: '📊' },
-    { href: '/projektmanagement/prozesse', label: 'Prozessmanagement', icon: '🔄' },
-    { href: '/marketing', label: 'Marketing', icon: '📢' },
     { href: '/aufgaben', label: 'Aufgaben', icon: '📋' },
-    { href: '/dokumente', label: 'Dokumente', icon: '📄' },
     { href: '/formulare', label: 'Formulare', icon: '📝' },
+    { href: '/dokumente', label: 'Dokumente', icon: '📄' },
+    { href: '/marketing', label: 'Marketing', icon: '📢' },
+    { href: '/projektmanagement', label: 'Projektmanagement', icon: '📊' },
+    { href: '/beschwerdemanagement', label: 'Beschwerdemanagement', icon: '📢' },
     { href: '/schulungen', label: 'Schulungen', icon: '🎓' },
-    { href: '/ideen', label: 'Ideen', icon: '💡' },
   ]
 
   const adminNavItems = [
@@ -81,8 +80,6 @@ const Sidebar = () => {
         <ul className="space-y-2">
           {navItems.map((item) => {
             const isActive = pathname === item.href
-            const isIdeen = item.href === '/ideen'
-            const isProzesse = item.href === '/projektmanagement/prozesse'
             
             return (
               <li key={item.href}>
@@ -91,23 +88,9 @@ const Sidebar = () => {
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={`flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 relative ${
                     isActive
-                      ? isProzesse
-                        ? 'bg-teal-700/60 border-r-2 border-teal-300 shadow-lg backdrop-blur-sm'
-                        : 'bg-blue-800/60 border-r-2 border-blue-400 shadow-lg backdrop-blur-sm'
-                      : isProzesse
-                        ? 'hover:bg-teal-700/40 hover:shadow-md backdrop-blur-sm'
-                        : 'hover:bg-blue-800/40 hover:shadow-md backdrop-blur-sm'
-                  } ${
-                    isProzesse
-                      ? isActive
-                        ? 'text-teal-100'
-                        : 'text-teal-200 hover:text-teal-100'
-                      : isIdeen 
-                        ? isActive 
-                          ? 'text-yellow-300' 
-                          : 'text-yellow-400 hover:text-yellow-300'
-                        : 'text-white'
-                  }`}
+                      ? 'bg-blue-800/60 border-r-2 border-blue-400 shadow-lg backdrop-blur-sm'
+                      : 'hover:bg-blue-800/40 hover:shadow-md backdrop-blur-sm'
+                  } text-white`}
                 >
                   <span className="text-lg">{item.icon}</span>
                   <span className="font-medium flex-1">{item.label}</span>

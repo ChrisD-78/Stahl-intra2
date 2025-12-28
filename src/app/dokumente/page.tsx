@@ -86,6 +86,7 @@ export default function Dokumente() {
   const [editDescription, setEditDescription] = useState('')
   const [editCategory, setEditCategory] = useState('')
   const [editTags, setEditTags] = useState('')
+  const [showFAQ, setShowFAQ] = useState(false)
 
   const addNewDocument = async (documentData: {
     title: string
@@ -305,13 +306,17 @@ export default function Dokumente() {
             <p className="mt-2 text-sm text-gray-600">{getCategoryCount('Sicherheit')} Dokumente</p>
           </div>
         </div>
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <button
+          onClick={() => setShowFAQ(true)}
+          className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow cursor-pointer text-left w-full"
+        >
           <div className="text-center">
             <span className="text-4xl">❓</span>
             <h3 className="mt-4 text-lg font-semibold text-gray-900">FAQ</h3>
             <p className="mt-2 text-sm text-gray-600">{getCategoryCount('FAQ')} Dokumente</p>
+            <p className="mt-2 text-xs text-blue-600">Klicken für FAQ-Inhalte</p>
           </div>
-        </div>
+        </button>
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="text-center">
             <span className="text-4xl">📋</span>
@@ -572,6 +577,71 @@ export default function Dokumente() {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* FAQ Modal */}
+      {showFAQ && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-gradient-to-r from-blue-600 to-purple-600 p-6 rounded-t-2xl">
+              <div className="flex items-center justify-between">
+                <h3 className="text-2xl font-bold text-white">FAQ</h3>
+                <button
+                  onClick={() => setShowFAQ(false)}
+                  className="text-white hover:text-gray-200 p-2 hover:bg-white/10 rounded-lg"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm font-semibold text-blue-600 uppercase tracking-wide">
+                  Verwaltungsfragen
+                </span>
+              </div>
+              <div className="space-y-4">
+                <div className="border border-gray-100 rounded-xl p-4 hover:border-blue-200 transition-colors">
+                  <p className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                    <span className="text-blue-500">?</span>
+                    Wie beantrage ich Urlaub oder Gleittage?
+                  </p>
+                  <p className="text-sm text-gray-600 mt-2">
+                    Nutze das Formular unter Verwaltungsprozesse → Abwesenheiten. Nach digitaler Unterschrift geht der Antrag automatisch zur Teamleitung und Personalstelle.
+                  </p>
+                </div>
+                <div className="border border-gray-100 rounded-xl p-4 hover:border-blue-200 transition-colors">
+                  <p className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                    <span className="text-blue-500">?</span>
+                    Wo hinterlege ich Dienstreiseanträge?
+                  </p>
+                  <p className="text-sm text-gray-600 mt-2">
+                    Dienstreisen werden im Workflow-System angelegt. Lade Budget und Agenda hoch, anschließend prüft die Beschaffung die Unterlagen.
+                  </p>
+                </div>
+                <div className="border border-gray-100 rounded-xl p-4 hover:border-blue-200 transition-colors">
+                  <p className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                    <span className="text-blue-500">?</span>
+                    Wer hilft bei IT-Problemen?
+                  </p>
+                  <p className="text-sm text-gray-600 mt-2">
+                    Wende dich an den IT-Service im Organigramm. Über das Status-Tracking siehst du, wie weit dein Ticket ist.
+                  </p>
+                </div>
+                <div className="border border-gray-100 rounded-xl p-4 hover:border-blue-200 transition-colors">
+                  <p className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+                    <span className="text-blue-500">?</span>
+                    Wie reiche ich Verbesserungsvorschläge ein?
+                  </p>
+                  <p className="text-sm text-gray-600 mt-2">
+                    Öffne das Ideenmanagement-Tool weiter unten. Dort kannst du Ideen kategorisieren, Impact einschätzen und das Team zur Diskussion einladen.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

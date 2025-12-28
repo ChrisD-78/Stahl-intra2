@@ -1,14 +1,13 @@
 'use client'
 
 import { useState } from 'react'
+import { TasksProvider } from '@/contexts/TasksContext'
 import TaskManagement from '@/components/projektmanagement/TaskManagement'
 import TimePlanning from '@/components/projektmanagement/TimePlanning'
 import ResourceManagement from '@/components/projektmanagement/ResourceManagement'
-import DocumentManagement from '@/components/projektmanagement/DocumentManagement'
-import CommunicationCollaboration from '@/components/projektmanagement/CommunicationCollaboration'
 import ReportingAnalytics from '@/components/projektmanagement/ReportingAnalytics'
 
-type ModuleType = 'tasks' | 'planning' | 'resources' | 'documents' | 'communication' | 'reporting'
+type ModuleType = 'tasks' | 'planning' | 'resources' | 'reporting'
 
 export default function ProjektmanagementPage() {
   const [activeModule, setActiveModule] = useState<ModuleType>('tasks')
@@ -22,9 +21,7 @@ export default function ProjektmanagementPage() {
     { id: 'tasks' as ModuleType, label: 'Aufgabenverwaltung', icon: '📋', color: 'blue' },
     { id: 'planning' as ModuleType, label: 'Zeitplanung & Terminierung', icon: '📅', color: 'green' },
     { id: 'resources' as ModuleType, label: 'Ressourcenmanagement', icon: '👥', color: 'purple' },
-    { id: 'documents' as ModuleType, label: 'Dokumentenmanagement', icon: '📄', color: 'orange' },
-    { id: 'communication' as ModuleType, label: 'Kommunikation & Kollaboration', icon: '💬', color: 'pink' },
-    { id: 'reporting' as ModuleType, label: 'Reporting & Analytics', icon: '📊', color: 'indigo' },
+    { id: 'reporting' as ModuleType, label: 'Reporting', icon: '📊', color: 'indigo' },
   ]
 
   const getColorClasses = (color: string) => {
@@ -40,57 +37,57 @@ export default function ProjektmanagementPage() {
   }
 
   return (
-    <div className="space-y-6 lg:space-y-8">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-xl p-6 lg:p-10 text-white">
-        <h1 className="text-2xl lg:text-4xl font-extrabold mb-2">Projektmanagement</h1>
-        <p className="text-white/90 max-w-3xl">
-          Zentrale Verwaltung für Projekte, Aufgaben, Ressourcen und Kollaboration
-        </p>
-      </div>
+    <TasksProvider>
+      <div className="space-y-6 lg:space-y-8">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-xl p-6 lg:p-10 text-white">
+          <h1 className="text-2xl lg:text-4xl font-extrabold mb-2">Projektmanagement</h1>
+          <p className="text-white/90 max-w-3xl">
+            Zentrale Verwaltung für Projekte, Aufgaben, Ressourcen und Kollaboration
+          </p>
+        </div>
 
-      {/* Module Navigation */}
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 lg:p-6 relative z-10">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 lg:gap-4">
-          {modules.map((module) => {
-            const colors = getColorClasses(module.color)
-            const isActive = activeModule === module.id
-            return (
-              <button
-                key={module.id}
-                type="button"
-                onClick={() => handleModuleClick(module.id)}
-                className={`p-4 lg:p-5 rounded-xl border-2 transition-all duration-200 flex flex-col items-center justify-center min-h-[120px] lg:min-h-[140px] w-full cursor-pointer ${
-                  isActive
-                    ? `${colors.bg} ${colors.border} border-2 shadow-md`
-                    : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
-                }`}
-              >
-                <div className="text-3xl lg:text-4xl mb-2 lg:mb-3 flex-shrink-0">{module.icon}</div>
-                <div className={`text-xs lg:text-sm font-semibold text-center leading-tight px-1 w-full overflow-hidden ${isActive ? colors.text : 'text-gray-600'}`} style={{ wordBreak: 'break-word', hyphens: 'auto' }}>
-                  {module.label}
-                </div>
-              </button>
-            )
-          })}
+        {/* Module Navigation */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-4 lg:p-6 relative z-10">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+            {modules.map((module) => {
+              const colors = getColorClasses(module.color)
+              const isActive = activeModule === module.id
+              return (
+                <button
+                  key={module.id}
+                  type="button"
+                  onClick={() => handleModuleClick(module.id)}
+                  className={`p-4 lg:p-5 rounded-xl border-2 transition-all duration-200 flex flex-col items-center justify-center min-h-[120px] lg:min-h-[140px] w-full cursor-pointer ${
+                    isActive
+                      ? `${colors.bg} ${colors.border} border-2 shadow-md`
+                      : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                  }`}
+                >
+                  <div className="text-3xl lg:text-4xl mb-2 lg:mb-3 flex-shrink-0">{module.icon}</div>
+                  <div className={`text-xs lg:text-sm font-semibold text-center leading-tight px-1 w-full overflow-hidden ${isActive ? colors.text : 'text-gray-600'}`} style={{ wordBreak: 'break-word', hyphens: 'auto' }}>
+                    {module.label}
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Active Module Content */}
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 min-h-[400px]">
+          {activeModule === 'tasks' && <TaskManagement />}
+          {activeModule === 'planning' && <TimePlanning />}
+          {activeModule === 'resources' && <ResourceManagement />}
+          {activeModule === 'reporting' && <ReportingAnalytics />}
+          {!activeModule && (
+            <div className="text-center text-gray-500 py-8">
+              Bitte wählen Sie ein Modul aus
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Active Module Content */}
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 min-h-[400px]">
-        {activeModule === 'tasks' && <TaskManagement />}
-        {activeModule === 'planning' && <TimePlanning />}
-        {activeModule === 'resources' && <ResourceManagement />}
-        {activeModule === 'documents' && <DocumentManagement />}
-        {activeModule === 'communication' && <CommunicationCollaboration />}
-        {activeModule === 'reporting' && <ReportingAnalytics />}
-        {!activeModule && (
-          <div className="text-center text-gray-500 py-8">
-            Bitte wählen Sie ein Modul aus
-          </div>
-        )}
-      </div>
-    </div>
+    </TasksProvider>
   )
 }
 
