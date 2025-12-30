@@ -5,7 +5,6 @@ import { getDashboardInfos, createDashboardInfo, deleteDashboardInfo, uploadInfo
 import Link from 'next/link'
 import DailyMotivation from "@/components/DailyMotivation"
 import InfoForm from "@/components/InfoForm"
-import { useTasks } from "@/contexts/TaskContext"
 import DashboardInfoPopup from "@/components/DashboardInfoPopup"
 import { useAuth } from "@/components/AuthProvider"
 
@@ -230,10 +229,7 @@ const signaturePolicies = [
 ]
 
 export default function Dashboard() {
-  const { getTaskStats, getTasksByStatus } = useTasks()
   const { isAdmin } = useAuth()
-  const taskStats = getTaskStats()
-  const recentTasks = getTasksByStatus('Offen').slice(0, 3)
   
   const [currentInfos, setCurrentInfos] = useState<InfoItem[]>([])
   const [popupInfo, setPopupInfo] = useState<InfoItem | null>(null)
@@ -525,39 +521,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Recent Activities */}
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
-        <div className="p-6 border-b border-gray-100">
-          <h2 className="text-2xl font-bold text-gray-900">
-            Letzte Aktivitäten
-          </h2>
-        </div>
-        <div className="p-6 space-y-4">
-          {recentTasks.length > 0 ? (
-            recentTasks.map((task) => (
-              <div key={task.id} className="flex items-center space-x-4 p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl border border-blue-200">
-                <div className="w-3 h-3 bg-blue-500 rounded-full shadow-lg"></div>
-                <div className="flex-1">
-                  <span className="text-sm font-medium text-blue-800">
-                    Offene Aufgabe: &quot;{task.title}&quot;
-                  </span>
-                  <p className="text-xs text-blue-600 mt-1">
-                    Zugewiesen an: {task.assignedTo} • Fällig: {new Date(task.dueDate).toLocaleDateString('de-DE')}
-                  </p>
-                </div>
-                <span className="text-xs text-blue-600 font-medium">
-                  {task.priority}
-                </span>
-              </div>
-            ))
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              <span className="text-4xl">✅</span>
-              <p className="mt-2">Keine offenen Aufgaben</p>
-            </div>
-          )}
-        </div>
-      </div>
 
       {/* Popup für wichtige Informationen */}
       {popupInfo && (
