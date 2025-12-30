@@ -1,62 +1,107 @@
 <svg viewBox="0 0 400 450" xmlns="http://www.w3.org/2000/svg">
-
-  <!-- Logo Stadtholding Landau -->
-
-  <g transform="translate(200, 180)">
-
-    <!-- Kreis-Rahmen -->
-
-    <circle cx="0" cy="0" r="85" fill="none" stroke="#1565c0" stroke-width="4"/>
-
-    <circle cx="0" cy="0" r="75" fill="none" stroke="#1976d2" stroke-width="2"/>
-
-    
-
-    <!-- S (linksseitig, klar und deutlich) -->
-
-    <path d="M -15,-45 Q -35,-50 -45,-40 Q -50,-30 -45,-20 Q -40,-15 -30,-12 L -20,-10 Q -10,-8 -8,-3 Q -5,5 -12,12 Q -20,18 -32,15 Q -42,12 -48,5" 
-
-          fill="none" stroke="#0d47a1" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
-
-    
-
-    <!-- H (rechtsseitig, klar und deutlich) -->
-
-    <!-- Linker Strich -->
-
-    <line x1="20" y1="-45" x2="20" y2="25" stroke="#0d47a1" stroke-width="9" stroke-linecap="round"/>
-
-    <!-- Rechter Strich -->
-
-    <line x1="50" y1="-45" x2="50" y2="25" stroke="#0d47a1" stroke-width="9" stroke-linecap="round"/>
-
-    <!-- Querstrich -->
-
-    <line x1="20" y1="-10" x2="50" y2="-10" stroke="#0d47a1" stroke-width="9" stroke-linecap="round"/>
-
-  </g>
-
+  <!-- Logo: Herz-Design mit LD (Landau) -->
+  <!-- Rot-rosa: #B05D6B, Grau: #6B7280 -->
   
-
-  <!-- Text -->
-
-  <text x="200" y="340" font-family="Arial, sans-serif" font-size="26" font-weight="bold" text-anchor="middle" fill="#0d47a1">
-
+  <!-- Rot-rosa Segment (oben links) - Herzform oben links mit gezacktem Rand -->
+  <path d="M 100,80 
+           C 70,60 40,70 30,90 
+           C 20,110 25,130 35,150 
+           C 45,170 60,185 80,195 
+           C 100,200 120,195 140,185 
+           C 160,175 175,160 180,140 
+           C 185,120 180,100 170,85 
+           C 160,70 140,75 120,80 
+           C 110,82 105,81 100,80 Z" 
+        fill="#B05D6B" 
+        stroke="none"/>
+  
+  <!-- Gezackter Rand oben (7-8 abgerundete Zähne) -->
+  <path d="M 100,80 
+           L 88,68 L 94,56 L 84,44 L 92,32 L 82,20 L 90,8 L 80,0 
+           L 90,-6 L 100,6 L 110,-6 L 120,0 
+           L 112,8 L 122,20 L 114,32 L 124,44 L 118,56 L 128,68 
+           L 120,80 
+           L 110,75 L 100,80 Z" 
+        fill="#B05D6B" 
+        stroke="none"/>
+  
+  <!-- Gezackter Rand links (abgerundete Zähne) -->
+  <path d="M 100,80 
+           L 85,90 L 75,85 L 65,95 L 55,90 L 45,100 L 35,95 L 25,105 
+           L 20,100 L 30,110 L 25,120 L 35,130 L 30,140 L 40,150 
+           L 50,145 L 60,155 L 70,150 L 80,160 
+           L 90,155 L 100,165 
+           L 100,80 Z" 
+        fill="#B05D6B" 
+        stroke="none"/>
+  
+  <!-- Graues Segment: Durchgehende Form mit "LD" -->
+  <!-- "D" oben rechts -->
+  <path d="M 200,80 
+           C 240,90 260,120 260,140 
+           C 260,160 240,190 200,200 
+           L 200,80 Z" 
+        fill="#6B7280" 
+        stroke="none"/>
+  
+  <!-- Vertikaler Strich des D -->
+  <path d="M 200,80 
+           L 220,80 
+           L 220,200 
+           L 200,200 Z" 
+        fill="#6B7280" 
+        stroke="none"/>
+  
+  <!-- Verbindung D zu unterem Teil -->
+  <path d="M 200,200 
+           L 200,300 
+           C 220,320 240,320 260,300 
+           L 260,280 
+           C 240,300 220,300 200,280 
+           L 200,200 Z" 
+        fill="#6B7280" 
+        stroke="none"/>
+  
+  <!-- "L" unten links -->
+  <path d="M 100,200 
+           L 120,200 
+           L 120,320 
+           L 100,320 Z" 
+        fill="#6B7280" 
+        stroke="none"/>
+  
+  <!-- Horizontaler Strich des L -->
+  <path d="M 100,320 
+           L 180,320 
+           L 180,340 
+           L 100,340 Z" 
+        fill="#6B7280" 
+        stroke="none"/>
+  
+  <!-- Verbindung L zu unterem Teil (Herzspitze) -->
+  <path d="M 180,320 
+           C 200,340 220,340 240,320 
+           L 240,300 
+           C 220,320 200,320 180,300 
+           L 180,320 Z" 
+        fill="#6B7280" 
+        stroke="none"/>
+  
+  <!-- Text unter dem Logo -->
+  <text x="200" y="390" 
+        font-family="Arial, sans-serif" 
+        font-size="28" 
+        font-weight="bold" 
+        text-anchor="middle" 
+        fill="#424242">
     STADTHOLDING
-
   </text>
-
-  <text x="200" y="370" font-family="Arial, sans-serif" font-size="16" text-anchor="middle" fill="#1976d2">
-
+  
+  <text x="200" y="415" 
+        font-family="Arial, sans-serif" 
+        font-size="16" 
+        text-anchor="middle" 
+        fill="#757575">
     Landau in der Pfalz
-
   </text>
-
 </svg>
-
-
-
-
-
-
-

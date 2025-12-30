@@ -51,7 +51,7 @@ const Sidebar = () => {
       <div className="flex-shrink-0 p-4 border-b border-blue-200/30">
         <div className="flex items-center justify-center">
           <img 
-            src="/stadtholding-logo-new.svg" 
+            src="/stadtholding-logo.png" 
             alt="Stadtholding Logo" 
             className="h-24 w-auto object-contain"
           />

@@ -46,7 +46,7 @@ const LoginForm = () => {
         <div className="text-center">
           <div className="mb-0 flex items-center justify-center">
             <img 
-              src="/stadtholding-logo-new.svg" 
+              src="/stadtholding-logo.png" 
               alt="Stadtholding Logo" 
               className="h-48 w-auto object-contain"
             />
