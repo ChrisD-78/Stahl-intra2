@@ -76,14 +76,21 @@ export const TaskProvider = ({ children }: TaskProviderProps) => {
     }
     setTasks(prev => [optimistic, ...prev])
     try {
-      await dbCreateTask({
+      console.log('Creating task:', taskData)
+      const result = await dbCreateTask({
         title: taskData.title,
         description: taskData.description,
         priority: taskData.priority,
         due_date: taskData.dueDate,
         assigned_to: taskData.assignedTo,
       })
+      console.log('Task created successfully:', result)
+      
+      // Warte kurz, damit die API die Aufgabe verarbeitet hat
+      await new Promise(resolve => setTimeout(resolve, 300))
+      
       const refreshed = await dbGetTasks()
+      console.log('Refreshed tasks:', refreshed.length)
       const mapped: Task[] = refreshed.map((t: TaskRecord) => ({
         id: t.id as string,
         title: t.title,
@@ -95,11 +102,23 @@ export const TaskProvider = ({ children }: TaskProviderProps) => {
         createdAt: (t.created_at || '').split('T')[0] || new Date().toISOString().split('T')[0]
       }))
       setTasks(mapped)
-    } catch (e) {
+    } catch (e: any) {
       console.error('Create task failed', e)
+      console.error('Error details:', {
+        message: e?.message,
+        status: e?.status,
+        response: e?.response
+      })
       // rollback
       setTasks(prev => prev.filter(t => t.id !== optimistic.id))
-      alert('Aufgabe konnte nicht gespeichert werden.')
+      
+      // Zeige detaillierte Fehlermeldung
+      const errorMsg = e?.message || 'Unbekannter Fehler'
+      if (errorMsg.includes('401') || errorMsg.includes('Unauthorized')) {
+        alert('Authentifizierungsfehler: Bitte melden Sie sich erneut an.')
+      } else {
+        alert(`Aufgabe konnte nicht gespeichert werden: ${errorMsg}`)
+      }
     }
   }
 

@@ -21,13 +21,32 @@ export async function getTasks(): Promise<TaskRecord[]> {
 }
 
 export async function createTask(task: Omit<TaskRecord, 'id' | 'created_at' | 'status'> & { status?: string }) {
-  const response = await fetch('/api/tasks', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(task)
-  })
-  if (!response.ok) throw new Error('Failed to create task')
-  return response.json()
+  try {
+    console.log('Sending task to API:', task)
+    const response = await fetch('/api/tasks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(task)
+    })
+    
+    console.log('API Response status:', response.status, response.statusText)
+    
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('API Error response:', errorText)
+      const error = new Error(`Failed to create task: ${response.status} ${response.statusText}`) as any
+      error.status = response.status
+      error.response = errorText
+      throw error
+    }
+    
+    const result = await response.json()
+    console.log('API Success response:', result)
+    return result
+  } catch (error: any) {
+    console.error('createTask error:', error)
+    throw error
+  }
 }
 
 export async function updateTask(id: string, partial: Partial<TaskRecord>) {
