@@ -654,7 +654,7 @@ export default function ProzessePage() {
                               value={newNote}
                               onChange={(e) => setNewNote(e.target.value)}
                               placeholder="Ihre Idee oder Anmerkung..."
-                              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                               rows={2}
                             />
                             <button
@@ -1034,7 +1034,7 @@ export default function ProzessePage() {
                   type="text"
                   value={newProcess.title}
                   onChange={(e) => setNewProcess({ ...newProcess, title: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                   placeholder="z.B. Website Relaunch"
                 />
               </div>
@@ -1043,7 +1043,7 @@ export default function ProzessePage() {
                 <textarea
                   value={newProcess.description}
                   onChange={(e) => setNewProcess({ ...newProcess, description: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                   rows={4}
                   placeholder="Beschreiben Sie den Prozess..."
                 />
@@ -1088,7 +1088,7 @@ export default function ProzessePage() {
                   type="text"
                   value={newBrainstorming.title}
                   onChange={(e) => setNewBrainstorming({ ...newBrainstorming, title: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900"
                   placeholder="z.B. Ideensammlung für Website Relaunch"
                 />
               </div>
@@ -1097,7 +1097,7 @@ export default function ProzessePage() {
                 <textarea
                   value={newBrainstorming.description}
                   onChange={(e) => setNewBrainstorming({ ...newBrainstorming, description: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-gray-900"
                   rows={3}
                   placeholder="Worum geht es in dieser Brainstorming-Sitzung?"
                 />
@@ -1169,7 +1169,7 @@ export default function ProzessePage() {
                   type="text"
                   value={newTask.title}
                   onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                   placeholder="z.B. Design-Konzept erstellen"
                 />
               </div>
@@ -1178,7 +1178,7 @@ export default function ProzessePage() {
                 <textarea
                   value={newTask.description}
                   onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                   rows={3}
                   placeholder="Beschreiben Sie die Aufgabe..."
                 />
@@ -1248,7 +1248,7 @@ export default function ProzessePage() {
                   type="text"
                   value={newTask.title || selectedNote.text.substring(0, 50) + (selectedNote.text.length > 50 ? '...' : '')}
                   onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
                 />
               </div>
               <div>
@@ -1256,7 +1256,7 @@ export default function ProzessePage() {
                 <textarea
                   value={newTask.description}
                   onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-gray-900"
                   rows={3}
                   placeholder="Weitere Details zur Aufgabe..."
                 />

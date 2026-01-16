@@ -172,7 +172,7 @@ export default function TaskManagement() {
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+          className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
         >
           <option value="">Alle Status</option>
           {statusColumns.map(status => (
@@ -182,7 +182,7 @@ export default function TaskManagement() {
         <select
           value={filterPriority}
           onChange={(e) => setFilterPriority(e.target.value)}
-          className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+          className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
         >
           <option value="">Alle Prioritäten</option>
           <option value="Niedrig">Niedrig</option>
@@ -269,7 +269,7 @@ export default function TaskManagement() {
                     <select
                       value={task.status}
                       onChange={(e) => handleMoveToStatus(task.id, e.target.value as Task['status'])}
-                      className="text-xs border border-gray-300 rounded px-2 py-1"
+                      className="text-xs border border-gray-300 rounded px-2 py-1 text-gray-900"
                     >
                       {statusColumns.map(s => (
                         <option key={s} value={s}>{s}</option>
@@ -322,7 +322,7 @@ export default function TaskManagement() {
                     type="text"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                     required
                   />
                 </div>
@@ -332,7 +332,7 @@ export default function TaskManagement() {
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                     rows={3}
                     required
                   />
@@ -343,7 +343,7 @@ export default function TaskManagement() {
                   <select
                     value={formData.priority}
                     onChange={(e) => setFormData({ ...formData, priority: e.target.value as Task['priority'] })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                     required
                   >
                     <option value="Niedrig">Niedrig</option>
@@ -374,7 +374,7 @@ export default function TaskManagement() {
                     type="date"
                     value={formData.dueDate}
                     onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                     required
                   />
                 </div>
@@ -385,7 +385,7 @@ export default function TaskManagement() {
                     type="number"
                     value={formData.estimatedHours}
                     onChange={(e) => setFormData({ ...formData, estimatedHours: parseInt(e.target.value) || 0 })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                     min="0"
                     required
                   />
@@ -604,7 +604,7 @@ function TaskDetailModal({
                 <textarea
                   value={editedTask.description}
                   onChange={(e) => setEditedTask({ ...editedTask, description: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                   rows={3}
                 />
               </div>
@@ -619,7 +619,7 @@ function TaskDetailModal({
                   <select
                     value={editedTask.priority}
                     onChange={(e) => setEditedTask({ ...editedTask, priority: e.target.value as Task['priority'] })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                   >
                     <option value="Niedrig">Niedrig</option>
                     <option value="Normal">Normal</option>
@@ -655,7 +655,7 @@ function TaskDetailModal({
                     <textarea
                       value={editedTask.requiredInfo || ''}
                       onChange={(e) => setEditedTask({ ...editedTask, requiredInfo: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                       rows={3}
                       placeholder="Welche Informationen werden benötigt?"
                     />
@@ -665,7 +665,7 @@ function TaskDetailModal({
                     <textarea
                       value={editedTask.requiredCollaboration || ''}
                       onChange={(e) => setEditedTask({ ...editedTask, requiredCollaboration: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                       rows={3}
                       placeholder="Welche Mitarbeiter werden benötigt?"
                     />
@@ -675,7 +675,7 @@ function TaskDetailModal({
                     <textarea
                       value={editedTask.ideaCollection || ''}
                       onChange={(e) => setEditedTask({ ...editedTask, ideaCollection: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                       rows={3}
                       placeholder="Ideen und Vorschläge..."
                     />
@@ -685,7 +685,7 @@ function TaskDetailModal({
                     <textarea
                       value={editedTask.scheduling || ''}
                       onChange={(e) => setEditedTask({ ...editedTask, scheduling: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                       rows={3}
                       placeholder="Termine und Zeitplanung..."
                     />
@@ -820,7 +820,7 @@ function TaskDetailModal({
                     <textarea
                       value={editedTask.interimReport || ''}
                       onChange={(e) => setEditedTask({ ...editedTask, interimReport: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                       rows={5}
                       placeholder="Zwischenbericht erstellen..."
                     />
@@ -836,7 +836,7 @@ function TaskDetailModal({
                             e.target.value = ''
                           }
                         }}
-                        className="px-3 py-1 text-sm border border-gray-300 rounded-lg"
+                        className="px-3 py-1 text-sm border border-gray-300 rounded-lg text-gray-900"
                       >
                         <option value="">Freigabe anfordern...</option>
                         {mockDecisionMakers.map(dm => (
@@ -884,7 +884,7 @@ function TaskDetailModal({
                         <textarea
                           value={editedTask.finalReport || ''}
                           onChange={(e) => setEditedTask({ ...editedTask, finalReport: e.target.value })}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                           rows={5}
                           placeholder="Abschlussbericht schreiben..."
                         />
@@ -894,7 +894,7 @@ function TaskDetailModal({
                         <textarea
                           value={editedTask.summary || ''}
                           onChange={(e) => setEditedTask({ ...editedTask, summary: e.target.value })}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                           rows={3}
                           placeholder="Kurze Zusammenfassung..."
                         />
@@ -980,7 +980,7 @@ function TaskDetailModal({
                   <select
                     value={protocolForm.author}
                     onChange={(e) => setProtocolForm({ ...protocolForm, author: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                     required
                   >
                     <option value="">Bitte wählen</option>
@@ -995,7 +995,7 @@ function TaskDetailModal({
                   <textarea
                     value={protocolForm.content}
                     onChange={(e) => setProtocolForm({ ...protocolForm, content: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                     rows={10}
                     placeholder="Geben Sie hier den Protokoll-Inhalt ein..."
                     required
@@ -1051,7 +1051,7 @@ function TaskDetailModal({
                     type="text"
                     value={meetingProtocolForm.title}
                     onChange={(e) => setMeetingProtocolForm({ ...meetingProtocolForm, title: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                     placeholder="z.B. Projektbesprechung Q1 2026"
                     required
                   />
@@ -1062,7 +1062,7 @@ function TaskDetailModal({
                   <textarea
                     value={meetingProtocolForm.content}
                     onChange={(e) => setMeetingProtocolForm({ ...meetingProtocolForm, content: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                     rows={10}
                     placeholder="Geben Sie hier den Besprechungsprotokoll-Inhalt ein..."
                     required

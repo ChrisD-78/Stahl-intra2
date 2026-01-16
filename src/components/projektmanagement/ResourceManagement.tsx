@@ -362,7 +362,7 @@ export default function ResourceManagement() {
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-900"
                     placeholder={formData.type === 'Mitarbeiter' ? 'z.B. Max Mustermann' : formData.type === 'Budget' ? 'z.B. IT-Budget Q1 2026' : 'z.B. Besprechungszimmer 1'}
                     required
                   />
@@ -377,7 +377,7 @@ export default function ResourceManagement() {
                       type: e.target.value as Resource['type'],
                       materialType: e.target.value !== 'Material' ? '' : formData.materialType
                     })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-900"
                     required
                   >
                     <option value="Mitarbeiter">Mitarbeiter</option>
@@ -392,7 +392,7 @@ export default function ResourceManagement() {
                     <select
                       value={formData.materialType}
                       onChange={(e) => setFormData({ ...formData, materialType: e.target.value })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-900"
                       required
                     >
                       <option value="">Bitte wählen</option>
@@ -413,7 +413,7 @@ export default function ResourceManagement() {
                     type="number"
                     value={formData.capacity || ''}
                     onChange={(e) => setFormData({ ...formData, capacity: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-900"
                     placeholder={formData.type === 'Mitarbeiter' ? 'z.B. 40' : formData.type === 'Budget' ? 'z.B. 50000' : 'z.B. 10'}
                     min="0"
                     step={formData.type === 'Budget' ? '100' : '1'}
@@ -431,7 +431,7 @@ export default function ResourceManagement() {
                   <select
                     value={formData.project}
                     onChange={(e) => setFormData({ ...formData, project: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-900"
                     required
                   >
                     <option value="">Bitte wählen</option>
