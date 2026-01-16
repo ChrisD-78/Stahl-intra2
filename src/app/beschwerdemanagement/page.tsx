@@ -918,7 +918,7 @@ export default function BeschwerdemanagementPage() {
                 <button
                   onClick={() => {
                     setShowAddUserModal(false)
-                    setNewUserName('')
+                    setNewUser({ name: '', email: '' })
                   }}
                   className="text-white hover:text-gray-200 p-2 hover:bg-white/10 rounded-lg"
                 >
