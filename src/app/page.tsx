@@ -305,6 +305,9 @@ export default function Dashboard() {
   }, [])
 
   const addNewInfo = async (title: string, content: string, pdfFile?: File, isPopup?: boolean) => {
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/13801e90-eb09-48f6-afc0-3617c2e551bb',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/page.tsx:addNewInfo:entry',message:'addNewInfo called',data:{title,contentLength:content.length,hasPdf:!!pdfFile,isPopup},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+    // #endregion
     const optimistic: InfoItem = {
       id: `tmp_${Date.now()}`,
       title,
@@ -317,9 +320,18 @@ export default function Dashboard() {
     try {
       let publicUrl: string | undefined
       if (pdfFile) {
+        // #region agent log
+        fetch('http://127.0.0.1:7243/ingest/13801e90-eb09-48f6-afc0-3617c2e551bb',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/page.tsx:addNewInfo:before-upload',message:'Before PDF upload',data:{pdfFileName:pdfFile.name},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+        // #endregion
         const up = await uploadInfoPdf(pdfFile)
         publicUrl = up.publicUrl
+        // #region agent log
+        fetch('http://127.0.0.1:7243/ingest/13801e90-eb09-48f6-afc0-3617c2e551bb',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/page.tsx:addNewInfo:after-upload',message:'After PDF upload',data:{publicUrl},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+        // #endregion
       }
+      // #region agent log
+      fetch('http://127.0.0.1:7243/ingest/13801e90-eb09-48f6-afc0-3617c2e551bb',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/page.tsx:addNewInfo:before-create',message:'Before createDashboardInfo call',data:{title,contentLength:content.length,pdf_name:pdfFile?.name,pdf_url:publicUrl,is_popup:isPopup},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+      // #endregion
       await createDashboardInfo({
         title,
         content,
@@ -328,7 +340,13 @@ export default function Dashboard() {
         pdf_url: publicUrl,
         is_popup: isPopup || false
       })
+      // #region agent log
+      fetch('http://127.0.0.1:7243/ingest/13801e90-eb09-48f6-afc0-3617c2e551bb',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/page.tsx:addNewInfo:after-create',message:'After createDashboardInfo call',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+      // #endregion
       const fresh = await getDashboardInfos()
+      // #region agent log
+      fetch('http://127.0.0.1:7243/ingest/13801e90-eb09-48f6-afc0-3617c2e551bb',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/page.tsx:addNewInfo:after-refresh',message:'After getDashboardInfos refresh',data:{freshCount:fresh.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+      // #endregion
       const mapped: InfoItem[] = fresh.map((r: DashboardInfoRecord) => ({
         id: r.id as string,
         title: r.title,
@@ -339,6 +357,9 @@ export default function Dashboard() {
       }))
       setCurrentInfos(mapped)
     } catch (e) {
+      // #region agent log
+      fetch('http://127.0.0.1:7243/ingest/13801e90-eb09-48f6-afc0-3617c2e551bb',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'app/page.tsx:addNewInfo:error',message:'addNewInfo error occurred',data:{error:String(e),errorStack:e instanceof Error ? e.stack : 'no stack'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+      // #endregion
       console.error('Create dashboard info failed', e)
       setCurrentInfos(prev => prev.filter(i => i.id !== optimistic.id))
       alert('Information konnte nicht gespeichert werden.')

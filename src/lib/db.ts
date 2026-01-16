@@ -193,17 +193,30 @@ export async function getDashboardInfos(): Promise<DashboardInfoRecord[]> {
 }
 
 export async function createDashboardInfo(info: Omit<DashboardInfoRecord, 'id' | 'created_at'>) {
+  // #region agent log
+  fetch('http://127.0.0.1:7243/ingest/13801e90-eb09-48f6-afc0-3617c2e551bb',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/db.ts:createDashboardInfo:entry',message:'createDashboardInfo called',data:{title:info.title,hasContent:!!info.content},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+  // #endregion
   const response = await fetch('/api/dashboard-infos', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(info)
   })
+  // #region agent log
+  fetch('http://127.0.0.1:7243/ingest/13801e90-eb09-48f6-afc0-3617c2e551bb',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/db.ts:createDashboardInfo:response',message:'API response received',data:{status:response.status,statusText:response.statusText,ok:response.ok},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+  // #endregion
   if (!response.ok) {
     const error = await response.json()
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/13801e90-eb09-48f6-afc0-3617c2e551bb',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/db.ts:createDashboardInfo:error',message:'API error response',data:{error,status:response.status},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+    // #endregion
     console.error('Failed to create dashboard info:', error)
     throw new Error('Failed to create dashboard info')
   }
-  return response.json()
+  const result = await response.json()
+  // #region agent log
+  fetch('http://127.0.0.1:7243/ingest/13801e90-eb09-48f6-afc0-3617c2e551bb',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lib/db.ts:createDashboardInfo:success',message:'createDashboardInfo success',data:{resultId:result.id,resultTitle:result.title},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+  // #endregion
+  return result
 }
 
 export async function deleteDashboardInfo(id: string) {

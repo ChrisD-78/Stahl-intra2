@@ -1,39 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server'
+// #region agent log
+import { query } from '@/lib/database'
+import { writeFileSync, appendFileSync } from 'fs'
+import { join } from 'path'
 
-// DATENBANKVERBINDUNG DEAKTIVIERT - Mock-Daten für Entwicklung
+const logPath = join(process.cwd(), '.cursor', 'debug.log')
+function logServer(location: string, message: string, data: any, hypothesisId: string) {
+  try {
+    const logEntry = JSON.stringify({location,message,data,timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId}) + '\n'
+    appendFileSync(logPath, logEntry, 'utf8')
+  } catch (e) {}
+}
+
+// #endregion
 // GET all dashboard infos
 export async function GET() {
+  // #region agent log
+  logServer('api/dashboard-infos/route.ts:GET:entry', 'GET dashboard infos called', {}, 'A')
+  // #endregion
   try {
-    // Mock-Daten (später durch echte Datenbank ersetzen)
-    const mockInfos = [
-      {
-        id: 'neujahrsgruss-2026',
-        title: 'Neujahrsgruß 2026',
-        content: `Liebe Mitarbeiterinnen und Mitarbeiter der Stadtholding Landau,
-
-das Jahr 2025 liegt hinter uns – ein Jahr voller Herausforderungen, Projekte und gemeinsamer Erfolge. Gemeinsam haben wir viel erreicht und unsere Stadt ein Stück weitergebracht. Dafür gebührt Ihnen allen ein herzliches Dankeschön!
-
-Ihr Engagement, Ihre Kompetenz und Ihr Einsatz sind das Fundament unserer Arbeit. Auch in herausfordernden Zeiten haben Sie bewiesen, dass wir als Team gemeinsam Lösungen finden und Ziele erreichen können.
-
-Für das neue Jahr 2026 wünsche ich Ihnen persönlich und beruflich alles Gute. Möge es ein Jahr voller Gesundheit, Zufriedenheit und positiver Erlebnisse werden. Lassen Sie uns gemeinsam mit Energie und Zuversicht die Aufgaben angehen, die vor uns liegen.
-
-Ich freue mich auf die weitere Zusammenarbeit mit Ihnen und darauf, auch im neuen Jahr gemeinsam Erfolge zu feiern.
-
-Einen guten Start ins Jahr 2026!
-
-Mit herzlichen Grüßen`,
-        timestamp: new Date('2026-01-01').toISOString(),
-        pdf_name: null,
-        pdf_url: null,
-        is_popup: false,
-        created_at: new Date('2026-01-01').toISOString()
-      }
-    ]
-    return NextResponse.json(mockInfos)
+    // #region agent log
+    logServer('api/dashboard-infos/route.ts:GET:before-query', 'Before database query', {hasDatabaseUrl:!!process.env.DATABASE_URL}, 'A')
+    // #endregion
+    const result = await query(
+      'SELECT id, title, content, timestamp, pdf_name, pdf_url, is_popup, created_at FROM dashboard_infos ORDER BY created_at DESC'
+    )
+    // #region agent log
+    logServer('api/dashboard-infos/route.ts:GET:after-query', 'After database query', {rowCount:result.rowCount}, 'A')
+    // #endregion
+    return NextResponse.json(result.rows)
   } catch (error) {
+    // #region agent log
+    logServer('api/dashboard-infos/route.ts:GET:error', 'GET error occurred', {error:String(error),errorMessage:error instanceof Error ? error.message : 'unknown'}, 'B')
+    // #endregion
     console.error('Failed to fetch dashboard infos:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch dashboard infos' },
+      { error: 'Failed to fetch dashboard infos', details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     )
   }
@@ -41,27 +43,37 @@ Mit herzlichen Grüßen`,
 
 // POST create new dashboard info
 export async function POST(request: NextRequest) {
+  // #region agent log
+  logServer('api/dashboard-infos/route.ts:POST:entry', 'POST create dashboard info called', {}, 'C')
+  // #endregion
   try {
     const body = await request.json()
+    // #region agent log
+    logServer('api/dashboard-infos/route.ts:POST:body-parsed', 'Request body parsed', {title:body.title,hasContent:!!body.content,hasPdf:!!body.pdf_url,hasDatabaseUrl:!!process.env.DATABASE_URL}, 'C')
+    // #endregion
     const { title, content, timestamp, pdf_name, pdf_url, is_popup } = body
     
-    // Mock-Daten zurückgeben (später durch echte Datenbank ersetzen)
-    const mockResult = {
-      id: Date.now().toString(),
-      title,
-      content,
-      timestamp,
-      pdf_name: pdf_name || null,
-      pdf_url: pdf_url || null,
-      is_popup: is_popup || false,
-      created_at: new Date().toISOString()
-    }
+    // #region agent log
+    logServer('api/dashboard-infos/route.ts:POST:before-insert', 'Before database insert', {title,contentLength:content?.length,timestamp,pdf_name,pdf_url,is_popup}, 'D')
+    // #endregion
+    const result = await query(
+      `INSERT INTO dashboard_infos (title, content, timestamp, pdf_name, pdf_url, is_popup) 
+       VALUES ($1, $2, $3, $4, $5, $6) 
+       RETURNING id, title, content, timestamp, pdf_name, pdf_url, is_popup, created_at`,
+      [title, content, timestamp, pdf_name || null, pdf_url || null, is_popup || false]
+    )
+    // #region agent log
+    logServer('api/dashboard-infos/route.ts:POST:after-insert', 'After database insert', {rowCount:result.rowCount,insertedId:result.rows[0]?.id}, 'D')
+    // #endregion
     
-    return NextResponse.json(mockResult, { status: 201 })
+    return NextResponse.json(result.rows[0], { status: 201 })
   } catch (error) {
+    // #region agent log
+    logServer('api/dashboard-infos/route.ts:POST:error', 'POST error occurred', {error:String(error),errorMessage:error instanceof Error ? error.message : 'unknown',errorStack:error instanceof Error ? error.stack : 'no stack'}, 'B')
+    // #endregion
     console.error('Failed to create dashboard info:', error)
     return NextResponse.json(
-      { error: 'Failed to create dashboard info' },
+      { error: 'Failed to create dashboard info', details: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     )
   }
@@ -69,6 +81,9 @@ export async function POST(request: NextRequest) {
 
 // DELETE dashboard info
 export async function DELETE(request: NextRequest) {
+  // #region agent log
+  logServer('api/dashboard-infos/route.ts:DELETE:entry', 'DELETE dashboard info called', {}, 'A')
+  // #endregion
   try {
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
@@ -77,9 +92,18 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'ID is required' }, { status: 400 })
     }
 
-    // Mock-Löschung (später durch echte Datenbank ersetzen)
+    // #region agent log
+    logServer('api/dashboard-infos/route.ts:DELETE:before-delete', 'Before database delete', {id}, 'A')
+    // #endregion
+    await query('DELETE FROM dashboard_infos WHERE id = $1', [id])
+    // #region agent log
+    logServer('api/dashboard-infos/route.ts:DELETE:after-delete', 'After database delete', {id}, 'A')
+    // #endregion
     return NextResponse.json({ success: true })
   } catch (error) {
+    // #region agent log
+    logServer('api/dashboard-infos/route.ts:DELETE:error', 'DELETE error occurred', {error:String(error),errorMessage:error instanceof Error ? error.message : 'unknown'}, 'B')
+    // #endregion
     console.error('Failed to delete dashboard info:', error)
     return NextResponse.json(
       { error: 'Failed to delete dashboard info' },

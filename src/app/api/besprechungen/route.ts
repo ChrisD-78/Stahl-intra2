@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { query } from '@/lib/database'
 
 export interface Erledigungsvermerk {
   id: string
@@ -37,8 +38,58 @@ export interface Besprechung {
   aktualisiertAm: string
 }
 
-// Mock-Daten (später durch echte Datenbank ersetzen)
-let mockBesprechungen: Besprechung[] = []
+// Hilfsfunktion: Besprechung mit Punkten und Erledigungsvermerken laden
+async function loadBesprechungMitPunkten(besprechungId: string) {
+  // Lade Besprechung
+  const besprechungResult = await query(
+    `SELECT id, titel, bereich, datum, uhrzeit, ort, teilnehmer, protokoll, status, 
+            erstellt_von as "erstelltVon", 
+            erstellt_am as "erstelltAm", 
+            aktualisiert_am as "aktualisiertAm"
+     FROM besprechungen WHERE id = $1`,
+    [besprechungId]
+  )
+
+  if (besprechungResult.rows.length === 0) {
+    return null
+  }
+
+  const besprechung = besprechungResult.rows[0]
+
+  // Lade Besprechungspunkte
+  const punkteResult = await query(
+    `SELECT id, titel, beschreibung, verantwortlich, frist, prioritaet, status, notizen,
+            erstellt_von as "erstelltVon",
+            erstellt_am as "erstelltAm"
+     FROM besprechungspunkte 
+     WHERE besprechung_id = $1 
+     ORDER BY erstellt_am ASC`,
+    [besprechungId]
+  )
+
+  const punkte = await Promise.all(
+    punkteResult.rows.map(async (punkt) => {
+      // Lade Erledigungsvermerke für jeden Punkt
+      const vermerkeResult = await query(
+        `SELECT id, text, erstellt_von as "erstelltVon", erstellt_am as "erstelltAm"
+         FROM erledigungsvermerke 
+         WHERE besprechungspunkt_id = $1 
+         ORDER BY erstellt_am ASC`,
+        [punkt.id]
+      )
+
+      return {
+        ...punkt,
+        erledigungsvermerke: vermerkeResult.rows
+      }
+    })
+  )
+
+  return {
+    ...besprechung,
+    punkte
+  }
+}
 
 // GET - Alle Besprechungen abrufen
 export async function GET(request: NextRequest) {
@@ -47,7 +98,7 @@ export async function GET(request: NextRequest) {
     const id = searchParams.get('id')
 
     if (id) {
-      const besprechung = mockBesprechungen.find(b => b.id === id)
+      const besprechung = await loadBesprechungMitPunkten(id)
       if (!besprechung) {
         return NextResponse.json(
           { error: 'Besprechung nicht gefunden' },
@@ -57,11 +108,35 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(besprechung)
     }
 
-    return NextResponse.json(mockBesprechungen)
-  } catch (error) {
+    // Lade alle Besprechungen
+    const result = await query(
+      `SELECT id, titel, bereich, datum, uhrzeit, ort, teilnehmer, protokoll, status,
+              erstellt_von as "erstelltVon",
+              erstellt_am as "erstelltAm",
+              aktualisiert_am as "aktualisiertAm"
+       FROM besprechungen 
+       ORDER BY datum DESC, uhrzeit DESC`
+    )
+
+    // Lade Punkte für alle Besprechungen (vereinfacht, nur IDs)
+    const besprechungen = await Promise.all(
+      result.rows.map(async (besprechung) => {
+        const punkteCount = await query(
+          'SELECT COUNT(*) as count FROM besprechungspunkte WHERE besprechung_id = $1',
+          [besprechung.id]
+        )
+        return {
+          ...besprechung,
+          punkte: [] // Für Liste nicht alle Details laden
+        }
+      })
+    )
+
+    return NextResponse.json(besprechungen)
+  } catch (error: any) {
     console.error('Fehler beim Abrufen der Besprechungen:', error)
     return NextResponse.json(
-      { error: 'Fehler beim Abrufen der Besprechungen' },
+      { error: 'Fehler beim Abrufen der Besprechungen', details: error?.message },
       { status: 500 }
     )
   }
@@ -80,28 +155,36 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const neueBesprechung: Besprechung = {
-      id: Date.now().toString(),
-      titel,
-      bereich,
-      datum,
-      uhrzeit,
-      ort: ort || '',
-      teilnehmer: teilnehmer || [],
-      protokoll: '',
-      status: 'geplant',
-      punkte: [],
-      erstelltVon: erstelltVon || 'System',
-      erstelltAm: new Date().toISOString(),
-      aktualisiertAm: new Date().toISOString()
+    const result = await query(
+      `INSERT INTO besprechungen (titel, bereich, datum, uhrzeit, ort, teilnehmer, protokoll, status, erstellt_von)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       RETURNING id, titel, bereich, datum, uhrzeit, ort, teilnehmer, protokoll, status,
+                 erstellt_von as "erstelltVon",
+                 erstellt_am as "erstelltAm",
+                 aktualisiert_am as "aktualisiertAm"`,
+      [
+        titel,
+        bereich,
+        datum,
+        uhrzeit,
+        ort || null,
+        teilnehmer || [],
+        '',
+        'geplant',
+        erstelltVon || 'System'
+      ]
+    )
+
+    const neueBesprechung = {
+      ...result.rows[0],
+      punkte: []
     }
 
-    mockBesprechungen.push(neueBesprechung)
     return NextResponse.json(neueBesprechung, { status: 201 })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Fehler beim Erstellen der Besprechung:', error)
     return NextResponse.json(
-      { error: 'Fehler beim Erstellen der Besprechung' },
+      { error: 'Fehler beim Erstellen der Besprechung', details: error?.message },
       { status: 500 }
     )
   }
@@ -111,7 +194,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()
-    const { id, ...updates } = body
+    const { id, punkte, ...updates } = body
 
     if (!id) {
       return NextResponse.json(
@@ -120,25 +203,106 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    const index = mockBesprechungen.findIndex(b => b.id === id)
-    if (index === -1) {
+    // Aktualisiere Besprechung
+    const updateFields: string[] = []
+    const values: any[] = []
+    let paramIndex = 1
+
+    if (updates.titel !== undefined) {
+      updateFields.push(`titel = $${paramIndex++}`)
+      values.push(updates.titel)
+    }
+    if (updates.bereich !== undefined) {
+      updateFields.push(`bereich = $${paramIndex++}`)
+      values.push(updates.bereich)
+    }
+    if (updates.datum !== undefined) {
+      updateFields.push(`datum = $${paramIndex++}`)
+      values.push(updates.datum)
+    }
+    if (updates.uhrzeit !== undefined) {
+      updateFields.push(`uhrzeit = $${paramIndex++}`)
+      values.push(updates.uhrzeit)
+    }
+    if (updates.ort !== undefined) {
+      updateFields.push(`ort = $${paramIndex++}`)
+      values.push(updates.ort)
+    }
+    if (updates.teilnehmer !== undefined) {
+      updateFields.push(`teilnehmer = $${paramIndex++}`)
+      values.push(updates.teilnehmer)
+    }
+    if (updates.protokoll !== undefined) {
+      updateFields.push(`protokoll = $${paramIndex++}`)
+      values.push(updates.protokoll)
+    }
+    if (updates.status !== undefined) {
+      updateFields.push(`status = $${paramIndex++}`)
+      values.push(updates.status)
+    }
+
+    if (updateFields.length > 0) {
+      values.push(id)
+      await query(
+        `UPDATE besprechungen SET ${updateFields.join(', ')} WHERE id = $${paramIndex}`,
+        values
+      )
+    }
+
+    // Aktualisiere Punkte, falls vorhanden
+    if (punkte && Array.isArray(punkte)) {
+      // Lösche alte Punkte
+      await query('DELETE FROM besprechungspunkte WHERE besprechung_id = $1', [id])
+
+      // Füge neue Punkte ein
+      for (const punkt of punkte) {
+        const punktResult = await query(
+          `INSERT INTO besprechungspunkte 
+           (besprechung_id, titel, beschreibung, verantwortlich, frist, prioritaet, status, notizen, erstellt_von)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+           RETURNING id`,
+          [
+            id,
+            punkt.titel,
+            punkt.beschreibung || null,
+            punkt.verantwortlich || null,
+            punkt.frist || null,
+            punkt.prioritaet || null,
+            punkt.status || 'offen',
+            punkt.notizen || null,
+            punkt.erstelltVon || 'System'
+          ]
+        )
+
+        const punktId = punktResult.rows[0].id
+
+        // Füge Erledigungsvermerke ein, falls vorhanden
+        if (punkt.erledigungsvermerke && Array.isArray(punkt.erledigungsvermerke)) {
+          for (const vermerk of punkt.erledigungsvermerke) {
+            await query(
+              `INSERT INTO erledigungsvermerke (besprechungspunkt_id, text, erstellt_von)
+               VALUES ($1, $2, $3)`,
+              [punktId, vermerk.text, vermerk.erstelltVon || 'System']
+            )
+          }
+        }
+      }
+    }
+
+    // Lade aktualisierte Besprechung
+    const aktualisierteBesprechung = await loadBesprechungMitPunkten(id)
+    if (!aktualisierteBesprechung) {
       return NextResponse.json(
         { error: 'Besprechung nicht gefunden' },
         { status: 404 }
       )
     }
 
-    mockBesprechungen[index] = {
-      ...mockBesprechungen[index],
-      ...updates,
-      aktualisiertAm: new Date().toISOString()
-    }
-
-    return NextResponse.json(mockBesprechungen[index])
-  } catch (error) {
+    return NextResponse.json(aktualisierteBesprechung)
+  } catch (error: any) {
     console.error('Fehler beim Aktualisieren der Besprechung:', error)
     return NextResponse.json(
-      { error: 'Fehler beim Aktualisieren der Besprechung' },
+      { error: 'Fehler beim Aktualisieren der Besprechung', details: error?.message },
       { status: 500 }
     )
   }
@@ -157,20 +321,21 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    const index = mockBesprechungen.findIndex(b => b.id === id)
-    if (index === -1) {
+    // CASCADE löscht automatisch alle Punkte und Erledigungsvermerke
+    const result = await query('DELETE FROM besprechungen WHERE id = $1 RETURNING id', [id])
+
+    if (result.rows.length === 0) {
       return NextResponse.json(
         { error: 'Besprechung nicht gefunden' },
         { status: 404 }
       )
     }
 
-    mockBesprechungen.splice(index, 1)
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Fehler beim Löschen der Besprechung:', error)
     return NextResponse.json(
-      { error: 'Fehler beim Löschen der Besprechung' },
+      { error: 'Fehler beim Löschen der Besprechung', details: error?.message },
       { status: 500 }
     )
   }
