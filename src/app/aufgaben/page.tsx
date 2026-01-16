@@ -1300,7 +1300,7 @@ export default function Aufgaben() {
                     required
                     value={formData.bereich}
                     onChange={(e) => setFormData({ ...formData, bereich: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   >
                     <option value="">Bitte wählen</option>
                     {mockBereiche.map(bereich => (
@@ -1317,7 +1317,7 @@ export default function Aufgaben() {
                     required
                     value={formData.kategorie}
                     onChange={(e) => setFormData({ ...formData, kategorie: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   >
                     <option value="">Bitte wählen</option>
                     {mockKategorien.map(kategorie => (
@@ -1335,7 +1335,7 @@ export default function Aufgaben() {
                     required
                     value={formData.vereinbartAm}
                     onChange={(e) => setFormData({ ...formData, vereinbartAm: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   />
                         </div>
                         
@@ -1347,7 +1347,7 @@ export default function Aufgaben() {
                     required
                     value={formData.prioritaet}
                     onChange={(e) => setFormData({ ...formData, prioritaet: e.target.value as JourFixeEntry['prioritaet'] })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   >
                     {mockPrioritaeten.map(prioritaet => (
                       <option key={prioritaet} value={prioritaet}>{prioritaet}</option>
@@ -1363,7 +1363,7 @@ export default function Aufgaben() {
                     required
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value as JourFixeEntry['status'] })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   >
                     {mockStatus.map(status => (
                       <option key={status} value={status}>
@@ -1381,7 +1381,7 @@ export default function Aufgaben() {
                     required
                     value={formData.verantwortlich}
                     onChange={(e) => setFormData({ ...formData, verantwortlich: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   >
                     <option value="">Bitte wählen</option>
                     {mockUsers.map(user => (
@@ -1397,7 +1397,7 @@ export default function Aufgaben() {
                   <select
                     value={formData.beteiligt}
                     onChange={(e) => setFormData({ ...formData, beteiligt: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   >
                     <option value="">Keine</option>
                     {mockUsers.map(user => (
@@ -1414,7 +1414,7 @@ export default function Aufgaben() {
                     type="date"
                     value={formData.terminSoll}
                     onChange={(e) => setFormData({ ...formData, terminSoll: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   />
                           </div>
 
@@ -1426,7 +1426,7 @@ export default function Aufgaben() {
                     type="date"
                     value={formData.abschlussTermin}
                     onChange={(e) => setFormData({ ...formData, abschlussTermin: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   />
                       </div>
                     </div>
@@ -1440,7 +1440,7 @@ export default function Aufgaben() {
                   value={formData.aufgabenfeld}
                   onChange={(e) => setFormData({ ...formData, aufgabenfeld: e.target.value })}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   placeholder="Beschreiben Sie die Aufgabe, den Prozess oder die Ursache..."
                 />
               </div>
@@ -1453,7 +1453,7 @@ export default function Aufgaben() {
                   value={formData.klaerung}
                   onChange={(e) => setFormData({ ...formData, klaerung: e.target.value })}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   placeholder="Beschreiben Sie die Klärung oder Maßnahme..."
                 />
               </div>
@@ -1524,7 +1524,7 @@ export default function Aufgaben() {
                         setFormData({ ...formData, pdfUrl: '', pdfName: '' })
                       }
                     }}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900"
                   />
                   <p className="text-xs text-gray-500">Nur PDF-Dateien, max. 10 MB</p>
                 </div>
@@ -1662,7 +1662,7 @@ export default function Aufgaben() {
                     type="date"
                     value={pdfFilters.dateFrom}
                     onChange={(e) => setPdfFilters({ ...pdfFilters, dateFrom: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   />
                 </div>
 
@@ -1674,7 +1674,7 @@ export default function Aufgaben() {
                     type="date"
                     value={pdfFilters.dateTo}
                     onChange={(e) => setPdfFilters({ ...pdfFilters, dateTo: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   />
                 </div>
               </div>
@@ -1733,7 +1733,7 @@ export default function Aufgaben() {
                   value={emailAddress}
                   onChange={(e) => setEmailAddress(e.target.value)}
                   placeholder="z.B. beispiel@example.com"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   required
                 />
               </div>
