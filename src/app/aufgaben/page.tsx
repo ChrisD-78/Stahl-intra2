@@ -118,7 +118,7 @@ export default function Aufgaben() {
 
   const filteredEntries = entries.filter(entry => {
     const matchesBereich = !filterBereich || entry.bereich === filterBereich
-    const matchesKategorie = !filterKategorie || entry.kategorie === filterKategorie
+    const matchesKategorie = true // Kategorie-Filter entfernt
     const matchesStatus = !filterStatus || entry.status === filterStatus
     
     // Zusätzliche Filterung basierend auf activeFilter
@@ -148,10 +148,7 @@ export default function Aufgaben() {
         aValue = a.bereich
         bValue = b.bereich
         break
-      case 'kategorie':
-        aValue = a.kategorie
-        bValue = b.kategorie
-        break
+      // Kategorie-Sortierung entfernt
       case 'vereinbartAm':
         aValue = a.vereinbartAm ? new Date(a.vereinbartAm).getTime() : 0
         bValue = b.vereinbartAm ? new Date(b.vereinbartAm).getTime() : 0
@@ -242,7 +239,6 @@ export default function Aufgaben() {
     // Beschreibung zusammenstellen
     const description = [
       `Bereich: ${entry.bereich}`,
-      `Kategorie: ${entry.kategorie}`,
       `Vereinbart am: ${entry.vereinbartAm ? new Date(entry.vereinbartAm).toLocaleDateString('de-DE') : '-'}`,
       '',
       `Aufgabenfeld / Prozess / Ursache:`,
@@ -415,7 +411,6 @@ export default function Aufgaben() {
           // Beschreibung zusammenstellen
           const description = [
             `Bereich: ${formData.bereich}`,
-            `Kategorie: ${formData.kategorie}`,
             `Vereinbart am: ${formData.vereinbartAm ? new Date(formData.vereinbartAm).toLocaleDateString('de-DE') : '-'}`,
             '',
             `Aufgabenfeld / Prozess / Ursache:`,
@@ -645,7 +640,6 @@ export default function Aufgaben() {
     const tableRows = filteredEntries.map(entry => `
       <tr>
         <td style="padding:8px;border:1px solid #e5e7eb;font-size:11px;">${entry.bereich || '-'}</td>
-        <td style="padding:8px;border:1px solid #e5e7eb;font-size:11px;">${entry.kategorie || '-'}</td>
         <td style="padding:8px;border:1px solid #e5e7eb;font-size:11px;">${formatDate(entry.vereinbartAm)}</td>
         <td style="padding:8px;border:1px solid #e5e7eb;font-size:11px;">${entry.aufgabenfeld || '-'}</td>
         <td style="padding:8px;border:1px solid #e5e7eb;font-size:11px;">${entry.klaerung || '-'}</td>
@@ -732,7 +726,6 @@ export default function Aufgaben() {
             <thead>
               <tr>
                 <td>Bereich</td>
-                <td>Kategorie</td>
                 <td>vereinbart am</td>
                 <td>Aufgabenfeld / Prozess / Ursache</td>
                 <td>Klärung / Maßnahme</td>
@@ -1012,30 +1005,6 @@ export default function Aufgaben() {
                     </div>
                   </div>
 
-                  <div className="relative">
-                    <select
-                      value={filterKategorie}
-                      onChange={(e) => setFilterKategorie(e.target.value)}
-                      className="px-4 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white appearance-none cursor-pointer min-w-[150px]"
-                      style={{ color: filterKategorie ? '#111827' : '#6b7280' }}
-                    >
-                      <option value="" disabled style={{ display: 'none' }}>Alle Kategorien</option>
-                      <option value="">Alle Kategorien</option>
-                      {mockKategorien.map(kategorie => (
-                        <option key={kategorie} value={kategorie}>{kategorie}</option>
-                      ))}
-                    </select>
-                    {!filterKategorie && (
-                      <div className="absolute inset-0 flex items-center px-4 pointer-events-none text-gray-500 text-sm">
-                        Alle Kategorien
-                      </div>
-                    )}
-                    <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
-                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </div>
-                  </div>
 
                   <div className="relative">
                     <select
@@ -1065,7 +1034,7 @@ export default function Aufgaben() {
                   </div>
                 </div>
               </div>
-              {(activeFilter !== 'all' || filterBereich || filterKategorie || filterStatus) && (
+              {(activeFilter !== 'all' || filterBereich || filterStatus) && (
                 <div className="flex items-center space-x-2">
                   <span className="text-sm text-gray-500">Aktiver Filter:</span>
                   {activeFilter !== 'all' && (
@@ -1095,7 +1064,6 @@ export default function Aufgaben() {
                     onClick={() => {
                       setActiveFilter('all')
                       setFilterBereich('')
-                      setFilterKategorie('')
                       setFilterStatus('')
                     }}
                     className="text-sm text-blue-600 hover:text-blue-800 underline font-medium"
@@ -1118,17 +1086,6 @@ export default function Aufgaben() {
                   <div className="flex items-center gap-2">
                     Bereich
                     {sortColumn === 'bereich' && (
-                      <span>{sortDirection === 'asc' ? '↑' : '↓'}</span>
-                    )}
-                  </div>
-                </th>
-                <th 
-                  className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-blue-100 select-none"
-                  onClick={() => handleSort('kategorie')}
-                >
-                  <div className="flex items-center gap-2">
-                    Kategorie
-                    {sortColumn === 'kategorie' && (
                       <span>{sortDirection === 'asc' ? '↑' : '↓'}</span>
                     )}
                   </div>
@@ -1255,7 +1212,6 @@ export default function Aufgaben() {
                 sortedEntries.map((entry) => (
                   <tr key={entry.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{entry.bereich}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{entry.kategorie}</td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{formatDate(entry.vereinbartAm)}</td>
                     <td className="px-4 py-3 text-sm text-gray-900 max-w-xs">{entry.aufgabenfeld}</td>
                     <td className="px-4 py-3 text-sm text-gray-900 max-w-xs">{entry.klaerung}</td>
@@ -1348,22 +1304,6 @@ export default function Aufgaben() {
                   </select>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Kategorie *
-                  </label>
-                  <select
-                    required
-                    value={formData.kategorie}
-                    onChange={(e) => setFormData({ ...formData, kategorie: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                  >
-                    <option value="">Bitte wählen</option>
-                    {mockKategorien.map(kategorie => (
-                      <option key={kategorie} value={kategorie}>{kategorie}</option>
-                    ))}
-                  </select>
-                </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
