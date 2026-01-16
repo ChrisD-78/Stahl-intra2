@@ -800,10 +800,10 @@ export default function Aufgaben() {
       {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-xl p-4 lg:p-8 text-white">
         <h1 className="text-2xl lg:text-4xl font-bold mb-4 text-center">
-          Aufgaben
+          Jour fixe
         </h1>
         <p className="text-center text-white/90 text-lg">
-          Jour Fixe - To-Do-Liste: Protokollierung regelmäßiger Treffen und deren Aufgaben
+          Jour Fixe - To-Do-Liste: Protokollierung regelmäßiger Treffen und deren Einträge
         </p>
       </div>
 
