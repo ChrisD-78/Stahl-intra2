@@ -23,7 +23,7 @@ interface JourFixeEntry {
 }
 
 const mockBereiche = ['FZB', 'FB', 'FH', 'AK', 'BL Jour Fixe']
-const mockKategorien = ['Energie', 'Allgemein']
+// Kategorie entfernt
 const mockUsers = ['Drost', 'Klement', 'Hartmann', 'Müller', 'Schmidt', 'Weber']
 const mockPrioritaeten: JourFixeEntry['prioritaet'][] = ['Niedrig', 'Mittel', 'Hoch']
 const mockStatus: JourFixeEntry['status'][] = ['warte', 'in Arbeit', 'erledigt']
@@ -35,7 +35,7 @@ export default function Aufgaben() {
   const [showForm, setShowForm] = useState(false)
   const [editingEntry, setEditingEntry] = useState<JourFixeEntry | null>(null)
   const [filterBereich, setFilterBereich] = useState<string>('')
-  const [filterKategorie, setFilterKategorie] = useState<string>('')
+  // Kategorie-Filter entfernt
   const [filterStatus, setFilterStatus] = useState<string>('')
   const [activeFilter, setActiveFilter] = useState<'all' | 'overdue' | 'today' | 'open' | 'completed'>('all')
   const [entriesProcessed, setEntriesProcessed] = useState<Set<string>>(new Set())
@@ -133,7 +133,7 @@ export default function Aufgaben() {
       matchesActiveFilter = entry.status === 'erledigt'
     }
     
-    return matchesBereich && matchesKategorie && matchesStatus && matchesActiveFilter
+    return matchesBereich && matchesStatus && matchesActiveFilter
   })
 
   // Sortierung anwenden
