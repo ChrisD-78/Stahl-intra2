@@ -497,7 +497,7 @@ export default function MarketingPage() {
             <div className="flex items-center justify-between">
               <button
                 onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
-                className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-gray-900"
               >
                 ← Vorheriger Monat
               </button>
@@ -506,7 +506,7 @@ export default function MarketingPage() {
               </h3>
               <button
                 onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
-                className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors text-gray-900"
               >
                 Nächster Monat →
               </button>
