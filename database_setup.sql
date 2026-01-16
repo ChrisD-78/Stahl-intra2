@@ -320,7 +320,40 @@ CREATE TABLE IF NOT EXISTS jour_fixe_entries (
 );
 
 -- =====================================================
--- TEIL 5: BENUTZER-VERWALTUNG
+-- TEIL 5: BESCHWERDEMANAGEMENT
+-- =====================================================
+
+-- Beschwerden Tabelle
+CREATE TABLE IF NOT EXISTS complaints (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  description TEXT NOT NULL,
+  category VARCHAR(100) NOT NULL,
+  area VARCHAR(100) NOT NULL,
+  submitted_by VARCHAR(255) NOT NULL,
+  submitted_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  assigned_to VARCHAR(255),
+  status VARCHAR(50) DEFAULT 'Neu' CHECK (status IN ('Neu', 'Zugewiesen', 'In Bearbeitung', 'Beantwortet', 'Abgeschlossen')),
+  response_method VARCHAR(50) CHECK (response_method IN ('E-Mail', 'Telefon', 'Persönlich')),
+  response_date TIMESTAMP WITH TIME ZONE,
+  response_by VARCHAR(255),
+  response_text TEXT,
+  resolution TEXT,
+  resolved_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Beschwerden-Mitarbeiter Tabelle (für die Zuweisung)
+CREATE TABLE IF NOT EXISTS complaint_users (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- =====================================================
+-- TEIL 6: BENUTZER-VERWALTUNG
 -- =====================================================
 
 -- Users Table

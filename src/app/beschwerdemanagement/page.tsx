@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useAuth } from '@/components/AuthProvider'
 
 interface Complaint {
@@ -32,15 +32,37 @@ const areas = ['Festhalle', 'Altes Kaufhaus', 'LA OLA', 'Freibad', 'Verwaltung',
 
 export default function BeschwerdemanagementPage() {
   const { currentUser } = useAuth()
-  const [users, setUsers] = useState<User[]>([
-    { id: '1', name: 'Eva Klein', email: 'eva.klein@stadtholding.de' },
-    { id: '2', name: 'Jonas Meier', email: 'jonas.meier@stadtholding.de' },
-    { id: '3', name: 'Carla Nguyen', email: 'carla.nguyen@stadtholding.de' },
-    { id: '4', name: 'Felix Sturm', email: 'felix.sturm@stadtholding.de' },
-    { id: '5', name: 'Mara Schubert', email: 'mara.schubert@stadtholding.de' },
-    { id: '6', name: 'Leon Fuchs', email: 'leon.fuchs@stadtholding.de' }
-  ])
+  const [users, setUsers] = useState<User[]>([])
   const [complaints, setComplaints] = useState<Complaint[]>([])
+
+  // Load data from database
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        // Load complaints
+        const complaintsResponse = await fetch('/api/complaints')
+        if (complaintsResponse.ok) {
+          const complaintsData = await complaintsResponse.json()
+          setComplaints(complaintsData.map((c: any) => ({
+            ...c,
+            submittedAt: c.submittedAt || new Date().toISOString(),
+            responseDate: c.responseDate || undefined,
+            resolvedAt: c.resolvedAt || undefined
+          })))
+        }
+
+        // Load users
+        const usersResponse = await fetch('/api/complaint-users')
+        if (usersResponse.ok) {
+          const usersData = await usersResponse.json()
+          setUsers(usersData)
+        }
+      } catch (error) {
+        console.error('Failed to load data:', error)
+      }
+    }
+    loadData()
+  }, [])
   const [showForm, setShowForm] = useState(false)
   const [showResponseForm, setShowResponseForm] = useState(false)
   const [showAnalysis, setShowAnalysis] = useState(false)
@@ -63,38 +85,52 @@ export default function BeschwerdemanagementPage() {
     resolution: ''
   })
 
-  const handleCreateComplaint = (e: React.FormEvent) => {
+  const handleCreateComplaint = async (e: React.FormEvent) => {
     e.preventDefault()
-    const newComplaint: Complaint = {
-      id: Date.now().toString(),
-      title: formData.title,
-      description: formData.description,
-      category: formData.category,
-      area: formData.area,
-      submittedBy: currentUser || 'Unbekannt',
-      submittedAt: new Date().toISOString(),
-      assignedTo: formData.assignedTo,
-      status: 'Zugewiesen'
+    try {
+      const response = await fetch('/api/complaints', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: formData.title,
+          description: formData.description,
+          category: formData.category,
+          area: formData.area,
+          submittedBy: currentUser || 'Unbekannt',
+          assignedTo: formData.assignedTo
+        })
+      })
+      if (!response.ok) throw new Error('Failed to create complaint')
+      const newComplaint = await response.json()
+      setComplaints([...complaints, {
+        ...newComplaint,
+        submittedAt: newComplaint.submittedAt || new Date().toISOString()
+      }])
+      
+      // E-Mail-Benachrichtigung senden
+      const assignedUser = users.find(u => u.name === formData.assignedTo)
+      if (assignedUser) {
+        sendNotificationEmail(assignedUser.email, {
+          ...newComplaint,
+          submittedAt: newComplaint.submittedAt || new Date().toISOString()
+        })
+      }
+      
+      setShowForm(false)
+      setFormData({
+        title: '',
+        description: '',
+        category: '',
+        area: '',
+        assignedTo: ''
+      })
+    } catch (error) {
+      console.error('Failed to create complaint:', error)
+      alert('Fehler beim Erstellen der Beschwerde. Bitte versuchen Sie es erneut.')
     }
-    setComplaints([...complaints, newComplaint])
-    
-    // E-Mail-Benachrichtigung senden
-    const assignedUser = users.find(u => u.name === formData.assignedTo)
-    if (assignedUser) {
-      sendNotificationEmail(assignedUser.email, newComplaint)
-    }
-    
-    setShowForm(false)
-    setFormData({
-      title: '',
-      description: '',
-      category: '',
-      area: '',
-      assignedTo: ''
-    })
   }
 
-  const handleAddUser = (e: React.FormEvent) => {
+  const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault()
     const trimmedName = newUser.name.trim()
     const trimmedEmail = newUser.email.trim()
@@ -122,21 +158,39 @@ export default function BeschwerdemanagementPage() {
       return
     }
 
-    const newUserObj: User = {
-      id: Date.now().toString(),
-      name: trimmedName,
-      email: trimmedEmail
+    try {
+      const response = await fetch('/api/complaint-users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: trimmedName,
+          email: trimmedEmail
+        })
+      })
+      if (!response.ok) throw new Error('Failed to create user')
+      const newUserObj = await response.json()
+      setUsers([...users, newUserObj])
+      setNewUser({ name: '', email: '' })
+      setShowAddUserModal(false)
+    } catch (error) {
+      console.error('Failed to create user:', error)
+      alert('Fehler beim Hinzufügen des Mitarbeiters. Bitte versuchen Sie es erneut.')
     }
-    
-    setUsers([...users, newUserObj])
-    setNewUser({ name: '', email: '' })
-    setShowAddUserModal(false)
   }
 
-  const handleDeleteUser = (userId: string) => {
+  const handleDeleteUser = async (userId: string) => {
     const user = users.find(u => u.id === userId)
     if (user && confirm(`Möchten Sie "${user.name}" wirklich entfernen?`)) {
-      setUsers(users.filter(u => u.id !== userId))
+      try {
+        const response = await fetch(`/api/complaint-users?id=${userId}`, {
+          method: 'DELETE'
+        })
+        if (!response.ok) throw new Error('Failed to delete user')
+        setUsers(users.filter(u => u.id !== userId))
+      } catch (error) {
+        console.error('Failed to delete user:', error)
+        alert('Fehler beim Löschen des Mitarbeiters. Bitte versuchen Sie es erneut.')
+      }
     }
   }
 
@@ -150,22 +204,36 @@ export default function BeschwerdemanagementPage() {
     alert(`E-Mail-Benachrichtigung würde gesendet werden an: ${userEmail}\n\nBetreff: Neue Beschwerde zugewiesen: ${complaint.title}`)
   }
 
-  const handleAssign = (complaintId: string, assignedTo: string) => {
-    const complaint = complaints.find(c => c.id === complaintId)
-    if (complaint) {
-      const updatedComplaints = complaints.map(c => 
-        c.id === complaintId ? { ...c, assignedTo, status: 'Zugewiesen' } : c
-      )
-      setComplaints(updatedComplaints)
+  const handleAssign = async (complaintId: string, assignedTo: string) => {
+    try {
+      const response = await fetch(`/api/complaints/${complaintId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          assignedTo,
+          status: 'Zugewiesen'
+        })
+      })
+      if (!response.ok) throw new Error('Failed to assign complaint')
+      const updatedComplaint = await response.json()
+      setComplaints(complaints.map(c => 
+        c.id === complaintId ? {
+          ...updatedComplaint,
+          submittedAt: updatedComplaint.submittedAt || c.submittedAt
+        } : c
+      ))
       
       // E-Mail-Benachrichtigung senden
       const assignedUser = users.find(u => u.name === assignedTo)
       if (assignedUser) {
-        const updatedComplaint = updatedComplaints.find(c => c.id === complaintId)
-        if (updatedComplaint) {
-          sendNotificationEmail(assignedUser.email, updatedComplaint)
-        }
+        sendNotificationEmail(assignedUser.email, {
+          ...updatedComplaint,
+          submittedAt: updatedComplaint.submittedAt || new Date().toISOString()
+        })
       }
+    } catch (error) {
+      console.error('Failed to assign complaint:', error)
+      alert('Fehler beim Zuweisen der Beschwerde. Bitte versuchen Sie es erneut.')
     }
   }
 
@@ -179,30 +247,39 @@ export default function BeschwerdemanagementPage() {
     setShowResponseForm(true)
   }
 
-  const handleSubmitResponse = (e: React.FormEvent) => {
+  const handleSubmitResponse = async (e: React.FormEvent) => {
     e.preventDefault()
     if (selectedComplaint) {
-      const updatedComplaint: Complaint = {
-        ...selectedComplaint,
-        status: 'Beantwortet',
-        responseMethod: responseData.responseMethod,
-        responseText: responseData.responseText,
-        resolution: responseData.resolution,
-        responseDate: new Date().toISOString(),
-        responseBy: currentUser || 'Unbekannt',
-        resolvedAt: responseData.resolution ? new Date().toISOString() : undefined
+      try {
+        const status = responseData.resolution ? 'Abgeschlossen' : 'Beantwortet'
+        const response = await fetch(`/api/complaints/${selectedComplaint.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            status,
+            responseMethod: responseData.responseMethod,
+            responseText: responseData.responseText,
+            resolution: responseData.resolution,
+            responseBy: currentUser || 'Unbekannt'
+          })
+        })
+        if (!response.ok) throw new Error('Failed to update complaint')
+        const updatedComplaint = await response.json()
+        setComplaints(complaints.map(c => c.id === selectedComplaint.id ? {
+          ...updatedComplaint,
+          submittedAt: updatedComplaint.submittedAt || c.submittedAt
+        } : c))
+        setShowResponseForm(false)
+        setSelectedComplaint(null)
+        setResponseData({
+          responseMethod: 'E-Mail',
+          responseText: '',
+          resolution: ''
+        })
+      } catch (error) {
+        console.error('Failed to submit response:', error)
+        alert('Fehler beim Speichern der Antwort. Bitte versuchen Sie es erneut.')
       }
-      if (responseData.resolution) {
-        updatedComplaint.status = 'Abgeschlossen'
-      }
-      setComplaints(complaints.map(c => c.id === selectedComplaint.id ? updatedComplaint : c))
-      setShowResponseForm(false)
-      setSelectedComplaint(null)
-      setResponseData({
-        responseMethod: 'E-Mail',
-        responseText: '',
-        resolution: ''
-      })
     }
   }
 
@@ -347,7 +424,7 @@ export default function BeschwerdemanagementPage() {
                               handleAssign(complaint.id, e.target.value)
                             }
                           }}
-                          className="text-xs border border-gray-300 rounded px-2 py-1"
+                          className="text-xs border border-gray-300 rounded px-2 py-1 text-gray-900"
                         >
                           <option value="">Zuweisen...</option>
                           {users.map(user => (
@@ -633,7 +710,7 @@ export default function BeschwerdemanagementPage() {
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                   required
                 />
               </div>
@@ -643,7 +720,7 @@ export default function BeschwerdemanagementPage() {
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                   rows={4}
                   required
                 />
@@ -655,7 +732,7 @@ export default function BeschwerdemanagementPage() {
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                     required
                   >
                     <option value="">Bitte wählen</option>
@@ -670,7 +747,7 @@ export default function BeschwerdemanagementPage() {
                   <select
                     value={formData.area}
                     onChange={(e) => setFormData({ ...formData, area: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                     required
                   >
                     <option value="">Bitte wählen</option>
@@ -695,7 +772,7 @@ export default function BeschwerdemanagementPage() {
                   <select
                     value={formData.assignedTo}
                     onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                     required
                   >
                     <option value="">Bitte wählen</option>
@@ -762,7 +839,7 @@ export default function BeschwerdemanagementPage() {
                   <select
                     value={responseData.responseMethod}
                     onChange={(e) => setResponseData({ ...responseData, responseMethod: e.target.value as Complaint['responseMethod'] })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                     required
                   >
                     <option value="E-Mail">E-Mail</option>
@@ -776,7 +853,7 @@ export default function BeschwerdemanagementPage() {
                   <textarea
                     value={responseData.responseText}
                     onChange={(e) => setResponseData({ ...responseData, responseText: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                     rows={6}
                     placeholder="Schreiben Sie hier Ihre Antwort auf die Beschwerde..."
                     required
@@ -788,7 +865,7 @@ export default function BeschwerdemanagementPage() {
                   <textarea
                     value={responseData.resolution}
                     onChange={(e) => setResponseData({ ...responseData, resolution: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                     rows={3}
                     placeholder="Beschreiben Sie, wie die Beschwerde behoben wurde..."
                   />
@@ -857,7 +934,7 @@ export default function BeschwerdemanagementPage() {
                   type="text"
                   value={newUser.name}
                   onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                   placeholder="z.B. Max Mustermann"
                   required
                 />
@@ -869,7 +946,7 @@ export default function BeschwerdemanagementPage() {
                   type="email"
                   value={newUser.email}
                   onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
                   placeholder="z.B. max.mustermann@stadtholding.de"
                   required
                 />
