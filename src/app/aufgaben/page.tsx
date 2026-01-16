@@ -30,38 +30,7 @@ const mockStatus: JourFixeEntry['status'][] = ['warte', 'in Arbeit', 'erledigt']
 
 export default function Aufgaben() {
   const { addTask, tasks } = useTasks()
-  const [entries, setEntries] = useState<JourFixeEntry[]>([
-    {
-      id: '1',
-      bereich: 'FZB',
-      kategorie: 'Energie',
-      vereinbartAm: '2014-12-18',
-      aufgabenfeld: 'EffCheck Umsetzung - Investiv',
-      klaerung: 'Doppeltüren im Eingangsbereich in Schleusen-Drehflügeltüren abändern...',
-      verantwortlich: 'Drost',
-      beteiligt: '',
-      terminSoll: '2020-01-01',
-      abschlussTermin: '',
-      prioritaet: 'Mittel',
-      status: 'warte',
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: '2',
-      bereich: 'FZB',
-      kategorie: 'Allgemein',
-      vereinbartAm: '2014-11-06',
-      aufgabenfeld: 'Zertifizierung Sauna',
-      klaerung: 'Einbau Tür Treppe zur Massageebene...',
-      verantwortlich: 'Drost',
-      beteiligt: 'Drost',
-      terminSoll: '2021',
-      abschlussTermin: '',
-      prioritaet: 'Mittel',
-      status: 'warte',
-      createdAt: new Date().toISOString()
-    }
-  ])
+  const [entries, setEntries] = useState<JourFixeEntry[]>([])
 
   const [showForm, setShowForm] = useState(false)
   const [editingEntry, setEditingEntry] = useState<JourFixeEntry | null>(null)
@@ -342,6 +311,21 @@ export default function Aufgaben() {
     console.log('Synchronisation abgeschlossen:', { syncedCount, skippedCount })
   }
 
+  // Lade Jour-fixe Einträge aus der Datenbank
+  useEffect(() => {
+    const loadEntries = async () => {
+      try {
+        const response = await fetch('/api/jour-fixe')
+        if (!response.ok) throw new Error('Failed to fetch entries')
+        const data = await response.json()
+        setEntries(data)
+      } catch (error) {
+        console.error('Failed to load jour-fixe entries:', error)
+      }
+    }
+    loadEntries()
+  }, [])
+
   // Beim Laden der Seite alle bestehenden Jour-fixe-Einträge in Aufgaben umwandeln
   useEffect(() => {
     // Warte bis tasks geladen sind (nur einmal beim ersten Laden)
@@ -360,7 +344,7 @@ export default function Aufgaben() {
     }, 2000) // Verzögerung, damit tasks geladen sind
 
     return () => clearTimeout(timer)
-  }, []) // Nur einmal beim Mount ausführen
+  }, [entries]) // Abhängig von entries, damit es nach dem Laden ausgeführt wird
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -385,20 +369,34 @@ export default function Aufgaben() {
     
     if (editingEntry) {
       // Update existing entry
-      setEntries(prev => prev.map(entry => 
-        entry.id === editingEntry.id 
-          ? { ...finalFormData, id: entry.id, createdAt: entry.createdAt }
-          : entry
-      ))
-      setEditingEntry(null)
+      try {
+        const response = await fetch(`/api/jour-fixe/${editingEntry.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(finalFormData)
+        })
+        if (!response.ok) throw new Error('Failed to update entry')
+        const updatedEntry = await response.json()
+        setEntries(prev => prev.map(entry => 
+          entry.id === editingEntry.id ? updatedEntry : entry
+        ))
+        setEditingEntry(null)
+      } catch (error) {
+        console.error('Failed to update entry:', error)
+        alert('Fehler beim Aktualisieren des Eintrags. Bitte versuchen Sie es erneut.')
+        return
+      }
     } else {
       // Create new entry
-      const newEntry: JourFixeEntry = {
-        ...finalFormData,
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString()
-      }
-      setEntries(prev => [...prev, newEntry])
+      try {
+        const response = await fetch('/api/jour-fixe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(finalFormData)
+        })
+        if (!response.ok) throw new Error('Failed to create entry')
+        const newEntry = await response.json()
+        setEntries(prev => [...prev, newEntry])
       
       // Automatisch eine Aufgabe aus dem Jour-fixe-Eintrag erstellen
       if (formData.aufgabenfeld && formData.verantwortlich) {
@@ -439,6 +437,10 @@ export default function Aufgaben() {
           dueDate: dueDate,
           assignedTo: formData.verantwortlich
         })
+      } catch (error) {
+        console.error('Failed to create entry:', error)
+        alert('Fehler beim Erstellen des Eintrags. Bitte versuchen Sie es erneut.')
+        return
       }
     }
     
@@ -488,24 +490,60 @@ export default function Aufgaben() {
     setShowForm(true)
   }
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm('Möchten Sie diesen Eintrag wirklich löschen?')) {
-      setEntries(prev => prev.filter(entry => entry.id !== id))
+      try {
+        const response = await fetch(`/api/jour-fixe?id=${id}`, {
+          method: 'DELETE'
+        })
+        if (!response.ok) throw new Error('Failed to delete entry')
+        setEntries(prev => prev.filter(entry => entry.id !== id))
+      } catch (error) {
+        console.error('Failed to delete entry:', error)
+        alert('Fehler beim Löschen des Eintrags. Bitte versuchen Sie es erneut.')
+      }
     }
   }
 
-  const handleStatusChange = (id: string, newStatus: JourFixeEntry['status']) => {
-    setEntries(prev => prev.map(entry => {
-      if (entry.id === id) {
-        const updated = { ...entry, status: newStatus }
-        // Wenn auf "erledigt" gesetzt, automatisch Abschlusstermin setzen falls leer
-        if (newStatus === 'erledigt' && !updated.abschlussTermin) {
-          updated.abschlussTermin = new Date().toISOString().split('T')[0]
-        }
-        return updated
-      }
-      return entry
-    }))
+  const handleStatusChange = async (id: string, newStatus: JourFixeEntry['status']) => {
+    const entry = entries.find(e => e.id === id)
+    if (!entry) return
+
+    const updated = { ...entry, status: newStatus }
+    // Wenn auf "erledigt" gesetzt, automatisch Abschlusstermin setzen falls leer
+    if (newStatus === 'erledigt' && !updated.abschlussTermin) {
+      updated.abschlussTermin = new Date().toISOString().split('T')[0]
+    }
+
+    try {
+      const response = await fetch(`/api/jour-fixe/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          bereich: updated.bereich,
+          kategorie: updated.kategorie,
+          vereinbartAm: updated.vereinbartAm,
+          aufgabenfeld: updated.aufgabenfeld,
+          klaerung: updated.klaerung,
+          verantwortlich: updated.verantwortlich,
+          beteiligt: updated.beteiligt,
+          terminSoll: updated.terminSoll,
+          abschlussTermin: updated.abschlussTermin,
+          prioritaet: updated.prioritaet,
+          status: updated.status,
+          pdfUrl: updated.pdfUrl,
+          pdfName: updated.pdfName
+        })
+      })
+      if (!response.ok) throw new Error('Failed to update status')
+      const updatedEntry = await response.json()
+      setEntries(prev => prev.map(entry => 
+        entry.id === id ? updatedEntry : entry
+      ))
+    } catch (error) {
+      console.error('Failed to update status:', error)
+      alert('Fehler beim Aktualisieren des Status. Bitte versuchen Sie es erneut.')
+    }
   }
 
   const formatDate = (dateString: string) => {
