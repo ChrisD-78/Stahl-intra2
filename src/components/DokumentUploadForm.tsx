@@ -174,7 +174,7 @@ const DokumentUploadForm = ({ onUploadDocument }: DokumentUploadFormProps) => {
                   id="title"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   placeholder="z.B. Sicherheitsrichtlinien 2024"
                   required
                   autoFocus
@@ -190,7 +190,7 @@ const DokumentUploadForm = ({ onUploadDocument }: DokumentUploadFormProps) => {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   placeholder="Beschreibung des Dokuments..."
                   required
                 />
@@ -204,7 +204,7 @@ const DokumentUploadForm = ({ onUploadDocument }: DokumentUploadFormProps) => {
                   id="category"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                 >
                   <option value="Sicherheit">Sicherheit</option>
                   <option value="FAQ">FAQ</option>
@@ -221,7 +221,7 @@ const DokumentUploadForm = ({ onUploadDocument }: DokumentUploadFormProps) => {
                   id="tags"
                   value={tags}
                   onChange={(e) => setTags(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   placeholder="z.B. sicherheit, richtlinien, 2024"
                 />
               </div>
