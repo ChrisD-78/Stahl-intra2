@@ -397,46 +397,47 @@ export default function Aufgaben() {
         if (!response.ok) throw new Error('Failed to create entry')
         const newEntry = await response.json()
         setEntries(prev => [...prev, newEntry])
-      
-      // Automatisch eine Aufgabe aus dem Jour-fixe-Eintrag erstellen
-      if (formData.aufgabenfeld && formData.verantwortlich) {
-        // Priorität mappen (Jour-fixe verwendet: Niedrig, Mittel, Hoch)
-        // Aufgaben verwendet: Niedrig, Mittel, Hoch, Kritisch
-        const taskPriority = formData.prioritaet === 'Hoch' ? 'Hoch' : 
-                            formData.prioritaet === 'Mittel' ? 'Mittel' : 'Niedrig'
         
-        // Fälligkeitsdatum: verwende terminSoll, falls vorhanden, sonst 30 Tage in der Zukunft
-        const dueDate = formData.terminSoll || (() => {
-          const date = new Date()
-          date.setDate(date.getDate() + 30)
-          return date.toISOString().split('T')[0]
-        })()
-        
-        // Beschreibung zusammenstellen
-        const description = [
-          `Bereich: ${formData.bereich}`,
-          `Kategorie: ${formData.kategorie}`,
-          `Vereinbart am: ${formData.vereinbartAm ? new Date(formData.vereinbartAm).toLocaleDateString('de-DE') : '-'}`,
-          '',
-          `Aufgabenfeld / Prozess / Ursache:`,
-          formData.aufgabenfeld,
-          '',
-          formData.klaerung ? `Klärung / Maßnahme:\n${formData.klaerung}` : '',
-          formData.beteiligt ? `\nBeteiligt: ${formData.beteiligt}` : '',
-          '',
-          `[Erstellt aus Jour Fixe - To-Do-Liste]`
-        ].filter(Boolean).join('\n')
-        
-        // Aufgabe erstellen
-        addTask({
-          title: formData.aufgabenfeld.length > 80 
-            ? formData.aufgabenfeld.substring(0, 77) + '...' 
-            : formData.aufgabenfeld,
-          description: description,
-          priority: taskPriority,
-          dueDate: dueDate,
-          assignedTo: formData.verantwortlich
-        })
+        // Automatisch eine Aufgabe aus dem Jour-fixe-Eintrag erstellen
+        if (formData.aufgabenfeld && formData.verantwortlich) {
+          // Priorität mappen (Jour-fixe verwendet: Niedrig, Mittel, Hoch)
+          // Aufgaben verwendet: Niedrig, Mittel, Hoch, Kritisch
+          const taskPriority = formData.prioritaet === 'Hoch' ? 'Hoch' : 
+                              formData.prioritaet === 'Mittel' ? 'Mittel' : 'Niedrig'
+          
+          // Fälligkeitsdatum: verwende terminSoll, falls vorhanden, sonst 30 Tage in der Zukunft
+          const dueDate = formData.terminSoll || (() => {
+            const date = new Date()
+            date.setDate(date.getDate() + 30)
+            return date.toISOString().split('T')[0]
+          })()
+          
+          // Beschreibung zusammenstellen
+          const description = [
+            `Bereich: ${formData.bereich}`,
+            `Kategorie: ${formData.kategorie}`,
+            `Vereinbart am: ${formData.vereinbartAm ? new Date(formData.vereinbartAm).toLocaleDateString('de-DE') : '-'}`,
+            '',
+            `Aufgabenfeld / Prozess / Ursache:`,
+            formData.aufgabenfeld,
+            '',
+            formData.klaerung ? `Klärung / Maßnahme:\n${formData.klaerung}` : '',
+            formData.beteiligt ? `\nBeteiligt: ${formData.beteiligt}` : '',
+            '',
+            `[Erstellt aus Jour Fixe - To-Do-Liste]`
+          ].filter(Boolean).join('\n')
+          
+          // Aufgabe erstellen
+          addTask({
+            title: formData.aufgabenfeld.length > 80 
+              ? formData.aufgabenfeld.substring(0, 77) + '...' 
+              : formData.aufgabenfeld,
+            description: description,
+            priority: taskPriority,
+            dueDate: dueDate,
+            assignedTo: formData.verantwortlich
+          })
+        }
       } catch (error) {
         console.error('Failed to create entry:', error)
         alert('Fehler beim Erstellen des Eintrags. Bitte versuchen Sie es erneut.')
