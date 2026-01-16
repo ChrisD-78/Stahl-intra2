@@ -88,201 +88,292 @@ export default function MarketingPage() {
   const mockUsers = ['Max Mustermann', 'Anna Schmidt', 'Tom Weber', 'Lisa Müller', 'Peter Klein']
   const mockRecipients = ['Marketing Team', 'Vertrieb', 'Management', 'Alle Mitarbeiter', 'Externe Partner']
 
-  // Load mock data
+  // Load data from API
   useEffect(() => {
-    const mockCampaigns: MarketingCampaign[] = [
-      {
-        id: '1',
-        title: 'Sommerferien-Kampagne',
-        description: 'Social Media Kampagne für Sommerangebote',
-        startDate: new Date('2025-06-01'),
-        endDate: new Date('2025-08-31'),
-        status: 'geplant',
-        types: ['social-media', 'print'],
-        location: 'freibad',
-        responsible: 'Anna Schmidt',
-        materials: ['poster-1', 'text-1']
-      },
-      {
-        id: '2',
-        title: 'Tag der offenen Tür',
-        description: 'Event-Marketing und Werbematerialien',
-        startDate: new Date('2025-07-15'),
-        endDate: new Date('2025-07-15'),
-        status: 'geplant',
-        types: ['event', 'print', 'email'],
-        location: 'festhalle',
-        responsible: 'Tom Weber',
-        materials: ['poster-2']
-      }
-    ]
+    const loadData = async () => {
+      try {
+        // Load campaigns
+        const campaignsResponse = await fetch('/api/marketing/campaigns')
+        if (campaignsResponse.ok) {
+          const campaignsData = await campaignsResponse.json()
+          setCampaigns(campaignsData.map((c: any) => ({
+            ...c,
+            startDate: new Date(c.startDate),
+            endDate: new Date(c.endDate)
+          })))
+        }
 
-    const mockTexts: MarketingText[] = [
-      {
-        id: 'text-1',
-        title: 'Facebook Post - Sommerangebot',
-        content: '🌞 Jetzt profitieren! Unsere Sommerangebote sind da. Entdecken Sie tolle Rabatte für die ganze Familie.',
-        type: 'social-media',
-        createdBy: 'Anna Schmidt',
-        createdAt: new Date('2025-05-15'),
-        status: 'freigegeben',
-        approvedBy: 'Max Mustermann',
-        approvedAt: new Date('2025-05-16')
-      },
-      {
-        id: 'text-2',
-        title: 'Newsletter Juni',
-        content: 'Liebe Kunden, der Juni bringt viele Neuigkeiten...',
-        type: 'email',
-        createdBy: 'Lisa Müller',
-        createdAt: new Date('2025-05-20'),
-        status: 'freigabe',
-        approvedBy: undefined
-      }
-    ]
+        // Load texts
+        const textsResponse = await fetch('/api/marketing/texts')
+        if (textsResponse.ok) {
+          const textsData = await textsResponse.json()
+          setTexts(textsData.map((t: any) => ({
+            ...t,
+            createdAt: new Date(t.createdAt),
+            approvedAt: t.approvedAt ? new Date(t.approvedAt) : undefined
+          })))
+        }
 
-    const mockPosters: MarketingPoster[] = [
-      {
-        id: 'poster-1',
-        title: 'Sommerangebote Plakat A1',
-        description: 'Hauptplakat für Sommerferien-Kampagne',
-        fileUrl: '/uploads/sommer-plakat.pdf',
-        fileName: 'sommer-plakat.pdf',
-        fileSize: '2.4 MB',
-        uploadedBy: 'Anna Schmidt',
-        uploadedAt: new Date('2025-05-10'),
-        status: 'freigegeben',
-        approvedBy: 'Max Mustermann',
-        sentTo: ['Marketing Team', 'Vertrieb'],
-        sentAt: new Date('2025-05-17')
-      },
-      {
-        id: 'poster-2',
-        title: 'Tag der offenen Tür Flyer',
-        description: 'Informations-Flyer für Event',
-        fileUrl: '/uploads/event-flyer.pdf',
-        fileName: 'event-flyer.pdf',
-        fileSize: '1.8 MB',
-        uploadedBy: 'Tom Weber',
-        uploadedAt: new Date('2025-05-18'),
-        status: 'freigabe'
+        // Load posters
+        const postersResponse = await fetch('/api/marketing/posters')
+        if (postersResponse.ok) {
+          const postersData = await postersResponse.json()
+          setPosters(postersData.map((p: any) => ({
+            ...p,
+            uploadedAt: new Date(p.uploadedAt),
+            sentAt: p.sentAt ? new Date(p.sentAt) : undefined
+          })))
+        }
+      } catch (error) {
+        console.error('Failed to load marketing data:', error)
       }
-    ]
-
-    setCampaigns(mockCampaigns)
-    setTexts(mockTexts)
-    setPosters(mockPosters)
+    }
+    loadData()
   }, [])
 
   // Campaign functions
-  const handleCreateCampaign = () => {
+  const handleCreateCampaign = async () => {
     if (!newCampaign.title || !newCampaign.startDate || !newCampaign.endDate || newCampaign.types.length === 0) return
 
-    const campaign: MarketingCampaign = {
-      id: `c-${Date.now()}`,
-      title: newCampaign.title,
-      description: newCampaign.description,
-      startDate: new Date(newCampaign.startDate),
-      endDate: new Date(newCampaign.endDate),
-      status: 'geplant',
-      types: newCampaign.types,
-      location: newCampaign.location,
-      responsible: currentUser || 'Unbekannt',
-      materials: []
+    try {
+      const response = await fetch('/api/marketing/campaigns', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: newCampaign.title,
+          description: newCampaign.description,
+          startDate: newCampaign.startDate,
+          endDate: newCampaign.endDate,
+          types: newCampaign.types,
+          location: newCampaign.location,
+          responsible: currentUser || 'Unbekannt',
+          materials: []
+        })
+      })
+      if (!response.ok) throw new Error('Failed to create campaign')
+      const campaign = await response.json()
+      setCampaigns([...campaigns, {
+        ...campaign,
+        startDate: new Date(campaign.startDate),
+        endDate: new Date(campaign.endDate)
+      }])
+      setShowNewCampaignModal(false)
+      setNewCampaign({ title: '', description: '', startDate: '', endDate: '', types: [], location: 'la-ola' })
+    } catch (error) {
+      console.error('Failed to create campaign:', error)
+      alert('Fehler beim Erstellen der Kampagne. Bitte versuchen Sie es erneut.')
     }
-
-    setCampaigns([...campaigns, campaign])
-    setShowNewCampaignModal(false)
-    setNewCampaign({ title: '', description: '', startDate: '', endDate: '', types: [], location: 'la-ola' })
   }
 
   // Text functions
-  const handleCreateText = () => {
+  const handleCreateText = async () => {
     if (!newText.title || !newText.content) return
 
-    const text: MarketingText = {
-      id: `t-${Date.now()}`,
-      title: newText.title,
-      content: newText.content,
-      type: newText.type,
-      createdBy: currentUser || 'Unbekannt',
-      createdAt: new Date(),
-      status: 'entwurf'
+    try {
+      const response = await fetch('/api/marketing/texts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: newText.title,
+          content: newText.content,
+          type: newText.type,
+          createdBy: currentUser || 'Unbekannt'
+        })
+      })
+      if (!response.ok) throw new Error('Failed to create text')
+      const text = await response.json()
+      setTexts([...texts, {
+        ...text,
+        createdAt: new Date(text.createdAt),
+        approvedAt: text.approvedAt ? new Date(text.approvedAt) : undefined
+      }])
+      setShowNewTextModal(false)
+      setNewText({ title: '', content: '', type: 'social-media' })
+    } catch (error) {
+      console.error('Failed to create text:', error)
+      alert('Fehler beim Erstellen des Textes. Bitte versuchen Sie es erneut.')
     }
-
-    setTexts([...texts, text])
-    setShowNewTextModal(false)
-    setNewText({ title: '', content: '', type: 'social-media' })
   }
 
-  const handleRequestTextApproval = (textId: string) => {
-    setTexts(texts.map(t => t.id === textId ? { ...t, status: 'freigabe' as const } : t))
+  const handleRequestTextApproval = async (textId: string) => {
+    try {
+      const response = await fetch(`/api/marketing/texts/${textId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'freigabe' })
+      })
+      if (!response.ok) throw new Error('Failed to request approval')
+      const updatedText = await response.json()
+      setTexts(texts.map(t => t.id === textId ? {
+        ...t,
+        ...updatedText,
+        createdAt: new Date(updatedText.createdAt),
+        approvedAt: updatedText.approvedAt ? new Date(updatedText.approvedAt) : undefined
+      } : t))
+    } catch (error) {
+      console.error('Failed to request approval:', error)
+      alert('Fehler beim Anfordern der Freigabe. Bitte versuchen Sie es erneut.')
+    }
   }
 
-  const handleApproveText = (textId: string) => {
-    setTexts(texts.map(t => t.id === textId ? { 
-      ...t, 
-      status: 'freigegeben' as const,
-      approvedBy: currentUser || 'Unbekannt',
-      approvedAt: new Date()
-    } : t))
+  const handleApproveText = async (textId: string) => {
+    try {
+      const response = await fetch(`/api/marketing/texts/${textId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          status: 'freigegeben',
+          approvedBy: currentUser || 'Unbekannt'
+        })
+      })
+      if (!response.ok) throw new Error('Failed to approve text')
+      const updatedText = await response.json()
+      setTexts(texts.map(t => t.id === textId ? {
+        ...t,
+        ...updatedText,
+        createdAt: new Date(updatedText.createdAt),
+        approvedAt: updatedText.approvedAt ? new Date(updatedText.approvedAt) : undefined
+      } : t))
+    } catch (error) {
+      console.error('Failed to approve text:', error)
+      alert('Fehler beim Freigeben des Textes. Bitte versuchen Sie es erneut.')
+    }
   }
 
   // Poster functions
-  const handleCreatePoster = () => {
+  const handleCreatePoster = async () => {
     if (!newPoster.title || !newPoster.file) return
 
-    const poster: MarketingPoster = {
-      id: `p-${Date.now()}`,
-      title: newPoster.title,
-      description: newPoster.description,
-      fileUrl: `/uploads/${newPoster.file.name}`,
-      fileName: newPoster.file.name,
-      fileSize: `${(newPoster.file.size / 1024 / 1024).toFixed(1)} MB`,
-      uploadedBy: currentUser || 'Unbekannt',
-      uploadedAt: new Date(),
-      status: 'entwurf'
+    try {
+      // Upload file first (using existing upload API)
+      const formData = new FormData()
+      formData.append('file', newPoster.file)
+      const uploadResponse = await fetch('/api/upload/pdf', {
+        method: 'POST',
+        body: formData
+      })
+      if (!uploadResponse.ok) throw new Error('Failed to upload file')
+      const uploadResult = await uploadResponse.json()
+
+      // Create poster record
+      const response = await fetch('/api/marketing/posters', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: newPoster.title,
+          description: newPoster.description,
+          fileUrl: uploadResult.url || uploadResult.publicUrl,
+          fileName: newPoster.file.name,
+          fileSize: `${(newPoster.file.size / 1024 / 1024).toFixed(1)} MB`,
+          uploadedBy: currentUser || 'Unbekannt'
+        })
+      })
+      if (!response.ok) throw new Error('Failed to create poster')
+      const poster = await response.json()
+      setPosters([...posters, {
+        ...poster,
+        uploadedAt: new Date(poster.uploadedAt),
+        sentAt: poster.sentAt ? new Date(poster.sentAt) : undefined
+      }])
+      setShowNewPosterModal(false)
+      setNewPoster({ title: '', description: '', file: null })
+    } catch (error) {
+      console.error('Failed to create poster:', error)
+      alert('Fehler beim Hochladen des Plakats. Bitte versuchen Sie es erneut.')
     }
-
-    setPosters([...posters, poster])
-    setShowNewPosterModal(false)
-    setNewPoster({ title: '', description: '', file: null })
   }
 
-  const handleRequestPosterApproval = (posterId: string) => {
-    setPosters(posters.map(p => p.id === posterId ? { ...p, status: 'freigabe' as const } : p))
+  const handleRequestPosterApproval = async (posterId: string) => {
+    try {
+      const response = await fetch(`/api/marketing/posters/${posterId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'freigabe' })
+      })
+      if (!response.ok) throw new Error('Failed to request approval')
+      const updatedPoster = await response.json()
+      setPosters(posters.map(p => p.id === posterId ? {
+        ...p,
+        ...updatedPoster,
+        uploadedAt: new Date(updatedPoster.uploadedAt),
+        sentAt: updatedPoster.sentAt ? new Date(updatedPoster.sentAt) : undefined
+      } : p))
+    } catch (error) {
+      console.error('Failed to request approval:', error)
+      alert('Fehler beim Anfordern der Freigabe. Bitte versuchen Sie es erneut.')
+    }
   }
 
-  const handleApprovePoster = (posterId: string) => {
-    setPosters(posters.map(p => p.id === posterId ? { 
-      ...p, 
-      status: 'freigegeben' as const,
-      approvedBy: currentUser || 'Unbekannt'
-    } : p))
-    setShowApprovalModal(false)
-    setSelectedItem(null)
+  const handleApprovePoster = async (posterId: string) => {
+    try {
+      const response = await fetch(`/api/marketing/posters/${posterId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          status: 'freigegeben',
+          approvedBy: currentUser || 'Unbekannt'
+        })
+      })
+      if (!response.ok) throw new Error('Failed to approve poster')
+      const updatedPoster = await response.json()
+      setPosters(posters.map(p => p.id === posterId ? {
+        ...p,
+        ...updatedPoster,
+        uploadedAt: new Date(updatedPoster.uploadedAt),
+        sentAt: updatedPoster.sentAt ? new Date(updatedPoster.sentAt) : undefined
+      } : p))
+      setShowApprovalModal(false)
+      setSelectedItem(null)
+    } catch (error) {
+      console.error('Failed to approve poster:', error)
+      alert('Fehler beim Freigeben des Plakats. Bitte versuchen Sie es erneut.')
+    }
   }
 
-  const handleSendMaterial = () => {
+  const handleSendMaterial = async () => {
     if (!selectedItem || sendTo.length === 0) return
 
-    if (selectedItem.type === 'poster') {
-      setPosters(posters.map(p => p.id === selectedItem.id ? {
-        ...p,
-        status: 'versendet' as const,
-        sentTo: sendTo,
-        sentAt: new Date()
-      } : p))
-    } else if (selectedItem.type === 'text') {
-      setTexts(texts.map(t => t.id === selectedItem.id ? {
-        ...t,
-        status: 'versendet' as const
-      } : t))
-    }
+    try {
+      if (selectedItem.type === 'poster') {
+        const response = await fetch(`/api/marketing/posters/${selectedItem.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            status: 'versendet',
+            sentTo: sendTo
+          })
+        })
+        if (!response.ok) throw new Error('Failed to send poster')
+        const updatedPoster = await response.json()
+        setPosters(posters.map(p => p.id === selectedItem.id ? {
+          ...p,
+          ...updatedPoster,
+          uploadedAt: new Date(updatedPoster.uploadedAt),
+          sentAt: updatedPoster.sentAt ? new Date(updatedPoster.sentAt) : undefined
+        } : p))
+      } else if (selectedItem.type === 'text') {
+        const response = await fetch(`/api/marketing/texts/${selectedItem.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'versendet' })
+        })
+        if (!response.ok) throw new Error('Failed to send text')
+        const updatedText = await response.json()
+        setTexts(texts.map(t => t.id === selectedItem.id ? {
+          ...t,
+          ...updatedText,
+          createdAt: new Date(updatedText.createdAt),
+          approvedAt: updatedText.approvedAt ? new Date(updatedText.approvedAt) : undefined
+        } : t))
+      }
 
-    setShowSendModal(false)
-    setSelectedItem(null)
-    setSendTo([])
+      setShowSendModal(false)
+      setSelectedItem(null)
+      setSendTo([])
+    } catch (error) {
+      console.error('Failed to send material:', error)
+      alert('Fehler beim Versenden des Materials. Bitte versuchen Sie es erneut.')
+    }
   }
 
   // Calendar functions
@@ -825,7 +916,7 @@ export default function MarketingPage() {
                   type="text"
                   value={newCampaign.title}
                   onChange={(e) => setNewCampaign({ ...newCampaign, title: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-gray-900"
                   placeholder="z.B. Sommerferien-Kampagne"
                 />
               </div>
@@ -834,7 +925,7 @@ export default function MarketingPage() {
                 <textarea
                   value={newCampaign.description}
                   onChange={(e) => setNewCampaign({ ...newCampaign, description: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-gray-900"
                   rows={3}
                   placeholder="Beschreibung der Kampagne..."
                 />
@@ -846,7 +937,7 @@ export default function MarketingPage() {
                     type="date"
                     value={newCampaign.startDate}
                     onChange={(e) => setNewCampaign({ ...newCampaign, startDate: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-gray-900"
                   />
                 </div>
                 <div>
@@ -855,7 +946,7 @@ export default function MarketingPage() {
                     type="date"
                     value={newCampaign.endDate}
                     onChange={(e) => setNewCampaign({ ...newCampaign, endDate: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-gray-900"
                   />
                 </div>
               </div>
@@ -899,7 +990,7 @@ export default function MarketingPage() {
                 <select
                   value={newCampaign.location}
                   onChange={(e) => setNewCampaign({ ...newCampaign, location: e.target.value as any })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-gray-900"
                 >
                   <option value="festhalle">Festhalle</option>
                   <option value="altes-kaufhaus">Altes Kaufhaus</option>
@@ -942,7 +1033,7 @@ export default function MarketingPage() {
                   type="text"
                   value={newText.title}
                   onChange={(e) => setNewText({ ...newText, title: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-gray-900"
                   placeholder="z.B. Facebook Post - Sommerangebot"
                 />
               </div>
@@ -951,7 +1042,7 @@ export default function MarketingPage() {
                 <textarea
                   value={newText.content}
                   onChange={(e) => setNewText({ ...newText, content: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-gray-900"
                   rows={6}
                   placeholder="Marketing-Text eingeben..."
                 />
@@ -961,7 +1052,7 @@ export default function MarketingPage() {
                 <select
                   value={newText.type}
                   onChange={(e) => setNewText({ ...newText, type: e.target.value as any })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-gray-900"
                 >
                   <option value="social-media">Social Media</option>
                   <option value="website">Website</option>
@@ -1004,7 +1095,7 @@ export default function MarketingPage() {
                   type="text"
                   value={newPoster.title}
                   onChange={(e) => setNewPoster({ ...newPoster, title: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-gray-900"
                   placeholder="z.B. Sommerangebote Plakat A1"
                 />
               </div>
@@ -1013,7 +1104,7 @@ export default function MarketingPage() {
                 <textarea
                   value={newPoster.description}
                   onChange={(e) => setNewPoster({ ...newPoster, description: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-gray-900"
                   rows={3}
                   placeholder="Beschreibung des Plakats..."
                 />
@@ -1024,7 +1115,7 @@ export default function MarketingPage() {
                   type="file"
                   accept=".pdf,.png,.jpg,.jpeg"
                   onChange={(e) => setNewPoster({ ...newPoster, file: e.target.files?.[0] || null })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-gray-900"
                 />
                 <p className="text-xs text-gray-500 mt-1">PDF, PNG oder JPG (max. 10 MB)</p>
               </div>

@@ -244,7 +244,59 @@ CREATE TABLE IF NOT EXISTS erledigungsvermerke (
 );
 
 -- =====================================================
--- TEIL 3: JOUR-FIXE EINTRÄGE
+-- TEIL 3: MARKETING
+-- =====================================================
+
+-- Marketing Kampagnen Tabelle
+CREATE TABLE IF NOT EXISTS marketing_campaigns (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  status VARCHAR(50) DEFAULT 'geplant' CHECK (status IN ('geplant', 'aktiv', 'abgeschlossen')),
+  types TEXT[] NOT NULL,
+  location VARCHAR(100) NOT NULL CHECK (location IN ('festhalle', 'altes-kaufhaus', 'la-ola', 'freibad')),
+  responsible VARCHAR(255) NOT NULL,
+  materials TEXT[],
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Marketing Texte Tabelle
+CREATE TABLE IF NOT EXISTS marketing_texts (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  content TEXT NOT NULL,
+  type VARCHAR(50) NOT NULL CHECK (type IN ('social-media', 'website', 'print', 'email')),
+  created_by VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  status VARCHAR(50) DEFAULT 'entwurf' CHECK (status IN ('entwurf', 'freigabe', 'freigegeben', 'versendet')),
+  approved_by VARCHAR(255),
+  approved_at TIMESTAMP WITH TIME ZONE,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Marketing Plakate Tabelle
+CREATE TABLE IF NOT EXISTS marketing_posters (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  file_url TEXT,
+  file_name VARCHAR(255),
+  file_size VARCHAR(50),
+  uploaded_by VARCHAR(255) NOT NULL,
+  uploaded_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  status VARCHAR(50) DEFAULT 'entwurf' CHECK (status IN ('entwurf', 'freigabe', 'freigegeben', 'versendet')),
+  approved_by VARCHAR(255),
+  sent_to TEXT[],
+  sent_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- =====================================================
+-- TEIL 4: JOUR-FIXE EINTRÄGE
 -- =====================================================
 
 -- Jour-fixe Einträge Tabelle
@@ -268,7 +320,7 @@ CREATE TABLE IF NOT EXISTS jour_fixe_entries (
 );
 
 -- =====================================================
--- TEIL 4: BENUTZER-VERWALTUNG
+-- TEIL 5: BENUTZER-VERWALTUNG
 -- =====================================================
 
 -- Users Table
