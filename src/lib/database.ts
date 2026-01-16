@@ -8,6 +8,7 @@ export function getPool(): Pool {
     const connectionString = process.env.DATABASE_URL
 
     if (!connectionString) {
+      console.error('DATABASE_URL is missing. Available env vars:', Object.keys(process.env).filter(k => k.includes('DATABASE')))
       throw new Error('DATABASE_URL environment variable is not set')
     }
 
