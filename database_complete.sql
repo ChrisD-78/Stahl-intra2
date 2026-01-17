@@ -118,6 +118,94 @@ CREATE TABLE IF NOT EXISTS external_proofs (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- ==============================================
+-- BUCHHALTUNG TABLES
+-- ==============================================
+
+CREATE TABLE IF NOT EXISTS accounting_documents (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  doc_type VARCHAR(50) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  vendor_name VARCHAR(255),
+  amount DECIMAL(12,2) NOT NULL,
+  currency VARCHAR(10) DEFAULT 'EUR',
+  category VARCHAR(100),
+  status VARCHAR(50) DEFAULT 'offen',
+  document_date VARCHAR(100),
+  due_date VARCHAR(100),
+  description TEXT,
+  file_name VARCHAR(255),
+  file_url TEXT,
+  uploaded_by VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS accounting_document_comments (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  document_id UUID REFERENCES accounting_documents(id) ON DELETE CASCADE,
+  comment TEXT NOT NULL,
+  created_by VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS accounting_counterparties (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  counterparty_type VARCHAR(50) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  iban VARCHAR(100),
+  bic VARCHAR(50),
+  tax_id VARCHAR(100),
+  email VARCHAR(255),
+  phone VARCHAR(100),
+  address TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS accounting_payments (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  document_id UUID REFERENCES accounting_documents(id) ON DELETE SET NULL,
+  label VARCHAR(255) NOT NULL,
+  amount DECIMAL(12,2) NOT NULL,
+  due_date VARCHAR(100),
+  status VARCHAR(50) DEFAULT 'geplant',
+  paid_at VARCHAR(100),
+  method VARCHAR(100),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS accounting_cashbook_entries (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  entry_type VARCHAR(10) NOT NULL,
+  amount DECIMAL(12,2) NOT NULL,
+  entry_date VARCHAR(100) NOT NULL,
+  description TEXT,
+  category VARCHAR(100),
+  reference VARCHAR(255),
+  created_by VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS accounting_travel_expenses (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  employee_name VARCHAR(255) NOT NULL,
+  start_date VARCHAR(100),
+  end_date VARCHAR(100),
+  purpose TEXT,
+  kilometers INTEGER,
+  mileage_rate DECIMAL(10,2),
+  meals DECIMAL(10,2),
+  lodging DECIMAL(10,2),
+  other_costs DECIMAL(10,2),
+  total_amount DECIMAL(12,2),
+  status VARCHAR(50) DEFAULT 'eingereicht',
+  created_by VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Chat Users Table
 CREATE TABLE IF NOT EXISTS chat_users (
   id VARCHAR(255) PRIMARY KEY,
@@ -175,6 +263,16 @@ CREATE INDEX IF NOT EXISTS idx_tasks_assigned_to
 CREATE INDEX IF NOT EXISTS idx_recurring_tasks_active
   ON recurring_tasks (is_active, next_due);
 
+-- Buchhaltung Indexes
+CREATE INDEX IF NOT EXISTS idx_accounting_documents_status ON accounting_documents(status);
+CREATE INDEX IF NOT EXISTS idx_accounting_documents_type ON accounting_documents(doc_type);
+CREATE INDEX IF NOT EXISTS idx_accounting_documents_due_date ON accounting_documents(due_date);
+CREATE INDEX IF NOT EXISTS idx_accounting_counterparties_type ON accounting_counterparties(counterparty_type);
+CREATE INDEX IF NOT EXISTS idx_accounting_payments_status ON accounting_payments(status);
+CREATE INDEX IF NOT EXISTS idx_accounting_payments_due_date ON accounting_payments(due_date);
+CREATE INDEX IF NOT EXISTS idx_accounting_cashbook_date ON accounting_cashbook_entries(entry_date);
+CREATE INDEX IF NOT EXISTS idx_accounting_travel_expenses_status ON accounting_travel_expenses(status);
+
 -- ==============================================
 -- TRIGGERS FOR AUTO-UPDATING updated_at
 -- ==============================================
@@ -206,6 +304,34 @@ CREATE TRIGGER update_tasks_updated_at
 DROP TRIGGER IF EXISTS update_trainings_updated_at ON trainings;
 CREATE TRIGGER update_trainings_updated_at
   BEFORE UPDATE ON trainings
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- Apply to accounting_documents
+DROP TRIGGER IF EXISTS update_accounting_documents_updated_at ON accounting_documents;
+CREATE TRIGGER update_accounting_documents_updated_at
+  BEFORE UPDATE ON accounting_documents
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- Apply to accounting_counterparties
+DROP TRIGGER IF EXISTS update_accounting_counterparties_updated_at ON accounting_counterparties;
+CREATE TRIGGER update_accounting_counterparties_updated_at
+  BEFORE UPDATE ON accounting_counterparties
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- Apply to accounting_payments
+DROP TRIGGER IF EXISTS update_accounting_payments_updated_at ON accounting_payments;
+CREATE TRIGGER update_accounting_payments_updated_at
+  BEFORE UPDATE ON accounting_payments
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- Apply to accounting_travel_expenses
+DROP TRIGGER IF EXISTS update_accounting_travel_expenses_updated_at ON accounting_travel_expenses;
+CREATE TRIGGER update_accounting_travel_expenses_updated_at
+  BEFORE UPDATE ON accounting_travel_expenses
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 

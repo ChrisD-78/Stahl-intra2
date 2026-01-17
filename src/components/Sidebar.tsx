@@ -13,7 +13,7 @@ const Sidebar = () => {
   const navItems = [
     { href: '/', label: 'Dashboard', icon: '🏠' },
     { href: '/aufgaben', label: 'Jour fixe', icon: '📋' },
-    { href: '/besprechungen', label: 'Besprechungen', icon: '🤝' },
+    { href: '/buchhaltung', label: 'Buchhaltung', icon: '💶' },
     { href: '/formulare', label: 'Formulare', icon: '📝' },
     { href: '/dokumente', label: 'Dokumente', icon: '📄' },
     { href: '/marketing', label: 'Marketing', icon: '📢' },
