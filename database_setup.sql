@@ -158,6 +158,77 @@ CREATE TABLE IF NOT EXISTS external_proofs (
 );
 
 -- ==============================================
+-- HR TABLES
+-- ==============================================
+
+CREATE TABLE IF NOT EXISTS hr_employees (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  first_name VARCHAR(255) NOT NULL,
+  last_name VARCHAR(255) NOT NULL,
+  email VARCHAR(255),
+  phone VARCHAR(100),
+  department VARCHAR(100),
+  position VARCHAR(100),
+  birthday VARCHAR(100),
+  emergency_contact VARCHAR(255),
+  emergency_phone VARCHAR(100),
+  status VARCHAR(50) DEFAULT 'aktiv',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS hr_sick_leaves (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  employee_name VARCHAR(255) NOT NULL,
+  department VARCHAR(100),
+  start_date VARCHAR(100) NOT NULL,
+  end_date VARCHAR(100),
+  reason TEXT,
+  status VARCHAR(50) DEFAULT 'eingereicht',
+  au_file_name VARCHAR(255),
+  au_file_url TEXT,
+  submitted_by VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS hr_benefits (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  category VARCHAR(100),
+  is_active BOOLEAN DEFAULT true,
+  created_by VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS hr_reviews (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  employee_name VARCHAR(255) NOT NULL,
+  reviewer_name VARCHAR(255),
+  review_date VARCHAR(100),
+  review_type VARCHAR(100),
+  goals TEXT,
+  notes TEXT,
+  status VARCHAR(50) DEFAULT 'geplant',
+  created_by VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS hr_self_service_requests (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  employee_name VARCHAR(255) NOT NULL,
+  request_type VARCHAR(100) NOT NULL,
+  details TEXT,
+  status VARCHAR(50) DEFAULT 'eingereicht',
+  created_by VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- ==============================================
 -- BUCHHALTUNG TABLES
 -- ==============================================
 
@@ -563,6 +634,15 @@ CREATE INDEX IF NOT EXISTS idx_besprechungspunkte_besprechung_id ON besprechungs
 CREATE INDEX IF NOT EXISTS idx_besprechungspunkte_status ON besprechungspunkte(status);
 CREATE INDEX IF NOT EXISTS idx_erledigungsvermerke_punkt_id ON erledigungsvermerke(besprechungspunkt_id);
 
+-- HR Indexes
+CREATE INDEX IF NOT EXISTS idx_hr_employees_department ON hr_employees(department);
+CREATE INDEX IF NOT EXISTS idx_hr_employees_status ON hr_employees(status);
+CREATE INDEX IF NOT EXISTS idx_hr_sick_leaves_status ON hr_sick_leaves(status);
+CREATE INDEX IF NOT EXISTS idx_hr_sick_leaves_dates ON hr_sick_leaves(start_date, end_date);
+CREATE INDEX IF NOT EXISTS idx_hr_benefits_category ON hr_benefits(category);
+CREATE INDEX IF NOT EXISTS idx_hr_reviews_status ON hr_reviews(status);
+CREATE INDEX IF NOT EXISTS idx_hr_self_service_status ON hr_self_service_requests(status);
+
 -- Buchhaltung Indexes
 CREATE INDEX IF NOT EXISTS idx_accounting_documents_status ON accounting_documents(status);
 CREATE INDEX IF NOT EXISTS idx_accounting_documents_type ON accounting_documents(doc_type);
@@ -622,6 +702,37 @@ CREATE TRIGGER update_besprechungen_updated_at
 DROP TRIGGER IF EXISTS update_besprechungspunkte_updated_at ON besprechungspunkte;
 CREATE TRIGGER update_besprechungspunkte_updated_at
   BEFORE UPDATE ON besprechungspunkte
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- Apply to HR tables
+DROP TRIGGER IF EXISTS update_hr_employees_updated_at ON hr_employees;
+CREATE TRIGGER update_hr_employees_updated_at
+  BEFORE UPDATE ON hr_employees
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_hr_sick_leaves_updated_at ON hr_sick_leaves;
+CREATE TRIGGER update_hr_sick_leaves_updated_at
+  BEFORE UPDATE ON hr_sick_leaves
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_hr_benefits_updated_at ON hr_benefits;
+CREATE TRIGGER update_hr_benefits_updated_at
+  BEFORE UPDATE ON hr_benefits
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_hr_reviews_updated_at ON hr_reviews;
+CREATE TRIGGER update_hr_reviews_updated_at
+  BEFORE UPDATE ON hr_reviews
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_hr_self_service_updated_at ON hr_self_service_requests;
+CREATE TRIGGER update_hr_self_service_updated_at
+  BEFORE UPDATE ON hr_self_service_requests
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
