@@ -970,17 +970,15 @@ export default function BuchhaltungPage() {
 
         <div className="space-y-6">
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-gray-900">Stammdaten</h2>
-              {permissions.masterdataEdit && (
-                <button
-                  className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                  onClick={() => setShowCounterpartyForm(!showCounterpartyForm)}
-                >
-                  Neuer Kontakt
-                </button>
-              )}
-            </div>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Stammdaten</h2>
+            {permissions.masterdataEdit && (
+              <button
+                className="mb-4 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                onClick={() => setShowCounterpartyForm(!showCounterpartyForm)}
+              >
+                Neuer Kontakt
+              </button>
+            )}
 
             {showCounterpartyForm && permissions.masterdataEdit && (
               <div className="border border-gray-200 rounded-xl p-4 mb-4">
@@ -1073,17 +1071,15 @@ export default function BuchhaltungPage() {
           </div>
 
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-gray-900">Kassenbuch</h2>
-              {permissions.cashbookEdit && (
-                <button
-                  className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                  onClick={() => setShowCashbookForm(!showCashbookForm)}
-                >
-                  Neue Buchung
-                </button>
-              )}
-            </div>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Kassenbuch</h2>
+            {permissions.cashbookEdit && (
+              <button
+                className="mb-4 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                onClick={() => setShowCashbookForm(!showCashbookForm)}
+              >
+                Neue Buchung
+              </button>
+            )}
 
             {showCashbookForm && permissions.cashbookEdit && (
               <div className="border border-gray-200 rounded-xl p-4 mb-4">
