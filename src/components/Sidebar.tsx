@@ -14,6 +14,7 @@ const Sidebar = () => {
     { href: '/', label: 'Dashboard', icon: '🏠' },
     { href: '/aufgaben', label: 'Jour fixe', icon: '📋' },
     { href: '/buchhaltung', label: 'Buchhaltung', icon: '💶' },
+    { href: '/hr', label: 'HR', icon: '🧑‍💼' },
     { href: '/formulare', label: 'Formulare', icon: '📝' },
     { href: '/dokumente', label: 'Dokumente', icon: '📄' },
     { href: '/marketing', label: 'Marketing', icon: '📢' },
