@@ -944,16 +944,19 @@ export default function BuchhaltungPage() {
             {permissions.reports ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
-                  { title: 'Monatliche Umsatzuebersicht', action: 'Report generieren' },
-                  { title: 'Kostenstellenauswertung', action: 'Analyse starten' },
-                  { title: 'Liquiditaetsuebersicht', action: 'Uebersicht anzeigen' },
-                  { title: 'DATEV-Export', action: 'Export vorbereiten' }
+                  { title: 'Monatliche Umsatzuebersicht', filename: 'Monatliche-Umsatzuebersicht.txt' },
+                  { title: 'Kostenstellenauswertung', filename: 'Kostenstellenauswertung.txt' },
+                  { title: 'Liquiditaetsuebersicht', filename: 'Liquiditaetsuebersicht.txt' }
                 ].map((report) => (
                   <div key={report.title} className="border border-gray-200 rounded-xl p-4">
                     <p className="text-sm font-medium text-gray-900">{report.title}</p>
-                    <button className="mt-3 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm">
-                      {report.action}
-                    </button>
+                    <a
+                      href="/buchhaltung-dummy-report.pdf"
+                      download={report.filename}
+                      className="mt-3 inline-flex items-center px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+                    >
+                      Dummy-Download
+                    </a>
                   </div>
                 ))}
               </div>
@@ -1163,17 +1166,15 @@ export default function BuchhaltungPage() {
           </div>
 
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-gray-900">Reisekostenabrechnung</h2>
-              {permissions.travelEdit && (
-                <button
-                  className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                  onClick={() => setShowTravelForm(!showTravelForm)}
-                >
-                  Neue Abrechnung
-                </button>
-              )}
-            </div>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Reisekostenabrechnung</h2>
+            {permissions.travelEdit && (
+              <button
+                className="mb-4 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                onClick={() => setShowTravelForm(!showTravelForm)}
+              >
+                Neue Abrechnung
+              </button>
+            )}
 
             {showTravelForm && permissions.travelEdit && (
               <div className="border border-gray-200 rounded-xl p-4 mb-4">
