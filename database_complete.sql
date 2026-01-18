@@ -485,7 +485,7 @@ INSERT INTO users (username, password, display_name, is_admin, is_active) VALUES
   ('Dennis', 'Dennis812', 'Dennis Wilkens', false, true),
   ('Lea', 'lea331', 'Lea Hofmann', false, true),
   ('laola', 'laola123', 'Team LAOLA', false, true),
-  ('staho', 'staho1', 'Verwaltung Stadtholding Landau', false, true)
+  ('staho', 'staho123', 'Verwaltung Stadtholding Landau', false, true)
 ON CONFLICT (username) DO NOTHING;
 
 -- =====================================================

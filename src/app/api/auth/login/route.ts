@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { query } from '@/lib/database'
 
+// DATENBANKVERBINDUNG DEAKTIVIERT - Mock-Login für Entwicklung
 export async function POST(request: NextRequest) {
   try {
     const { username, password } = await request.json()
@@ -12,15 +12,21 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const result = await query(
-      `SELECT id, username, password, display_name, is_admin, role, is_active
-       FROM users
-       WHERE username = $1
-       LIMIT 1`,
-      [username]
-    )
+    // Mock-User für Entwicklung (später durch echte Datenbank ersetzen)
+    // Standard-Login: staho / staho1
+    const mockUsers = [
+      {
+        id: '1',
+        username: 'staho',
+        password: 'staho1',
+        display_name: 'Stadtholding',
+        is_admin: true,
+        role: 'Admin',
+        is_active: true
+      }
+    ]
 
-    const user = result.rows[0]
+    const user = mockUsers.find(u => u.username === username)
 
     if (!user) {
       return NextResponse.json(
@@ -43,8 +49,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    await query('UPDATE users SET last_login = NOW() WHERE id = $1', [user.id])
-
+    // Login erfolgreich
     return NextResponse.json({
       success: true,
       user: {
@@ -55,6 +60,7 @@ export async function POST(request: NextRequest) {
         role: user.role || 'Benutzer'
       }
     })
+
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json(
