@@ -229,12 +229,21 @@ const signaturePolicies = [
 ]
 
 export default function Dashboard() {
-  const { isAdmin } = useAuth()
+  const { isAdmin, currentUser } = useAuth()
   
   const [currentInfos, setCurrentInfos] = useState<InfoItem[]>([])
   const [popupInfo, setPopupInfo] = useState<InfoItem | null>(null)
   const [editingInfo, setEditingInfo] = useState<InfoItem | null>(null)
   const [showEditModal, setShowEditModal] = useState(false)
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false)
+  const [feedbackForm, setFeedbackForm] = useState({
+    name: currentUser || '',
+    email: '',
+    department: '',
+    message: ''
+  })
+  const [feedbackStatus, setFeedbackStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
+  const [feedbackError, setFeedbackError] = useState<string | null>(null)
 
   const formatDate = (dateString: string): string => {
     // Konvertiere das Datum in das Format: TT.MM.JJJJ (ohne Uhrzeit)
@@ -303,6 +312,11 @@ export default function Dashboard() {
     }
     load()
   }, [])
+
+  useEffect(() => {
+    if (!currentUser) return
+    setFeedbackForm((prev) => (prev.name ? prev : { ...prev, name: currentUser }))
+  }, [currentUser])
 
   const addNewInfo = async (title: string, content: string, pdfFile?: File, isPopup?: boolean) => {
     const optimistic: InfoItem = {
@@ -434,6 +448,44 @@ export default function Dashboard() {
     }
   }
 
+  const handleFeedbackSubmit = async (event: React.FormEvent) => {
+    event.preventDefault()
+    setFeedbackStatus('sending')
+    setFeedbackError(null)
+
+    try {
+      const response = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: 'christof.drost@gmail.com',
+          subject: 'Intranet Testphase Feedback',
+          text: `Name: ${feedbackForm.name}\nE-Mail: ${feedbackForm.email}\nAbteilung: ${feedbackForm.department}\n\nWunsch/Anregung/Bug:\n${feedbackForm.message}`,
+          html: `
+            <h2>Intranet Testphase Feedback</h2>
+            <p><strong>Name:</strong> ${feedbackForm.name || '-'}</p>
+            <p><strong>E-Mail:</strong> ${feedbackForm.email || '-'}</p>
+            <p><strong>Abteilung:</strong> ${feedbackForm.department || '-'}</p>
+            <p><strong>Wunsch/Anregung/Bug:</strong></p>
+            <p>${feedbackForm.message.replace(/\\n/g, '<br/>')}</p>
+          `
+        })
+      })
+      const data = await response.json().catch(() => ({}))
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'E-Mail konnte nicht gesendet werden')
+      }
+
+      setFeedbackStatus('sent')
+      setFeedbackForm((prev) => ({ ...prev, message: '' }))
+    } catch (error) {
+      console.error('Feedback send failed:', error)
+      setFeedbackStatus('error')
+      setFeedbackError(error instanceof Error ? error.message : 'Unbekannter Fehler')
+    }
+  }
+
   return (
     <div className="space-y-4 lg:space-y-8">
       {/* Header */}
@@ -442,6 +494,39 @@ export default function Dashboard() {
           Willkommen im Intranet der Stadtholding Landau in der Pfalz GmbH
         </h1>
         <DailyMotivation />
+      </div>
+
+      {/* Testphase Hinweis */}
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
+        <div className="p-6 lg:p-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 mb-3">
+                🧪 Testphase 3 Monate
+              </div>
+              <h2 className="text-xl font-bold text-gray-900 mb-2">
+                Intranet startet jetzt in die Testphase
+              </h2>
+              <p className="text-sm text-gray-600 max-w-2xl">
+                Für die nächsten 3 Monate sammeln wir Wünsche, Anregungen und Bugs.
+                Bitte meldet alles, was euch auffällt – so verbessern wir das Intranet gemeinsam.
+              </p>
+            </div>
+            <div className="flex-shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowFeedbackModal(true)
+                  setFeedbackStatus('idle')
+                  setFeedbackError(null)
+                }}
+                className="px-5 py-3 rounded-xl bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-700 transition-colors"
+              >
+                Feedback senden
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
 
@@ -562,6 +647,114 @@ export default function Dashboard() {
                 setEditingInfo(null)
               }}
             />
+          </div>
+        </div>
+      )}
+
+      {/* Feedback Modal */}
+      {showFeedbackModal && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-xl w-full overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-bold text-white">Feedback zur Testphase</h3>
+                  <p className="text-sm text-blue-100 mt-1">
+                    Wünsche, Anregungen oder Bugs direkt senden
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowFeedbackModal(false)
+                    setFeedbackStatus('idle')
+                    setFeedbackError(null)
+                  }}
+                  className="text-white/80 hover:text-white p-2 hover:bg-white/10 rounded-lg transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+            <form onSubmit={handleFeedbackSubmit} className="p-6 space-y-4">
+              <div className="grid grid-cols-1 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                  <input
+                    type="text"
+                    value={feedbackForm.name}
+                    onChange={(e) => setFeedbackForm((prev) => ({ ...prev, name: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    placeholder="Ihr Name"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">E-Mail (optional)</label>
+                  <input
+                    type="email"
+                    value={feedbackForm.email}
+                    onChange={(e) => setFeedbackForm((prev) => ({ ...prev, email: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    placeholder="name@stadtholding.de"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Abteilung (optional)</label>
+                  <input
+                    type="text"
+                    value={feedbackForm.department}
+                    onChange={(e) => setFeedbackForm((prev) => ({ ...prev, department: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
+                    placeholder="z.B. Verwaltung, HR, Technik"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Wunsch / Anregung / Bug
+                  </label>
+                  <textarea
+                    value={feedbackForm.message}
+                    onChange={(e) => setFeedbackForm((prev) => ({ ...prev, message: e.target.value }))}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 min-h-[140px]"
+                    placeholder="Beschreibe kurz dein Anliegen..."
+                    required
+                  />
+                </div>
+              </div>
+
+              {feedbackStatus === 'error' && feedbackError && (
+                <div className="p-3 rounded-lg bg-red-50 text-red-700 text-sm border border-red-200">
+                  {feedbackError}
+                </div>
+              )}
+              {feedbackStatus === 'sent' && (
+                <div className="p-3 rounded-lg bg-green-50 text-green-700 text-sm border border-green-200">
+                  Danke! Dein Feedback wurde gesendet.
+                </div>
+              )}
+
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowFeedbackModal(false)
+                    setFeedbackStatus('idle')
+                    setFeedbackError(null)
+                  }}
+                  className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+                >
+                  Schließen
+                </button>
+                <button
+                  type="submit"
+                  disabled={feedbackStatus === 'sending'}
+                  className="px-5 py-2.5 rounded-lg bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-700 transition-colors disabled:opacity-60"
+                >
+                  {feedbackStatus === 'sending' ? 'Sende...' : 'Feedback senden'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

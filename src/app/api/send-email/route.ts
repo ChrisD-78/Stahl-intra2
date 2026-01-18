@@ -27,7 +27,9 @@ export async function POST(request: NextRequest) {
 
     // SMTP-Konfiguration
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.udag.de',
+      port: 465,
+      secure: true,
       auth: {
         user: emailUser,
         pass: emailPass
