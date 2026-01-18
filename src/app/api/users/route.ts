@@ -1,28 +1,18 @@
 import { NextResponse } from 'next/server'
+import { query } from '@/lib/database'
 
-// DATENBANKVERBINDUNG DEAKTIVIERT - Mock-Daten für Entwicklung
 export async function GET() {
   try {
-    // Mock-Daten (später durch echte Datenbank ersetzen)
-    const mockUsers = [
-      {
-        id: '1',
-        username: 'staho',
-        display_name: 'Stadtholding',
-        is_admin: true,
-        role: 'Admin',
-        is_active: true,
-        created_at: new Date().toISOString(),
-        last_login: null,
-        created_by: 'system'
-      }
-    ]
+    const result = await query(
+      `SELECT id, username, display_name, is_admin, role, is_active, created_at, last_login, created_by
+       FROM users
+       ORDER BY created_at DESC`
+    )
 
     return NextResponse.json({
       success: true,
-      users: mockUsers
+      users: result.rows
     })
-
   } catch (error) {
     console.error('Failed to fetch users:', error)
     return NextResponse.json(
