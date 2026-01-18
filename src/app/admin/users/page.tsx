@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/components/AuthProvider'
 import { useRouter } from 'next/navigation'
-import ProtectedLayout from '@/components/ProtectedLayout'
 
 interface User {
   id: string
@@ -271,7 +270,6 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <ProtectedLayout>
       <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
@@ -665,7 +663,6 @@ export default function AdminUsersPage() {
           </div>
         </div>
       </div>
-    </ProtectedLayout>
   )
 }
 
