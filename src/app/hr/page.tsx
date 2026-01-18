@@ -303,42 +303,103 @@ export default function HRPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-        <button
-          type="button"
-          onClick={() => employeeSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-          className="text-left bg-white rounded-2xl shadow-lg border border-gray-100 p-5 hover:shadow-xl transition-shadow"
-        >
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-5 hover:shadow-xl transition-shadow">
           <p className="text-xs uppercase tracking-wide text-gray-500">Mitarbeiterverwaltung</p>
           <p className="text-2xl font-bold text-gray-900 mt-2">{employees.length}</p>
           <p className="text-sm text-gray-600 mt-1">Aktive Datensaetze</p>
-        </button>
-        <button
-          type="button"
-          onClick={() => sickSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-          className="text-left bg-white rounded-2xl shadow-lg border border-gray-100 p-5 hover:shadow-xl transition-shadow"
-        >
+          <div className="mt-4 flex flex-wrap gap-2">
+            {canManage && (
+              <button
+                type="button"
+                onClick={() => {
+                  setShowEmployeeForm(true)
+                  employeeSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                }}
+                className="px-3 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              >
+                Neuer Mitarbeiter
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => employeeSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+              className="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              Details anzeigen
+            </button>
+          </div>
+        </div>
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-5 hover:shadow-xl transition-shadow">
           <p className="text-xs uppercase tracking-wide text-gray-500">Krankmeldungen</p>
           <p className="text-2xl font-bold text-gray-900 mt-2">{sickLeaves.length}</p>
           <p className="text-sm text-gray-600 mt-1">Eintraege gesamt</p>
-        </button>
-        <button
-          type="button"
-          onClick={() => benefitsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-          className="text-left bg-white rounded-2xl shadow-lg border border-gray-100 p-5 hover:shadow-xl transition-shadow"
-        >
-          <p className="text-xs uppercase tracking-wide text-gray-500">Benefits</p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setShowSickForm(true)
+                sickSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }}
+              className="px-3 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            >
+              Krankmeldung einreichen
+            </button>
+            <button
+              type="button"
+              onClick={() => sickSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+              className="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              Details anzeigen
+            </button>
+          </div>
+        </div>
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-5 hover:shadow-xl transition-shadow">
+          <p className="text-xs uppercase tracking-wide text-gray-500">Benefits-Uebersicht</p>
           <p className="text-2xl font-bold text-gray-900 mt-2">{benefits.length}</p>
           <p className="text-sm text-gray-600 mt-1">Angebote</p>
-        </button>
-        <button
-          type="button"
-          onClick={() => reviewSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-          className="text-left bg-white rounded-2xl shadow-lg border border-gray-100 p-5 hover:shadow-xl transition-shadow"
-        >
+          <div className="mt-4 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => benefitsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+              className="px-3 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            >
+              Benefit Uebersicht
+            </button>
+            <button
+              type="button"
+              onClick={() => benefitsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+              className="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              Details anzeigen
+            </button>
+          </div>
+        </div>
+        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-5 hover:shadow-xl transition-shadow">
           <p className="text-xs uppercase tracking-wide text-gray-500">Mitarbeitergespraeche</p>
           <p className="text-2xl font-bold text-gray-900 mt-2">{reviews.length}</p>
           <p className="text-sm text-gray-600 mt-1">Vorgaenge</p>
-        </button>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {canManage && (
+              <button
+                type="button"
+                onClick={() => {
+                  setShowReviewForm(true)
+                  reviewSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                }}
+                className="px-3 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              >
+                Mitarbeitergespraeche
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => reviewSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+              className="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              Details anzeigen
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
