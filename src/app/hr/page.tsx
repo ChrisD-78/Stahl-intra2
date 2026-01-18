@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from '@/components/AuthProvider'
 
 interface Employee {
@@ -51,35 +51,27 @@ interface Review {
   created_by: string
 }
 
-interface SelfServiceRequest {
-  id: string
-  employee_name: string
-  request_type: string
-  details?: string | null
-  status: string
-  created_by: string
-}
-
 const sickStatusOptions = ['eingereicht', 'geprueft', 'freigegeben', 'abgeschlossen']
 const reviewStatusOptions = ['geplant', 'durchgefuehrt', 'nachbereitung']
-const selfServiceStatusOptions = ['eingereicht', 'in_pruefung', 'erledigt']
 
 export default function HRPage() {
   const { isLoggedIn, currentUser, isAdmin, userRole } = useAuth()
   const resolvedRole = userRole || (isAdmin ? 'Admin' : 'Benutzer')
   const canManage = resolvedRole === 'Admin' || resolvedRole === 'Verwaltung'
+  const employeeSectionRef = useRef<HTMLDivElement | null>(null)
+  const sickSectionRef = useRef<HTMLDivElement | null>(null)
+  const benefitsSectionRef = useRef<HTMLDivElement | null>(null)
+  const reviewSectionRef = useRef<HTMLDivElement | null>(null)
 
   const [employees, setEmployees] = useState<Employee[]>([])
   const [sickLeaves, setSickLeaves] = useState<SickLeave[]>([])
   const [benefits, setBenefits] = useState<Benefit[]>([])
   const [reviews, setReviews] = useState<Review[]>([])
-  const [selfServiceRequests, setSelfServiceRequests] = useState<SelfServiceRequest[]>([])
 
   const [showEmployeeForm, setShowEmployeeForm] = useState(false)
   const [showSickForm, setShowSickForm] = useState(false)
   const [showBenefitForm, setShowBenefitForm] = useState(false)
   const [showReviewForm, setShowReviewForm] = useState(false)
-  const [showSelfServiceForm, setShowSelfServiceForm] = useState(false)
 
   const [employeeForm, setEmployeeForm] = useState({
     first_name: '',
@@ -116,11 +108,6 @@ export default function HRPage() {
     notes: '',
     status: 'geplant'
   })
-  const [selfServiceForm, setSelfServiceForm] = useState({
-    employee_name: '',
-    request_type: 'adressaenderung',
-    details: ''
-  })
 
   const loadEmployees = async () => {
     const response = await fetch('/api/hr/employees')
@@ -138,10 +125,6 @@ export default function HRPage() {
     const response = await fetch('/api/hr/reviews')
     if (response.ok) setReviews(await response.json())
   }
-  const loadSelfServiceRequests = async () => {
-    const response = await fetch('/api/hr/self-service')
-    if (response.ok) setSelfServiceRequests(await response.json())
-  }
 
   useEffect(() => {
     if (!isLoggedIn) return
@@ -151,8 +134,49 @@ export default function HRPage() {
       loadReviews()
     }
     loadSickLeaves()
-    loadSelfServiceRequests()
   }, [isLoggedIn, canManage])
+
+  const overviewRows = useMemo(() => {
+    const rows: Array<{ area: string; title: string; status?: string; detail?: string }> = []
+
+    employees.forEach((employee) => {
+      rows.push({
+        area: 'Mitarbeiter',
+        title: `${employee.first_name} ${employee.last_name}`,
+        status: employee.status || 'aktiv',
+        detail: `${employee.department || 'Ohne Abteilung'} · ${employee.position || 'Ohne Position'}`
+      })
+    })
+
+    sickLeaves.forEach((entry) => {
+      rows.push({
+        area: 'Krankmeldung',
+        title: entry.employee_name,
+        status: entry.status,
+        detail: `${entry.start_date} bis ${entry.end_date || '-'}`
+      })
+    })
+
+    benefits.forEach((benefit) => {
+      rows.push({
+        area: 'Benefit',
+        title: benefit.title,
+        status: benefit.is_active ? 'aktiv' : 'inaktiv',
+        detail: benefit.category || 'Allgemein'
+      })
+    })
+
+    reviews.forEach((review) => {
+      rows.push({
+        area: 'Gespraech',
+        title: review.employee_name,
+        status: review.status,
+        detail: review.review_date || '-'
+      })
+    })
+
+    return rows
+  }, [employees, sickLeaves, benefits, reviews])
 
   const handleCreateEmployee = async () => {
     if (!employeeForm.first_name || !employeeForm.last_name) return
@@ -245,19 +269,6 @@ export default function HRPage() {
     }
   }
 
-  const handleCreateSelfService = async () => {
-    if (!currentUser || !selfServiceForm.employee_name || !selfServiceForm.request_type) return
-    const response = await fetch('/api/hr/self-service', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...selfServiceForm, created_by: currentUser })
-    })
-    if (response.ok) {
-      setShowSelfServiceForm(false)
-      setSelfServiceForm({ employee_name: '', request_type: 'adressaenderung', details: '' })
-      loadSelfServiceRequests()
-    }
-  }
 
   const handleUpdateSickStatus = async (id: string, status: string) => {
     await fetch(`/api/hr/sick-leaves/${id}`, {
@@ -277,14 +288,6 @@ export default function HRPage() {
     loadReviews()
   }
 
-  const handleUpdateSelfServiceStatus = async (id: string, status: string) => {
-    await fetch(`/api/hr/self-service/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status })
-    })
-    loadSelfServiceRequests()
-  }
 
   if (!isLoggedIn) {
     return null
@@ -299,8 +302,83 @@ export default function HRPage() {
         </p>
       </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <button
+          type="button"
+          onClick={() => employeeSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+          className="text-left bg-white rounded-2xl shadow-lg border border-gray-100 p-5 hover:shadow-xl transition-shadow"
+        >
+          <p className="text-xs uppercase tracking-wide text-gray-500">Mitarbeiterverwaltung</p>
+          <p className="text-2xl font-bold text-gray-900 mt-2">{employees.length}</p>
+          <p className="text-sm text-gray-600 mt-1">Aktive Datensaetze</p>
+        </button>
+        <button
+          type="button"
+          onClick={() => sickSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+          className="text-left bg-white rounded-2xl shadow-lg border border-gray-100 p-5 hover:shadow-xl transition-shadow"
+        >
+          <p className="text-xs uppercase tracking-wide text-gray-500">Krankmeldungen</p>
+          <p className="text-2xl font-bold text-gray-900 mt-2">{sickLeaves.length}</p>
+          <p className="text-sm text-gray-600 mt-1">Eintraege gesamt</p>
+        </button>
+        <button
+          type="button"
+          onClick={() => benefitsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+          className="text-left bg-white rounded-2xl shadow-lg border border-gray-100 p-5 hover:shadow-xl transition-shadow"
+        >
+          <p className="text-xs uppercase tracking-wide text-gray-500">Benefits</p>
+          <p className="text-2xl font-bold text-gray-900 mt-2">{benefits.length}</p>
+          <p className="text-sm text-gray-600 mt-1">Angebote</p>
+        </button>
+        <button
+          type="button"
+          onClick={() => reviewSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+          className="text-left bg-white rounded-2xl shadow-lg border border-gray-100 p-5 hover:shadow-xl transition-shadow"
+        >
+          <p className="text-xs uppercase tracking-wide text-gray-500">Mitarbeitergespraeche</p>
+          <p className="text-2xl font-bold text-gray-900 mt-2">{reviews.length}</p>
+          <p className="text-sm text-gray-600 mt-1">Vorgaenge</p>
+        </button>
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
+        <div className="p-4 lg:p-6 border-b border-gray-100">
+          <h2 className="text-lg font-semibold text-gray-900">Gesamtuebersicht</h2>
+          <p className="text-sm text-gray-500">Alle Daten aus den HR-Bereichen auf einen Blick.</p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200 text-sm">
+            <thead className="bg-gray-50 text-gray-600">
+              <tr>
+                <th className="px-4 py-3 text-left font-semibold">Bereich</th>
+                <th className="px-4 py-3 text-left font-semibold">Eintrag</th>
+                <th className="px-4 py-3 text-left font-semibold">Status</th>
+                <th className="px-4 py-3 text-left font-semibold">Details</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {overviewRows.map((row, index) => (
+                <tr key={`${row.area}-${row.title}-${index}`} className="text-gray-700">
+                  <td className="px-4 py-3 font-medium text-gray-900">{row.area}</td>
+                  <td className="px-4 py-3">{row.title}</td>
+                  <td className="px-4 py-3">{row.status || '-'}</td>
+                  <td className="px-4 py-3 text-gray-500">{row.detail || '-'}</td>
+                </tr>
+              ))}
+              {overviewRows.length === 0 && (
+                <tr>
+                  <td className="px-4 py-6 text-center text-gray-500" colSpan={4}>
+                    Keine Daten vorhanden.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+        <div ref={employeeSectionRef} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
           <h2 className="text-xl font-bold text-gray-900 mb-3">Mitarbeiterverwaltung</h2>
           {canManage && (
             <button
@@ -399,7 +477,7 @@ export default function HRPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+        <div ref={sickSectionRef} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
           <h2 className="text-xl font-bold text-gray-900 mb-3">Krankmeldungen</h2>
           <button
             className="mb-4 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
@@ -496,7 +574,7 @@ export default function HRPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+        <div ref={benefitsSectionRef} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
           <h2 className="text-xl font-bold text-gray-900 mb-3">Benefits-Uebersicht</h2>
           {canManage && (
             <button
@@ -563,7 +641,7 @@ export default function HRPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+        <div ref={reviewSectionRef} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
           <h2 className="text-xl font-bold text-gray-900 mb-3">Mitarbeitergespraeche</h2>
           {canManage && (
             <button
@@ -663,84 +741,6 @@ export default function HRPage() {
               </div>
             ))}
             {reviews.length === 0 && <p>Keine Gespraeche geplant</p>}
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-3">Self-Service fuer Mitarbeiter</h2>
-          <button
-            className="mb-4 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-            onClick={() => setShowSelfServiceForm(!showSelfServiceForm)}
-          >
-            Anfrage stellen
-          </button>
-          {showSelfServiceForm && (
-            <div className="border border-indigo-200 rounded-xl p-4 mb-4 grid grid-cols-1 gap-3">
-              <input
-                placeholder="Mitarbeiter"
-                value={selfServiceForm.employee_name}
-                onChange={(e) => setSelfServiceForm({ ...selfServiceForm, employee_name: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
-              />
-              <select
-                value={selfServiceForm.request_type}
-                onChange={(e) => setSelfServiceForm({ ...selfServiceForm, request_type: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
-              >
-                <option value="adressaenderung">Adressaenderung</option>
-                <option value="bankverbindung">Bankverbindung</option>
-                <option value="steuerklasse">Steuerklasse</option>
-                <option value="familienstand">Familienstand</option>
-                <option value="bescheinigung">Bescheinigung anfordern</option>
-              </select>
-              <textarea
-                placeholder="Details"
-                value={selfServiceForm.details}
-                onChange={(e) => setSelfServiceForm({ ...selfServiceForm, details: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
-                rows={2}
-              />
-              <div className="flex gap-3">
-                <button
-                  onClick={handleCreateSelfService}
-                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-                >
-                  Absenden
-                </button>
-                <button
-                  onClick={() => setShowSelfServiceForm(false)}
-                  className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                >
-                  Abbrechen
-                </button>
-              </div>
-            </div>
-          )}
-          <div className="space-y-3 text-sm text-gray-600">
-            {selfServiceRequests.map((request) => (
-              <div key={request.id} className="border border-gray-100 rounded-lg p-3">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-900 font-medium">{request.employee_name}</p>
-                    <p className="text-xs text-gray-500">Typ: {request.request_type}</p>
-                  </div>
-                  {canManage ? (
-                    <select
-                      value={request.status}
-                      onChange={(e) => handleUpdateSelfServiceStatus(request.id, e.target.value)}
-                      className="border border-gray-200 rounded px-2 py-1 text-xs"
-                    >
-                      {selfServiceStatusOptions.map((status) => (
-                        <option key={status} value={status}>{status}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    <span className="text-xs text-gray-500">{request.status}</span>
-                  )}
-                </div>
-              </div>
-            ))}
-            {selfServiceRequests.length === 0 && <p>Keine Anfragen vorhanden</p>}
           </div>
         </div>
       </div>

@@ -5,7 +5,7 @@ import UrlaubsantragForm from '@/components/UrlaubsantragForm'
 import DienstreiseantragForm from '@/components/DienstreiseantragForm'
 import BeschaffungsantragForm from '@/components/BeschaffungsantragForm'
 import ReisekostenabrechnungForm from '@/components/ReisekostenabrechnungForm'
-import { getFormSubmissions, insertFormSubmission, deleteFormSubmissionById } from '@/lib/db'
+import { getFormSubmissions, insertFormSubmission, deleteFormSubmissionById, updateFormSubmissionById } from '@/lib/db'
 import { useAuth } from '@/components/AuthProvider'
 
 interface FormSubmission {
@@ -20,7 +20,7 @@ interface FormSubmission {
 }
 
 export default function Formulare() {
-  const { isAdmin } = useAuth()
+  const { isAdmin, currentUser } = useAuth()
   const [submissions, setSubmissions] = useState<FormSubmission[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -28,6 +28,12 @@ export default function Formulare() {
   const [selectedSubmission, setSelectedSubmission] = useState<FormSubmission | null>(null)
   const [showSubmissionModal, setShowSubmissionModal] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<FormSubmission | null>(null)
+  const [selfServiceForm, setSelfServiceForm] = useState({
+    employeeName: '',
+    requestType: 'adressaenderung',
+    details: ''
+  })
+  const [adminEdits, setAdminEdits] = useState<Record<string, { status: string; comment: string }>>({})
   
   // Filter states
   const [filterStatus, setFilterStatus] = useState<string>('')
@@ -58,6 +64,12 @@ export default function Formulare() {
     loadSubmissions()
   }, [])
 
+  useEffect(() => {
+    if (openForm === 'hr_self_service' && currentUser && !selfServiceForm.employeeName) {
+      setSelfServiceForm((prev) => ({ ...prev, employeeName: currentUser }))
+    }
+  }, [openForm, currentUser, selfServiceForm.employeeName])
+
   const handleFormSubmit = async (type: string, data: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
     try {
       const submissionData = {
@@ -66,7 +78,7 @@ export default function Formulare() {
         description: generateDescription(type, data),
         status: 'Eingegangen',
         form_data: data,
-        submitted_by: 'Aktueller Benutzer'
+        submitted_by: currentUser || 'Aktueller Benutzer'
       }
 
       // Save to Supabase
@@ -91,6 +103,16 @@ export default function Formulare() {
   }
 
   const generateDescription = (type: string, data: any): string => { // eslint-disable-line @typescript-eslint/no-explicit-any
+    const requestLabel = (value: string) => {
+      switch (value) {
+        case 'adressaenderung': return 'Adressaenderung'
+        case 'bankverbindung': return 'Bankverbindung'
+        case 'steuerklasse': return 'Steuerklasse'
+        case 'familienstand': return 'Familienstand'
+        case 'bescheinigung': return 'Bescheinigung'
+        default: return value
+      }
+    }
     switch (type) {
       case 'urlaubsantrag':
         return `Name: ${data.name}, Abteilung: ${data.abteilung}, Von: ${data.vonDatum}, Bis: ${data.bisDatum}, Tage: ${data.anzahlTage}`
@@ -100,6 +122,8 @@ export default function Formulare() {
         return `Name: ${data.name}, Gegenstand: ${data.beschaffungsgegenstand}, Menge: ${data.menge}, Gesamtpreis: ${data.gesamtpreis} €, Dringlichkeit: ${data.dringlichkeit}`
       case 'reisekostenabrechnung':
         return `Name: ${data.name}, Reiseziel: ${data.reiseziel}, Von: ${data.vonDatum}, Bis: ${data.bisDatum}, Gesamtkosten: ${data.gesamtkosten} €`
+      case 'hr_self_service':
+        return `Mitarbeiter: ${data.employeeName}, Typ: ${requestLabel(data.requestType)}, Details: ${data.details || '-'}`
       default:
         return 'Formular eingereicht'
     }
@@ -201,7 +225,41 @@ export default function Formulare() {
       case 'dienstreiseantrag': return 'Dienstreiseantrag'
       case 'beschaffungsantrag': return 'Beschaffungsantrag'
       case 'reisekostenabrechnung': return 'Reisekostenabrechnung'
+      case 'hr_self_service': return 'Self-Service'
       default: return type
+    }
+  }
+
+  const selfServiceSubmissions = submissions.filter((submission) => submission.type === 'hr_self_service')
+
+  const handleAdminSaveSelfService = async (submission: FormSubmission) => {
+    const currentEdit = adminEdits[submission.id] || {
+      status: submission.status,
+      comment: (submission.formData as any)?.adminComment || ''
+    }
+    try {
+      const updated = await updateFormSubmissionById(submission.id, {
+        status: currentEdit.status,
+        form_data: {
+          ...(submission.formData || {}),
+          adminComment: currentEdit.comment || ''
+        }
+      })
+      setSubmissions((prev) => prev.map((item) => (
+        item.id === submission.id
+          ? {
+              ...item,
+              status: updated.status || currentEdit.status,
+              formData: updated.form_data || {
+                ...(submission.formData || {}),
+                adminComment: currentEdit.comment || ''
+              }
+            }
+          : item
+      )))
+    } catch (error) {
+      console.error('Failed to update self-service submission:', error)
+      alert('Fehler beim Speichern der Self-Service-Anfrage.')
     }
   }
 
@@ -298,8 +356,95 @@ export default function Formulare() {
               Formular öffnen
             </button>
           </div>
+
+          <div className="border border-gray-200 rounded-lg p-4 lg:p-6 hover:shadow-md transition-shadow">
+            <div className="text-center mb-4">
+              <span className="text-4xl">🙋</span>
+            </div>
+            <h3 className="text-base lg:text-lg font-semibold text-gray-900 text-center mb-2">
+              Self-Service
+            </h3>
+            <p className="text-sm text-gray-900 text-center mb-4">
+              Aenderungen oder Bescheinigungen anfragen
+            </p>
+            <button 
+              onClick={() => setOpenForm('hr_self_service')}
+              className="w-full px-4 py-2.5 text-base bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
+            >
+              Formular öffnen
+            </button>
+          </div>
         </div>
       </div>
+
+      {isAdmin && (
+        <div className="bg-white rounded-lg shadow-sm">
+          <div className="p-4 lg:p-6 border-b border-gray-200">
+            <h2 className="text-base lg:text-lg font-semibold text-gray-900">Self-Service Antraege (Admin)</h2>
+            <p className="text-sm text-gray-500">Status aktualisieren und interne Kommentare erfassen.</p>
+          </div>
+          <div className="divide-y divide-gray-200">
+            {selfServiceSubmissions.length === 0 && (
+              <div className="p-4 lg:p-6 text-sm text-gray-500">
+                Keine Self-Service Antraege vorhanden.
+              </div>
+            )}
+            {selfServiceSubmissions.map((submission) => {
+              const fallbackComment = (submission.formData as any)?.adminComment || ''
+              const editState = adminEdits[submission.id] || { status: submission.status, comment: fallbackComment }
+              return (
+                <div key={submission.id} className="p-4 lg:p-6">
+                  <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                    <div className="flex-1 space-y-1">
+                      <h3 className="text-base font-semibold text-gray-900">{submission.title}</h3>
+                      <p className="text-sm text-gray-700">{submission.description}</p>
+                      <p className="text-xs text-gray-500">
+                        Eingereicht von {submission.submittedBy} am {formatDate(submission.submittedAt)}
+                      </p>
+                    </div>
+                    <div className="w-full lg:w-64 space-y-2">
+                      <label className="block text-xs font-semibold text-gray-600 uppercase">Status</label>
+                      <select
+                        value={editState.status}
+                        onChange={(e) =>
+                          setAdminEdits((prev) => ({
+                            ...prev,
+                            [submission.id]: { status: e.target.value, comment: editState.comment }
+                          }))
+                        }
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        <option value="Eingegangen">Eingegangen</option>
+                        <option value="In Bearbeitung">In Bearbeitung</option>
+                        <option value="Abgeschlossen">Abgeschlossen</option>
+                      </select>
+                      <label className="block text-xs font-semibold text-gray-600 uppercase">Kommentar</label>
+                      <textarea
+                        value={editState.comment}
+                        onChange={(e) =>
+                          setAdminEdits((prev) => ({
+                            ...prev,
+                            [submission.id]: { status: editState.status, comment: e.target.value }
+                          }))
+                        }
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        rows={3}
+                        placeholder="Interner Kommentar..."
+                      />
+                      <button
+                        onClick={() => handleAdminSaveSelfService(submission)}
+                        className="w-full px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                      >
+                        Speichern
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Recent Submissions */}
       <div className="bg-white rounded-lg shadow-sm">
@@ -383,6 +528,7 @@ export default function Formulare() {
                 <option value="dienstreiseantrag">Dienstreiseantrag</option>
                 <option value="beschaffungsantrag">Beschaffungsantrag</option>
                 <option value="reisekostenabrechnung">Reisekostenabrechnung</option>
+                <option value="hr_self_service">Self-Service</option>
               </select>
             </div>
           </div>
@@ -688,6 +834,68 @@ export default function Formulare() {
         onClose={() => setOpenForm(null)}
         onSubmit={(data) => handleFormSubmit('reisekostenabrechnung', data)}
       />
+
+      {openForm === 'hr_self_service' && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-6">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Self-Service Antrag</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Mitarbeiter</label>
+                <input
+                  type="text"
+                  value={selfServiceForm.employeeName}
+                  onChange={(e) => setSelfServiceForm({ ...selfServiceForm, employeeName: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                  placeholder="Vor- und Nachname"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Anliegen</label>
+                <select
+                  value={selfServiceForm.requestType}
+                  onChange={(e) => setSelfServiceForm({ ...selfServiceForm, requestType: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                >
+                  <option value="adressaenderung">Adressaenderung</option>
+                  <option value="bankverbindung">Bankverbindung aktualisieren</option>
+                  <option value="steuerklasse">Steuerklasse aendern</option>
+                  <option value="familienstand">Familienstand aktualisieren</option>
+                  <option value="bescheinigung">Bescheinigung anfordern</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Details</label>
+                <textarea
+                  value={selfServiceForm.details}
+                  onChange={(e) => setSelfServiceForm({ ...selfServiceForm, details: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                  rows={4}
+                  placeholder="Bitte beschreiben Sie kurz Ihr Anliegen."
+                />
+              </div>
+            </div>
+            <div className="flex space-x-3 mt-6">
+              <button
+                onClick={() => {
+                  handleFormSubmit('hr_self_service', selfServiceForm)
+                  setSelfServiceForm({ employeeName: '', requestType: 'adressaenderung', details: '' })
+                  setOpenForm(null)
+                }}
+                className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Antrag absenden
+              </button>
+              <button
+                onClick={() => setOpenForm(null)}
+                className="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Abbrechen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

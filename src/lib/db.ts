@@ -456,6 +456,16 @@ export async function deleteFormSubmissionById(id: string) {
   return response.json()
 }
 
+export async function updateFormSubmissionById(id: string, partial: Partial<FormSubmissionRecord>) {
+  const response = await fetch(`/api/form-submissions/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(partial)
+  })
+  if (!response.ok) throw new Error('Failed to update form submission')
+  return response.json()
+}
+
 // =====================
 // Documents Additional
 // =====================
