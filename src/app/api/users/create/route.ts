@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { query } from '@/lib/database'
 
-// DATENBANKVERBINDUNG DEAKTIVIERT - Mock-Daten für Entwicklung
-// POST - Neuen Benutzer erstellen (nur für Admins)
 export async function POST(request: NextRequest) {
   try {
     const { username, password, displayName, role, createdBy } = await request.json()
 
-    // Validierung
     if (!username || !password || !displayName) {
       return NextResponse.json(
         { success: false, error: 'Benutzername, Passwort und Anzeigename sind erforderlich' },
@@ -21,33 +19,38 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validiere Rolle
     const validRoles = ['Admin', 'Personal', 'Buchhaltung', 'Verwaltung', 'Benutzer']
     const userRole = role && validRoles.includes(role) ? role : 'Benutzer'
     const isAdmin = userRole === 'Admin'
 
-    // Mock-Daten zurückgeben (später durch echte Datenbank ersetzen)
-    const mockUser = {
-      id: Date.now().toString(),
-      username,
-      displayName,
-      role: userRole,
-      isAdmin,
-      isActive: true,
-      createdAt: new Date().toISOString()
-    }
+    const result = await query(
+      `INSERT INTO users (username, password, display_name, is_admin, role, is_active, created_by)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING id, username, display_name, is_admin, role, is_active, created_at, created_by`,
+      [username, password, displayName, isAdmin, userRole, true, createdBy || null]
+    )
 
-    console.log('✅ Neuer Benutzer erstellt (Mock):', mockUser.username)
+    const created = result.rows[0]
 
     return NextResponse.json({
       success: true,
-      user: mockUser
+      user: {
+        id: created.id,
+        username: created.username,
+        displayName: created.display_name,
+        role: created.role,
+        isAdmin: created.is_admin,
+        isActive: created.is_active,
+        createdAt: created.created_at
+      }
     }, { status: 201 })
-
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to create user:', error)
+    const message = error?.code === '23505'
+      ? 'Benutzername existiert bereits'
+      : 'Fehler beim Erstellen des Benutzers'
     return NextResponse.json(
-      { success: false, error: 'Fehler beim Erstellen des Benutzers' },
+      { success: false, error: message },
       { status: 500 }
     )
   }
