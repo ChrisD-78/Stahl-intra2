@@ -7,14 +7,19 @@ import { useState } from 'react'
 
 const Sidebar = () => {
   const pathname = usePathname()
-  const { currentUser, logout, isAdmin } = useAuth()
+  const { currentUser, logout, isAdmin, userRole } = useAuth()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const resolvedRole = userRole || (isAdmin ? 'Admin' : 'Benutzer')
 
   const navItems = [
     { href: '/', label: 'Dashboard', icon: '🏠' },
     { href: '/aufgaben', label: 'Jour fixe', icon: '📋' },
-    { href: '/buchhaltung', label: 'Buchhaltung', icon: '💶' },
-    { href: '/hr', label: 'HR', icon: '🧑‍💼' },
+    ...(resolvedRole === 'Admin' || resolvedRole === 'Buchhaltung' || resolvedRole === 'Verwaltung'
+      ? [{ href: '/buchhaltung', label: 'Buchhaltung', icon: '💶' }]
+      : []),
+    ...(resolvedRole === 'Admin' || resolvedRole === 'Personal' || resolvedRole === 'Verwaltung'
+      ? [{ href: '/hr', label: 'HR', icon: '🧑‍💼' }]
+      : []),
     { href: '/formulare', label: 'Formulare', icon: '📝' },
     { href: '/dokumente', label: 'Dokumente', icon: '📄' },
     { href: '/marketing', label: 'Marketing', icon: '📢' },

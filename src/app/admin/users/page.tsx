@@ -330,11 +330,13 @@ export default function AdminUsersPage() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="Benutzer">Benutzer</option>
-                    <option value="Verwaltung">Verwaltung</option>
-                    <option value="Admin">Admin</option>
+                    <option value="Personal">Personal (HR)</option>
+                    <option value="Buchhaltung">Buchhaltung</option>
+                    <option value="Verwaltung">Verwaltung (Ansicht)</option>
+                    <option value="Admin">Admin (alle Zugriffsrechte)</option>
                   </select>
                   <p className="mt-1 text-xs text-gray-500">
-                    Admin: Voller Zugriff auf alle Bereiche | Andere: Standard-Rechte
+                    Admin: Vollzugriff | Personal: HR | Buchhaltung: Buchhaltung | Verwaltung: Ansicht
                   </p>
                 </div>
 
@@ -441,9 +443,17 @@ export default function AdminUsersPage() {
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                               👑 Admin
                             </span>
+                          ) : user.role === 'Personal' ? (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                              🧑‍💼 Personal
+                            </span>
+                          ) : user.role === 'Buchhaltung' ? (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                              💶 Buchhaltung
+                            </span>
                           ) : user.role === 'Verwaltung' ? (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                              📋 Verwaltung
+                              📋 Verwaltung (Ansicht)
                             </span>
                           ) : (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
@@ -614,12 +624,20 @@ export default function AdminUsersPage() {
                     <p className="text-xs mt-1">Voller Zugriff auf alle Bereiche, kann Benutzer verwalten</p>
                   </div>
                   <div>
+                    <p className="font-semibold">🧑‍💼 Personal</p>
+                    <p className="text-xs mt-1">Zugriff auf HR, darf bearbeiten</p>
+                  </div>
+                  <div>
+                    <p className="font-semibold">💶 Buchhaltung</p>
+                    <p className="text-xs mt-1">Zugriff auf Buchhaltung, darf bearbeiten</p>
+                  </div>
+                  <div>
                     <p className="font-semibold">📋 Verwaltung</p>
-                    <p className="text-xs mt-1">Standard-Rechte für Verwaltungspersonal</p>
+                    <p className="text-xs mt-1">Ansichtrechte in HR und Buchhaltung, keine Aenderungen</p>
                   </div>
                   <div>
                     <p className="font-semibold">👤 Benutzer</p>
-                    <p className="text-xs mt-1">Standard-Rechte für alle anderen Mitarbeiter</p>
+                    <p className="text-xs mt-1">Standard-Rechte für freigegebene Bereiche</p>
                   </div>
                 </div>
                 <div className="mt-3 pt-3 border-t border-blue-200">

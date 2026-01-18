@@ -111,18 +111,20 @@ const isPastDate = (value?: string | null) => {
 export default function BuchhaltungPage() {
   const { isLoggedIn, currentUser, isAdmin, userRole } = useAuth()
   const resolvedRole = userRole || (isAdmin ? 'Admin' : 'Benutzer')
+  const canView = resolvedRole === 'Admin' || resolvedRole === 'Buchhaltung' || resolvedRole === 'Verwaltung'
+  const canEdit = resolvedRole === 'Admin' || resolvedRole === 'Buchhaltung'
   const permissions = {
-    documents: resolvedRole === 'Admin' || resolvedRole === 'Verwaltung',
-    documentsEdit: resolvedRole === 'Admin' || resolvedRole === 'Verwaltung',
-    payments: resolvedRole === 'Admin' || resolvedRole === 'Verwaltung',
-    paymentsEdit: resolvedRole === 'Admin' || resolvedRole === 'Verwaltung',
-    masterdata: resolvedRole === 'Admin' || resolvedRole === 'Verwaltung',
-    masterdataEdit: resolvedRole === 'Admin' || resolvedRole === 'Verwaltung',
-    cashbook: resolvedRole === 'Admin' || resolvedRole === 'Verwaltung',
-    cashbookEdit: resolvedRole === 'Admin' || resolvedRole === 'Verwaltung',
-    travel: true,
-    travelEdit: true,
-    reports: resolvedRole === 'Admin' || resolvedRole === 'Verwaltung'
+    documents: canView,
+    documentsEdit: canEdit,
+    payments: canView,
+    paymentsEdit: canEdit,
+    masterdata: canView,
+    masterdataEdit: canEdit,
+    cashbook: canView,
+    cashbookEdit: canEdit,
+    travel: canView,
+    travelEdit: canEdit,
+    reports: canView
   }
 
   const [documents, setDocuments] = useState<AccountingDocument[]>([])
@@ -523,6 +525,14 @@ export default function BuchhaltungPage() {
 
   if (!isLoggedIn) {
     return null
+  }
+  if (!canView) {
+    return (
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-2">Kein Zugriff</h2>
+        <p className="text-sm text-gray-600">Dieser Bereich ist nur fuer Buchhaltung, Verwaltung und Admin verfuegbar.</p>
+      </div>
+    )
   }
 
   return (

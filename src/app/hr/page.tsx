@@ -57,7 +57,8 @@ const reviewStatusOptions = ['geplant', 'durchgefuehrt', 'nachbereitung']
 export default function HRPage() {
   const { isLoggedIn, currentUser, isAdmin, userRole } = useAuth()
   const resolvedRole = userRole || (isAdmin ? 'Admin' : 'Benutzer')
-  const canManage = resolvedRole === 'Admin' || resolvedRole === 'Verwaltung'
+  const canView = resolvedRole === 'Admin' || resolvedRole === 'Personal' || resolvedRole === 'Verwaltung'
+  const canManage = resolvedRole === 'Admin' || resolvedRole === 'Personal'
   const employeeSectionRef = useRef<HTMLDivElement | null>(null)
   const sickSectionRef = useRef<HTMLDivElement | null>(null)
   const benefitsSectionRef = useRef<HTMLDivElement | null>(null)
@@ -295,6 +296,14 @@ export default function HRPage() {
 
   if (!isLoggedIn) {
     return null
+  }
+  if (!canView) {
+    return (
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-2">Kein Zugriff</h2>
+        <p className="text-sm text-gray-600">Dieser Bereich ist nur fuer Personal, Verwaltung und Admin verfuegbar.</p>
+      </div>
+    )
   }
 
   return (
