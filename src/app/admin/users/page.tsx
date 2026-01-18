@@ -70,10 +70,19 @@ export default function AdminUsersPage() {
       setLoading(true)
       setError(null)
       
-      const response = await fetch('/api/users')
+      const response = await fetch('/api/users', { cache: 'no-store' })
+      if (!response.ok) {
+        const text = await response.text()
+        throw new Error(`Failed to load users: ${response.status} ${text}`)
+      }
+      const contentType = response.headers.get('content-type') || ''
+      if (!contentType.includes('application/json')) {
+        const text = await response.text()
+        throw new Error(`Unexpected response: ${text.slice(0, 200)}`)
+      }
       const data = await response.json()
       
-      if (data.success) {
+      if (data.success && Array.isArray(data.users)) {
         setUsers(data.users)
       } else {
         setError(data.error || 'Fehler beim Laden der Benutzer')
@@ -117,7 +126,18 @@ export default function AdminUsersPage() {
         })
         
         // Aktualisiere Benutzerliste
-        loadUsers()
+        const createdUser: User = {
+          id: data.user.id,
+          username: data.user.username,
+          display_name: data.user.displayName,
+          is_admin: data.user.isAdmin,
+          role: data.user.role,
+          is_active: data.user.isActive,
+          created_at: data.user.createdAt,
+          created_by: currentUser || undefined
+        }
+        setUsers((prev) => [createdUser, ...prev])
+        await loadUsers()
         
         // Schließe Formular nach 2 Sekunden
         setTimeout(() => {
