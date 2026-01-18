@@ -20,7 +20,11 @@ if (fs.existsSync(envPath)) {
 
 async function resetUsers() {
   try {
-    const sql = neon(process.env.DATABASE_URL)
+    const connectionString = process.env.STAHO_DATABASE_URL || process.env.DATABASE_URL
+    if (!connectionString) {
+      throw new Error('STAHO_DATABASE_URL or DATABASE_URL is not set')
+    }
+    const sql = neon(connectionString)
 
     console.log('🔄 Lösche alle bestehenden Nutzer...')
     
