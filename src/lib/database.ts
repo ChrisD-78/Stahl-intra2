@@ -5,10 +5,10 @@ let pool: Pool | null = null
 
 export function getPool(): Pool {
   if (!pool) {
-    const connectionString = process.env.DATABASE_URL
+    const connectionString = process.env.STAHO_DATABASE_URL || process.env.DATABASE_URL
 
     if (!connectionString) {
-      throw new Error('DATABASE_URL environment variable is not set')
+      throw new Error('STAHO_DATABASE_URL or DATABASE_URL environment variable is not set')
     }
 
     pool = new Pool({
