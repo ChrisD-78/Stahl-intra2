@@ -72,6 +72,10 @@ export default function HRPage() {
   const [showSickForm, setShowSickForm] = useState(false)
   const [showBenefitForm, setShowBenefitForm] = useState(false)
   const [showReviewForm, setShowReviewForm] = useState(false)
+  const [showEmployeeDetails, setShowEmployeeDetails] = useState(false)
+  const [showSickDetails, setShowSickDetails] = useState(false)
+  const [showBenefitDetails, setShowBenefitDetails] = useState(false)
+  const [showReviewDetails, setShowReviewDetails] = useState(false)
 
   const [employeeForm, setEmployeeForm] = useState({
     first_name: '',
@@ -307,98 +311,21 @@ export default function HRPage() {
           <p className="text-xs uppercase tracking-wide text-gray-500">Mitarbeiterverwaltung</p>
           <p className="text-2xl font-bold text-gray-900 mt-2">{employees.length}</p>
           <p className="text-sm text-gray-600 mt-1">Aktive Datensaetze</p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {canManage && (
-              <button
-                type="button"
-                onClick={() => {
-                  setShowEmployeeForm(true)
-                  employeeSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                }}
-                className="px-3 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-              >
-                Neuer Mitarbeiter
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => employeeSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-              className="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-            >
-              Details anzeigen
-            </button>
-          </div>
         </div>
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-5 hover:shadow-xl transition-shadow">
           <p className="text-xs uppercase tracking-wide text-gray-500">Krankmeldungen</p>
           <p className="text-2xl font-bold text-gray-900 mt-2">{sickLeaves.length}</p>
           <p className="text-sm text-gray-600 mt-1">Eintraege gesamt</p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                setShowSickForm(true)
-                sickSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-              }}
-              className="px-3 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-            >
-              Krankmeldung einreichen
-            </button>
-            <button
-              type="button"
-              onClick={() => sickSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-              className="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-            >
-              Details anzeigen
-            </button>
-          </div>
         </div>
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-5 hover:shadow-xl transition-shadow">
           <p className="text-xs uppercase tracking-wide text-gray-500">Benefits-Uebersicht</p>
           <p className="text-2xl font-bold text-gray-900 mt-2">{benefits.length}</p>
           <p className="text-sm text-gray-600 mt-1">Angebote</p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => benefitsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-              className="px-3 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-            >
-              Benefit Uebersicht
-            </button>
-            <button
-              type="button"
-              onClick={() => benefitsSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-              className="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-            >
-              Details anzeigen
-            </button>
-          </div>
         </div>
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-5 hover:shadow-xl transition-shadow">
           <p className="text-xs uppercase tracking-wide text-gray-500">Mitarbeitergespraeche</p>
           <p className="text-2xl font-bold text-gray-900 mt-2">{reviews.length}</p>
           <p className="text-sm text-gray-600 mt-1">Vorgaenge</p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {canManage && (
-              <button
-                type="button"
-                onClick={() => {
-                  setShowReviewForm(true)
-                  reviewSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                }}
-                className="px-3 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-              >
-                Mitarbeitergespraeche
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={() => reviewSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-              className="px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-            >
-              Details anzeigen
-            </button>
-          </div>
         </div>
       </div>
 
@@ -440,15 +367,25 @@ export default function HRPage() {
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <div ref={employeeSectionRef} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-3">Mitarbeiterverwaltung</h2>
-          {canManage && (
-            <button
-              className="mb-4 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-              onClick={() => setShowEmployeeForm(!showEmployeeForm)}
-            >
-              Neuer Mitarbeiter
-            </button>
-          )}
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+            <h2 className="text-xl font-bold text-gray-900">Mitarbeiterverwaltung</h2>
+            <div className="flex flex-wrap gap-2">
+              {canManage && (
+                <button
+                  className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                  onClick={() => setShowEmployeeForm(!showEmployeeForm)}
+                >
+                  Neuer Mitarbeiter
+                </button>
+              )}
+              <button
+                className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                onClick={() => setShowEmployeeDetails((prev) => !prev)}
+              >
+                Details anzeigen
+              </button>
+            </div>
+          </div>
           {showEmployeeForm && canManage && (
             <div className="border border-indigo-200 rounded-xl p-4 mb-4 grid grid-cols-1 md:grid-cols-2 gap-3">
               <input
@@ -536,16 +473,61 @@ export default function HRPage() {
             {employees.length === 0 && <p>Keine Mitarbeiter erfasst</p>}
             {!canManage && <p className="text-xs text-gray-500">Nur HR/Admin sieht die Mitarbeiterliste.</p>}
           </div>
+          {showEmployeeDetails && (
+            <div className="mt-5 overflow-x-auto border border-gray-100 rounded-lg">
+              <table className="min-w-full text-sm">
+                <thead className="bg-gray-50 text-gray-600">
+                  <tr>
+                    <th className="px-4 py-2 text-left font-semibold">Name</th>
+                    <th className="px-4 py-2 text-left font-semibold">Abteilung</th>
+                    <th className="px-4 py-2 text-left font-semibold">Position</th>
+                    <th className="px-4 py-2 text-left font-semibold">Kontakt</th>
+                    <th className="px-4 py-2 text-left font-semibold">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 text-gray-700">
+                  {employees.map((employee) => (
+                    <tr key={`emp-${employee.id}`}>
+                      <td className="px-4 py-2 font-medium text-gray-900">
+                        {employee.first_name} {employee.last_name}
+                      </td>
+                      <td className="px-4 py-2">{employee.department || '-'}</td>
+                      <td className="px-4 py-2">{employee.position || '-'}</td>
+                      <td className="px-4 py-2">{employee.email || employee.phone || '-'}</td>
+                      <td className="px-4 py-2">{employee.status || '-'}</td>
+                    </tr>
+                  ))}
+                  {employees.length === 0 && (
+                    <tr>
+                      <td className="px-4 py-4 text-center text-gray-500" colSpan={5}>
+                        Keine Daten vorhanden.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
         <div ref={sickSectionRef} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-3">Krankmeldungen</h2>
-          <button
-            className="mb-4 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-            onClick={() => setShowSickForm(!showSickForm)}
-          >
-            Krankmeldung einreichen
-          </button>
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+            <h2 className="text-xl font-bold text-gray-900">Krankmeldungen</h2>
+            <div className="flex flex-wrap gap-2">
+              <button
+                className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                onClick={() => setShowSickForm(!showSickForm)}
+              >
+                Krankmeldung einreichen
+              </button>
+              <button
+                className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                onClick={() => setShowSickDetails((prev) => !prev)}
+              >
+                Details anzeigen
+              </button>
+            </div>
+          </div>
           {showSickForm && (
             <div className="border border-indigo-200 rounded-xl p-4 mb-4 grid grid-cols-1 gap-3">
               <input
@@ -633,18 +615,67 @@ export default function HRPage() {
             ))}
             {sickLeaves.length === 0 && <p>Keine Krankmeldungen vorhanden</p>}
           </div>
+          {showSickDetails && (
+            <div className="mt-5 overflow-x-auto border border-gray-100 rounded-lg">
+              <table className="min-w-full text-sm">
+                <thead className="bg-gray-50 text-gray-600">
+                  <tr>
+                    <th className="px-4 py-2 text-left font-semibold">Mitarbeiter</th>
+                    <th className="px-4 py-2 text-left font-semibold">Abteilung</th>
+                    <th className="px-4 py-2 text-left font-semibold">Zeitraum</th>
+                    <th className="px-4 py-2 text-left font-semibold">Status</th>
+                    <th className="px-4 py-2 text-left font-semibold">AU</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 text-gray-700">
+                  {sickLeaves.map((entry) => (
+                    <tr key={`sick-${entry.id}`}>
+                      <td className="px-4 py-2 font-medium text-gray-900">{entry.employee_name}</td>
+                      <td className="px-4 py-2">{entry.department || '-'}</td>
+                      <td className="px-4 py-2">{entry.start_date} – {entry.end_date || '-'}</td>
+                      <td className="px-4 py-2">{entry.status}</td>
+                      <td className="px-4 py-2">
+                        {entry.au_file_url ? (
+                          <a className="text-indigo-600" href={entry.au_file_url} target="_blank" rel="noreferrer">
+                            AU
+                          </a>
+                        ) : '-'}
+                      </td>
+                    </tr>
+                  ))}
+                  {sickLeaves.length === 0 && (
+                    <tr>
+                      <td className="px-4 py-4 text-center text-gray-500" colSpan={5}>
+                        Keine Daten vorhanden.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
         <div ref={benefitsSectionRef} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-3">Benefits-Uebersicht</h2>
-          {canManage && (
-            <button
-              className="mb-4 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-              onClick={() => setShowBenefitForm(!showBenefitForm)}
-            >
-              Benefit hinzufuegen
-            </button>
-          )}
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+            <h2 className="text-xl font-bold text-gray-900">Benefits-Uebersicht</h2>
+            <div className="flex flex-wrap gap-2">
+              {canManage && (
+                <button
+                  className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                  onClick={() => setShowBenefitForm(!showBenefitForm)}
+                >
+                  Benefit Uebersicht
+                </button>
+              )}
+              <button
+                className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                onClick={() => setShowBenefitDetails((prev) => !prev)}
+              >
+                Details anzeigen
+              </button>
+            </div>
+          </div>
           {showBenefitForm && canManage && (
             <div className="border border-indigo-200 rounded-xl p-4 mb-4 grid grid-cols-1 gap-3">
               <input
@@ -700,18 +731,59 @@ export default function HRPage() {
             ))}
             {benefits.length === 0 && <p>Keine Benefits hinterlegt</p>}
           </div>
+          {showBenefitDetails && (
+            <div className="mt-5 overflow-x-auto border border-gray-100 rounded-lg">
+              <table className="min-w-full text-sm">
+                <thead className="bg-gray-50 text-gray-600">
+                  <tr>
+                    <th className="px-4 py-2 text-left font-semibold">Benefit</th>
+                    <th className="px-4 py-2 text-left font-semibold">Kategorie</th>
+                    <th className="px-4 py-2 text-left font-semibold">Status</th>
+                    <th className="px-4 py-2 text-left font-semibold">Beschreibung</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 text-gray-700">
+                  {benefits.map((benefit) => (
+                    <tr key={`benefit-${benefit.id}`}>
+                      <td className="px-4 py-2 font-medium text-gray-900">{benefit.title}</td>
+                      <td className="px-4 py-2">{benefit.category || 'Allgemein'}</td>
+                      <td className="px-4 py-2">{benefit.is_active ? 'aktiv' : 'inaktiv'}</td>
+                      <td className="px-4 py-2">{benefit.description || '-'}</td>
+                    </tr>
+                  ))}
+                  {benefits.length === 0 && (
+                    <tr>
+                      <td className="px-4 py-4 text-center text-gray-500" colSpan={4}>
+                        Keine Daten vorhanden.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
         <div ref={reviewSectionRef} className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-3">Mitarbeitergespraeche</h2>
-          {canManage && (
-            <button
-              className="mb-4 px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-              onClick={() => setShowReviewForm(!showReviewForm)}
-            >
-              Neues Gespraech
-            </button>
-          )}
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+            <h2 className="text-xl font-bold text-gray-900">Mitarbeitergespraeche</h2>
+            <div className="flex flex-wrap gap-2">
+              {canManage && (
+                <button
+                  className="px-3 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                  onClick={() => setShowReviewForm(!showReviewForm)}
+                >
+                  Mitarbeitergespraeche
+                </button>
+              )}
+              <button
+                className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                onClick={() => setShowReviewDetails((prev) => !prev)}
+              >
+                Details anzeigen
+              </button>
+            </div>
+          </div>
           {showReviewForm && canManage && (
             <div className="border border-indigo-200 rounded-xl p-4 mb-4 grid grid-cols-1 gap-3">
               <input
@@ -803,6 +875,39 @@ export default function HRPage() {
             ))}
             {reviews.length === 0 && <p>Keine Gespraeche geplant</p>}
           </div>
+          {showReviewDetails && (
+            <div className="mt-5 overflow-x-auto border border-gray-100 rounded-lg">
+              <table className="min-w-full text-sm">
+                <thead className="bg-gray-50 text-gray-600">
+                  <tr>
+                    <th className="px-4 py-2 text-left font-semibold">Mitarbeiter</th>
+                    <th className="px-4 py-2 text-left font-semibold">Typ</th>
+                    <th className="px-4 py-2 text-left font-semibold">Datum</th>
+                    <th className="px-4 py-2 text-left font-semibold">Status</th>
+                    <th className="px-4 py-2 text-left font-semibold">Vorgesetzter</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 text-gray-700">
+                  {reviews.map((review) => (
+                    <tr key={`review-${review.id}`}>
+                      <td className="px-4 py-2 font-medium text-gray-900">{review.employee_name}</td>
+                      <td className="px-4 py-2">{review.review_type || 'Gespraech'}</td>
+                      <td className="px-4 py-2">{review.review_date || '-'}</td>
+                      <td className="px-4 py-2">{review.status}</td>
+                      <td className="px-4 py-2">{review.reviewer_name || '-'}</td>
+                    </tr>
+                  ))}
+                  {reviews.length === 0 && (
+                    <tr>
+                      <td className="px-4 py-4 text-center text-gray-500" colSpan={5}>
+                        Keine Daten vorhanden.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </div>
