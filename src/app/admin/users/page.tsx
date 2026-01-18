@@ -640,11 +640,6 @@ export default function AdminUsersPage() {
                     <p className="text-xs mt-1">Standard-Rechte für freigegebene Bereiche</p>
                   </div>
                 </div>
-                <div className="mt-3 pt-3 border-t border-blue-200">
-                  <p className="text-xs text-blue-600">
-                    <strong>Administratoren:</strong> Christof Drost, Kirstin Kreusch
-                  </p>
-                </div>
               </div>
             </div>
           </div>
